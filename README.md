@@ -16,3 +16,4 @@ Repository pour la version 2 de DevConferences.org
 - [ ] permettre l'envoi de notifications (par ville, par thème / catégorie)
 - [ ] fournir des statistiques sur les conférences
 - [ ] ajouter une carte type google-map
+- [ ] lister les CFP / s'abonner aux CFP
