@@ -21,7 +21,7 @@ body {
 
 @media screen and (max-width: 568px) {
     #header h1 {
-        font-size: 48px;
+        font-size: 36px;
     }
 }
 
