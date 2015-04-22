@@ -1,5 +1,5 @@
 {
   "deploy": {
-    "goal": "exec:java"
+    "goal": "package exec:java"
   }
 }
