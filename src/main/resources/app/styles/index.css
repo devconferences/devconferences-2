@@ -1,0 +1,57 @@
+* {
+    font-family: 'Comfortaa', sans-serif;
+}
+
+body {
+    margin-bottom: 50px;
+}
+
+#header {
+    background-color: #ff5ee7;
+    color: #ffffff;
+    padding: 50px;
+}
+
+#header h1 {
+    font-size: 72px;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#header h2 {
+    font-size: 60px;
+    margin-top: 50px;
+    margin-bottom: 0;
+}
+
+#main {
+    margin-top: 50px;
+    font-size: 28px;
+    color: #808080;
+}
+
+#main a {
+    color: #ff5ee7;
+}
+
+#main h3 {
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.thanks {
+    font-size: 18px;
+    margin-top: 15px;
+}
+
+hr {
+    margin-top: 50px;
+    margin-bottom: 0;
+}
+
+.row {
+    margin: 0;
+}

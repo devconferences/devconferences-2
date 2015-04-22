@@ -1,0 +1,9 @@
+# Itellij idea
+*.iml
+.idea
+
+# Temp files
+*~
+
+# Maven
+target
