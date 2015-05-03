@@ -1,5 +1,7 @@
 # DevConferences - version 2
 
+[![Join the chat at https://gitter.im/devconferences/devconferences-2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/devconferences/devconferences-2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Repository pour la version 2 de DevConferences.org
 
 ## TODO list
