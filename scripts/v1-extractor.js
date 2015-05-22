@@ -53,6 +53,19 @@ var extractConferences = function (html) {
     return conferences;
 };
 
+var normalizeFileName = function (city) {
+    switch (city) {
+        case 'clermont':
+            return 'Clermont-Ferrand';
+        case 'larochelle':
+            return 'La Rochelle';
+        case 'orleans':
+            return 'Orléans';
+        default:
+            return city[0].toUpperCase() + city.substring(1);
+    }
+};
+
 var baseUrl = 'http://www.devconferences.org/';
 var baseOutput = 'src/main/resources/v1/';
 var cities = [
@@ -68,7 +81,7 @@ async.eachSeries(cities, function (city, callback) {
         if (err) throw err;
 
         var conferences = extractConferences(body);
-        var fileName = baseOutput + city + '.json';
+        var fileName = baseOutput + normalizeFileName(city) + '.json';
         jf.writeFileSync(fileName, conferences);
         callback();
     });
