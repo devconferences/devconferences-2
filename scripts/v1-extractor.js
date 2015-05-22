@@ -55,8 +55,6 @@ var extractConferences = function (html) {
 
 var normalizeFileName = function (city) {
     switch (city) {
-        case 'clermont':
-            return 'Clermont-Ferrand';
         case 'larochelle':
             return 'La Rochelle';
         case 'orleans':
