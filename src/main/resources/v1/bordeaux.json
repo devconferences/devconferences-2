@@ -1,0 +1,92 @@
+[
+  {
+    "id": "bdxio",
+    "name": "Bordeaux Developer eXperience",
+    "avatar": "http://www.bdx.io/images/2ea70105.logo_header.png",
+    "description": "Une journée de conférences, pour les développeurs, sur les technologies de demain. La première édition a eu lieu le 17 octobre 2014.",
+    "website": "http://www.bdx.io",
+    "twitter": "@bdxio",
+    "facebook": null
+  },
+  {
+    "id": "agiletourbordeaux",
+    "name": "Agile Tour Bordeaux",
+    "avatar": "https://pbs.twimg.com/profile_images/454680272772939776/_SXa6CVP.jpeg",
+    "description": "L'Agile Tour Bordeaux existe depuis 6 ans. En 2013, pour sa cinquième édition, l'Agile Tour Bordeaux a été un véritable succès. Nous proposions 20 conférences animées par une vingtaine d'orateurs et nous avons eu l'immense plaisir d'accueillir plus de 250 participants. Nous vous attendons nombreux pour cette édition 2014 que nous espérons à la hauteur de vos attentes !",
+    "website": "http://agiletourbordeaux.fr",
+    "twitter": "@atbdx",
+    "facebook": null
+  },
+  {
+    "id": "bordeauxjug",
+    "name": "Bordeaux JUG",
+    "avatar": "http://www.bordeauxjug.org/files/bordeauxjug-logo-small.jpg",
+    "description": "L'objectif du BORDEAUX Java User Group est de permettre à des acteurs et utilisateurs du langage Java (professionnels, communautés open source, universitaires, étudiants) de se rencontrer et d'échanger autour des technologies Java. Des rencontres sont organisées tous les mois, en général le deuxième jeudi du mois, sous forme de réunions gratuites, ouvertes à tous.",
+    "website": "http://www.bordeauxjug.org",
+    "twitter": "@bordeauxjug",
+    "facebook": null
+  },
+  {
+    "id": "bordeauxjs",
+    "name": "Bordeaux JS",
+    "avatar": "https://pbs.twimg.com/profile_images/2741451195/8ff14ab4849d749af06271795a15cf54.png",
+    "description": "User group JavaScript à #bordeaux : réunions, discussions et live coding entre gens en asynchrone. #nodejs #coffeescript #javascript",
+    "website": "http://www.meetup.com/BordeauxJS",
+    "twitter": "@BordeauxJS",
+    "facebook": null
+  },
+  {
+    "id": "rubybdx",
+    "name": "Ruby Bordeaux",
+    "avatar": "https://a248.e.akamai.net/secure.meetupstatic.com/photos/event/d/3/7/4/global_196254132.jpeg",
+    "description": "Le groupe pour les gens intéressés par Ruby, le développement web, et les discussions entre passionnés. Chaque premier mardi du mois nous organisons un apéro Ruby autour d’un verre, permettant à des personnes ayant des affinités avec ce langage de se rencontrer et de discuter. Bien qu’informel, cet apéro donne souvent lieu à des lightning talks (10-15 minutes).",
+    "website": "http://www.rubybdx.org",
+    "twitter": "@rubybdx",
+    "facebook": "https://www.facebook.com/rubybdx"
+  },
+  {
+    "id": "baug",
+    "name": "GDG Bordeaux Android User Group",
+    "avatar": "http://baug.fr/wp-content/uploads/2013/11/logo_baug.png",
+    "description": "Le BAUG késako ? Le BAUG ( Bordeaux Android User Group) est l'association qui regroupe tous les professionnels d'Android sur Bordeaux et la région Aquitaine.",
+    "website": "http://baug.fr",
+    "twitter": null,
+    "facebook": null
+  },
+  {
+    "id": "uxbordeaux",
+    "name": "UX Bordeaux",
+    "avatar": "https://pbs.twimg.com/profile_images/429234970389786624/NPgXgqzw.png",
+    "description": "UX Bordeaux est née de la volonté de fédérer toutes les personnes de la région Bordelaise – et plus généralement d’Aquitaine – souhaitant partager leur intérêt pour l’Expérience Utilisateur. Notre objectif est de créer des événements autour de l’UX, permettant ainsi de favoriser les échanges et les retours d’expérience : afterworks, conférences, groupes de travail… Nous soutenons et encourageons toutes les formes d’événement ou d’initiative qui permettent de rapprocher tous les acteurs du domaine.",
+    "website": "http://ux-bordeaux.com",
+    "twitter": "@uxbordeaux",
+    "facebook": "https://www.facebook.com/UXBordeaux"
+  },
+  {
+    "id": "okiwi",
+    "name": "Okiwi",
+    "avatar": "http://okiwi.org/img/okiwi.png",
+    "description": "Okiwi est une communauté ouverte de praticiens en informatique située à Bordeaux. Ouverte parce que nous ne donnons pas de limites à notre curiosité. L’activité de l’association dépendra de ce que chacun y apportera.",
+    "website": "http://okiwi.org",
+    "twitter": "@okiwi_fr",
+    "facebook": null
+  },
+  {
+    "id": "dbtalks",
+    "name": "D&B Talks",
+    "avatar": "https://scontent-b-cdg.xx.fbcdn.net/hphotos-xfa1/v/t1.0-9/307898_505087429548935_159076237_n.png?oh=09896b644538376c456139c77ca11b37&oe=54FFC996",
+    "description": "Les D&B Talks se déroulent tous les derniers lundis du mois et permettent d'échanger entre designers et passionnés du numérique.",
+    "website": "http://dbtalks.org",
+    "twitter": "@dbtalks_org",
+    "facebook": "https://www.facebook.com/dbtalksbdx"
+  },
+  {
+    "id": "ttfx",
+    "name": "TTFX",
+    "avatar": "https://pbs.twimg.com/profile_images/2235927446/ttfx.jpg",
+    "description": "Son objectif est de faciliter les échanges entre les personnes travaillant sur ces technologies afin qu’ils mettent en commun leur expérience et leurs connaissances. Pour cela nous organisons le plus régulièrement possible des évenements, les TTFX, à Bordeaux.",
+    "website": "http://www.ttfx.fr",
+    "twitter": "@TTFXBordeaux",
+    "facebook": null
+  }
+]

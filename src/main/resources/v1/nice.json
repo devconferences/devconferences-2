@@ -1,0 +1,56 @@
+[
+  {
+    "id": "rivieradev",
+    "name": "Riviera DEV",
+    "avatar": "https://pbs.twimg.com/profile_images/558654009464995840/3Sb4cbmX_400x400.png",
+    "description": "Riviera DEV, la plus grande conférence de développeurs de la Côte d'Azur.",
+    "website": "http://www.rivieradev.fr",
+    "twitter": "@RivieraDev",
+    "facebook": null
+  },
+  {
+    "id": "sofiaconf",
+    "name": "Sofia Conf",
+    "avatar": "https://pbs.twimg.com/profile_images/458900578819514368/6eILNiDV.jpeg",
+    "description": "L'événement Open Source de Sophia Antipolis.",
+    "website": "http://www.sophiaconf.fr",
+    "twitter": "@SophiaConf",
+    "facebook": null
+  },
+  {
+    "id": "rivierajug",
+    "name": "Riviera JUG",
+    "avatar": "http://www.rivierajug.org/xwiki/bin/skin/XWiki/DefaultSkin/logo.png",
+    "description": "Java User Group de Nice et Sophia-Antipolis. Notre but et d'unir les développeurs Java de Toulon jusqu'à Monaco (pourquoi pas une partie de l'Italie si nos amis Italiens se montrent intéressés). Nous organisons des réunions régulières depuis janvier 2009 à Sophia-Antipolis. Tous les mois en général, après le travail, nous nous réunissons et accueillons des intervenants régionaux et internationaux pour nous parler de technologies Java",
+    "website": "http://www.rivierajug.org",
+    "twitter": "@rivierajug",
+    "facebook": null
+  },
+  {
+    "id": "jssophia",
+    "name": "JS Sophia",
+    "avatar": "https://pbs.twimg.com/profile_images/378800000695518699/74baa8326fafba82e0c79e3b7597cc84.jpeg",
+    "description": "JavaScript meetups in Sophia-Antipolis.",
+    "website": "http://groups.google.com/group/jssophia",
+    "twitter": "@jssophia",
+    "facebook": null
+  },
+  {
+    "id": "opencoffeesofia",
+    "name": "OpenCoffee Sophia",
+    "avatar": "http://www.opencoffeesophia.com/assets/logo.fw-17f57a3c1768162b3cc55ca4c3cd48ec.png",
+    "description": "Les OpenCoffee Clubs sont des rencontres régulières et informelles entre entrepreneurs, investisseurs, développeurs, consultants, chercheurs, étudiants et toutes les personnes travaillant dans le monde d’Internet. Il s’agit d’une opportunité de rencontrer d’autres professionnels, de développer son réseau et d’échanger et partager son expérience autour de sujets liés à la création et au financement de startups et de projets web.",
+    "website": "http://www.opencoffeesophia.com",
+    "twitter": "@occsophia",
+    "facebook": null
+  },
+  {
+    "id": "rivierascalaclojure",
+    "name": "Riviera Scala Clojure",
+    "avatar": "http://photos3.meetupstatic.com/photos/event/a/d/4/0/global_77984352.jpeg",
+    "description": "Riviera Scala and Clojure Enthusiasts Group.",
+    "website": "http://www.meetup.com/riviera-scala-clojure",
+    "twitter": "@riviera_func",
+    "facebook": null
+  }
+]

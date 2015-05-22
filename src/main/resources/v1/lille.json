@@ -1,0 +1,56 @@
+[
+  {
+    "id": "takeoffconf",
+    "name": "Take Off Conf",
+    "avatar": "https://pbs.twimg.com/profile_images/2561985310/p6qruuh8y73n2rxb1v33.png",
+    "description": "Take Off is an English-speaking conference for passionate developers and designers, focusing on trending topics for the upcoming year.",
+    "website": "http://takeoffconf.com",
+    "twitter": "@takeoffconf",
+    "facebook": "https://www.facebook.com/TakeoffConf"
+  },
+  {
+    "id": "chtijug",
+    "name": "Ch'ti JUG",
+    "avatar": "http://chtijug.org/wp-content/uploads/2012/01/logoJug-full-e1327596969647.png",
+    "description": "Le Ch’ti JUG est un groupe d’utilisateurs Java ayant pour but de fédérer, rassembler et animer la communauté Java dans le Nord-Pas-de-Calais. Le but premier est d’organiser périodiquement une rencontre ayant pour thème Java au sens large. Ces évènements sont mensuels, gratuits, et ouverts à tous.",
+    "website": "http://www.chtijug.org",
+    "twitter": "@chtijug",
+    "facebook": null
+  },
+  {
+    "id": "gdglille",
+    "name": "GDG Lille",
+    "avatar": "https://pbs.twimg.com/profile_images/457852805802258432/FL4anC5J.png",
+    "description": "Google Developer Group (GDG) Lille, est un groupe de développeurs passionnés par les technologies Google. Le groupe se réunit régulièrement autour de ces thèmes, et est ouvert au public.",
+    "website": "http://www.gdglille.org",
+    "twitter": "@GDGLille",
+    "facebook": null
+  },
+  {
+    "id": "chtijs",
+    "name": "Ch'ti JS",
+    "avatar": "http://chtijs.francejs.org/images/chtijs.svg",
+    "description": "ChtiJS est une réunion informelle de personnes passionnées de JavaScript. Notre but est de favoriser les échanges et la découverte dans une atmosphère ouverte et détendue.",
+    "website": "http://chtijs.francejs.org",
+    "twitter": "@chtijs",
+    "facebook": null
+  },
+  {
+    "id": "takeoff",
+    "name": "Take Off Talks",
+    "avatar": "http://photos3.meetupstatic.com/photos/event/5/5/9/8/global_274941912.jpeg",
+    "description": "Un soir par mois à Lille, venez prendre une bière avec nous. Trois conférenciers seront là pour partager leurs idées, découvertes et opinions autour du monde du design, du web et des startups. Tout le monde est bienvenu : débutants, curieux, experts.",
+    "website": "http://www.meetup.com/takeoff",
+    "twitter": "@TakeoffTalks",
+    "facebook": null
+  },
+  {
+    "id": "welshdesign",
+    "name": "Welsh Design",
+    "avatar": "http://photos2.meetupstatic.com/photos/event/a/5/e/8/global_366822472.jpeg",
+    "description": "WelshDesign est né d'une volonté de proposer un équivalent du déjà célèbre ChtiJS, mais orienté webdesign. Quelque chose de moins technique, où parler UI, UX, webdesign. Ce sont des réunions totalement informelles où tout le monde peut prendre la parole librement, et les sujets sont proposés et présentés par ses membres. N'hésitez pas à venir découvrir et/ou partager vos découvertes, process, outils ou librairie frontend autour de CSS, HTML, Javascript, du webdesign, du prototyping, workflow & maquettes responsive, emailing responsive, design atomique, … la liste est longue, y'a de quoi faire ! :)",
+    "website": "http://www.meetup.com/WelshDesign",
+    "twitter": "@welsh_design",
+    "facebook": null
+  }
+]
