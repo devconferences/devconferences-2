@@ -53,7 +53,7 @@ var extractConferences = function (html) {
     return conferences;
 };
 
-var normalizeFileName = function (city) {
+var getCityName = function (city) {
     switch (city) {
         case 'larochelle':
             return 'La Rochelle';
@@ -79,8 +79,14 @@ async.eachSeries(cities, function (city, callback) {
         if (err) throw err;
 
         var conferences = extractConferences(body);
-        var fileName = baseOutput + normalizeFileName(city) + '.json';
-        jf.writeFileSync(fileName, conferences);
+        var cityConferences = {
+            id: city,
+            name: getCityName(city),
+            conferences: conferences
+        };
+
+        var fileName = baseOutput + city + '.json';
+        jf.writeFileSync(fileName, cityConferences);
         callback();
     });
 

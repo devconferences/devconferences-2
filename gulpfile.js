@@ -12,12 +12,16 @@ var paths = {
     }
 };
 
-gulp.task('browserify', function () {
-    browserify(paths.src.js + '/index.js')
+gulp.task('jsx', function () {
+    browserify(paths.src.js + '/app.js')
         .transform(reactify)
         .bundle()
         .pipe(source('bundle.js'))
         .pipe(gulp.dest(paths.dist.js));
 });
 
-gulp.task('default', ['browserify']);
+gulp.task('watch', ['jsx'], function () {
+    gulp.watch(paths.src.js + '/**/*.js', ['jsx']);
+});
+
+gulp.task('default', ['watch']);

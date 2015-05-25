@@ -1,0 +1,59 @@
+var React = require('react');
+var Router = require('react-router');
+var injectTapEventPlugin = require("react-tap-event-plugin");
+
+var Home = require('./components/home');
+var City = require('./components/city');
+var NotFound = require('./components/not-found');
+
+var Route = Router.Route;
+var RouteHandler = Router.RouteHandler;
+var DefaultRoute = Router.DefaultRoute;
+var NotFoundRoute = Router.NotFoundRoute;
+
+// Needed for onTouchTap
+// Can go away when react 1.0 release
+// Check this repo: https://github.com/zilverline/react-tap-event-plugin
+injectTapEventPlugin();
+
+var App = React.createClass({
+    render: function () {
+        return (
+            <div>
+                <header>
+                    <div className="container title">
+                        <a href="#">
+                            Dev Conferences
+                        </a>
+                    </div>
+                </header>
+
+                <RouteHandler/>
+
+                <footer>
+                    <hr />
+                    <div className="container text-center">
+                        Il manque une ville &#63; Il manque une conférence &#63;
+                        <br />
+                        <a href="https://github.com/devconferences/devconferences.github.io">
+                            Contribuez sur Github &#33;
+                        </a>
+                    </div>
+                </footer>
+            </div>
+        )
+    }
+});
+
+var routes = (
+    <Route handler={App}>
+        <DefaultRoute handler={Home}/>
+        <NotFoundRoute handler={NotFound} />
+
+        <Route name="city" path="city/:id" handler={City}/>
+    </Route>
+);
+
+Router.run(routes, Router.HashLocation, function (Root) {
+    React.render(<Root/>, document.body);
+});
