@@ -39919,6 +39919,9 @@ module.exports = EventList;
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
+var WebsiteLink = require('./website-link');
+var TwitterLink = require('./twitter-link');
+
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
@@ -39927,6 +39930,25 @@ var Glyphicon = ReactBootstrap.Glyphicon;
 var Event = React.createClass({displayName: "Event",
 
     render: function () {
+        var renderWebsite = function (event) {
+            if (event.website) {
+                return (
+                    React.createElement("p", null, 
+                        React.createElement(WebsiteLink, {url: event.website})
+                    )
+                )
+            }
+        };
+        var renderTwitter = function (event) {
+            if (event.twitter) {
+                return (
+                    React.createElement("p", null, 
+                        React.createElement(TwitterLink, {twitterId: event.twitter})
+                    )
+                )
+            }
+        };
+
         var event = this.props.event;
         return (
             React.createElement("div", null, 
@@ -39944,11 +39966,8 @@ var Event = React.createClass({displayName: "Event",
                             React.createElement("p", null, 
                                 event.description
                             ), 
-                            React.createElement("p", null, 
-                                React.createElement(Glyphicon, {glyph: "home"}, 
-                                    React.createElement("a", {href: event.website}, " ", event.website)
-                                )
-                            )
+                             renderWebsite(event), 
+                             renderTwitter(event) 
                         )
                     )
                 )
@@ -39960,7 +39979,7 @@ var Event = React.createClass({displayName: "Event",
 
 module.exports = Event;
 
-},{"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
+},{"./twitter-link":281,"./website-link":282,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
 var React = require('react');
 var $ = require('jquery');
 
@@ -40025,4 +40044,41 @@ var NotFound = React.createClass({displayName: "NotFound",
 
 module.exports = NotFound;
 
-},{"react":270}]},{},[1]);
+},{"react":270}],281:[function(require,module,exports){
+var React = require('react');
+
+var TwitterLink = React.createClass({displayName: "TwitterLink",
+
+    render: function () {
+        var twitterId = this.props.twitterId;
+        return (
+            React.createElement("i", {className: "fa fa-twitter"}, 
+                React.createElement("a", {href: 'https://twitter.com/' + twitterId}, " ", '@' + twitterId)
+            )
+        )
+    }
+});
+
+module.exports = TwitterLink;
+
+},{"react":270}],282:[function(require,module,exports){
+var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
+
+var Glyphicon = ReactBootstrap.Glyphicon;
+
+var WebsiteLink = React.createClass({displayName: "WebsiteLink",
+
+    render: function () {
+        var url = this.props.url;
+        return (
+            React.createElement(Glyphicon, {glyph: "home"}, 
+                React.createElement("a", {href: url}, " ", url)
+            )
+        )
+    }
+});
+
+module.exports = WebsiteLink;
+
+},{"react":270,"react-bootstrap":60}]},{},[1]);

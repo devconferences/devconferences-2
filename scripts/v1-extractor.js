@@ -47,7 +47,7 @@ var extractConferencesAndCommunities = function (html) {
                 }
                 var twitterNode = $('i[class~="fa-twitter"]', paragraphNode);
                 if (twitterNode.length) {
-                    twitter = twitterNode.next().text();
+                    twitter = twitterNode.next().text().slice(1);
                 }
                 var facebookNode = $('i[class~="fa-facebook"]', paragraphNode);
                 if (facebookNode.length) {

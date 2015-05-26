@@ -1,6 +1,9 @@
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
+var WebsiteLink = require('./website-link');
+var TwitterLink = require('./twitter-link');
+
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
@@ -9,6 +12,25 @@ var Glyphicon = ReactBootstrap.Glyphicon;
 var Event = React.createClass({
 
     render: function () {
+        var renderWebsite = function (event) {
+            if (event.website) {
+                return (
+                    <p>
+                        <WebsiteLink url={event.website} />
+                    </p>
+                )
+            }
+        };
+        var renderTwitter = function (event) {
+            if (event.twitter) {
+                return (
+                    <p>
+                        <TwitterLink twitterId={event.twitter} />
+                    </p>
+                )
+            }
+        };
+
         var event = this.props.event;
         return (
             <div>
@@ -26,11 +48,8 @@ var Event = React.createClass({
                             <p>
                                 {event.description}
                             </p>
-                            <p>
-                                <Glyphicon glyph='home'>
-                                    <a href={event.website}> {event.website}</a>
-                                </Glyphicon>
-                            </p>
+                            { renderWebsite(event) }
+                            { renderTwitter(event) }
                         </Col>
                     </Row>
                 </Grid>
