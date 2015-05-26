@@ -1,239 +1,29 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>DevConferences, annuaire des conférences et communautés de développeurs en France.</title>
+    <title>Dev Conferences</title>
+    <meta name="description" content="Listing des conférences orientées développement en France">
 
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Comfortaa:400,700" type="text/css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/v1.css">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:700,400' rel='stylesheet' type='text/css'>
 
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="canonical" href="http://www.devconferences.org/">
 
-    <link rel="icon" href="img/logo_64.png">
-
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-62175473-1', 'auto');
-        ga('send', 'pageview');
-
-    </script>
+    <link rel="icon" href="/img/logo_64.png">
 
 </head>
+
 <body>
 
-<div class="container">
-
-    <div id="header" class="text-center">
-        <h1>Dev Conferences</h1>
-
-        <h2>version 2</h2>
-    </div>
-
-    <div id="main" class="text-center">
-        <p>
-            Nous sommes en train de préparer la version 2 de <a href="http://www.devconferences.org">DevConferences.org</a> !
-        </p>
-
-        <p>
-            Envie de nous donner un coup de main ? <br>
-            Rendez-vous au <a href="http://www.breizhcamp.org">Breizhcamp</a> à Rennes mercredi 10 juin 2015 pour une après-midi de hacking
-            !
-        </p>
-
-        <hr>
-
-        <h3>Sponsors</h3>
-
-        <div class="row">
-            <div class="col-md-4">
-                <p>
-                    <a href="//www.breizhcamp.org">
-                        <img src="//pbs.twimg.com/profile_images/584763893244919808/PEXuMRib.png" alt="Breizhcamp"
-                             class="img-circle"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    Breizhcamp
-                </p>
-
-                <p class="thanks">
-                    Merci au <a href="//www.breizhcamp.org">Breizhcamp</a> de nous accueillir lors de l'après-midi Hackerspace du mercredi
-                    10
-                    juin 2015 .
-                </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                    <a href="//www.clever-cloud.com">
-                        <img src="//pbs.twimg.com/profile_images/595661754392301569/-pgTbcC5.png" alt="Clever Cloud"
-                             class="img-circle"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    Clever Cloud
-                </p>
-
-                <p class="thanks">
-                    Merci à <a href="//www.clever-cloud.com">Clever Cloud</a> d'héberger la nouvelle version de DevConferences.
-                </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                    <a href="//www.serli.com">
-                        <img src="//pbs.twimg.com/profile_images/445868085153497089/cgPOpuas.jpeg" alt="Serli"
-                             class="img-circle"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    Serli
-                </p>
-
-                <p class="thanks">
-                    Merci à <a href="//www.serli.com">Serli</a> de nous soutenir et de nous aider à organiser la session de hacking au
-                    Breizhcamp.
-                </p>
-            </div>
-        </div>
-
-        <hr>
-
-        <h3>Dev Team</h3>
-
-        <div class="row">
-            <div class="col-md-4">
-                <p>
-                    <a href="//github.com/cwoodrow">
-                        <img src="//www.gravatar.com/avatar/71ca7cf0450a8a352d98955ee460dacb?s=96" alt="Chris" class="img-circle">
-                    </a>
-                    <br>
-                    Chris
-                </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                    <a href="//twitter.com/TrevorReznik">
-                        <img src="//www.gravatar.com/avatar/79dc5d13bab6d382ae346ecbb0b9876a?s=96" alt="Mathieu" class="img-circle">
-                    </a>
-                    <br>
-                    Mathieu
-                </p>
-            </div>
-            <div class="col-md-4">
-                <p>
-                    <a href="//twitter.com/sebprunier">
-                        <img src="//www.gravatar.com/avatar/9ec96799dd90029b4f1caf6d1475c1bb?s=96" alt="Sébastien" class="img-circle">
-                    </a>
-                    <br>
-                    Sébastien
-                </p>
-            </div>
-        </div>
-
-        <p class="thanks">
-            Vous serez présent au Breizhcamp pour nous aider ? Faites-le nous savoir en envoyant un petit tweet
-            <a href="//twitter.com/DevConferences">@DevConferences</a> !
-        </p>
-
-        <hr>
-
-        <h3>Quoi de prévu dans la v2 ?</h3>
-
-        <p>
-            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Recherches avancées<br>
-            <span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> Agendas des conférences<br>
-            <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> Localisation sur Google Maps<br>
-            <span class="glyphicon glyphicon-film" aria-hidden="true"></span> Vidéos des conférences<br>
-            <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Intégration avec <a href="//www.meetup.com">meetup.com</a><br>
-            <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Dates des Call For Papers<br>
-            <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Newsletter<br>
-            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Notifications<br>
-            <span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Statistiques
-        </p>
-
-        <p class="thanks">
-            Tous les détails sur <a href="//github.com/devconferences/devconferences-2">notre compte Github</a>
-        </p>
-
-        <hr>
-
-        <h3>Technos</h3>
-
-        <div class="row">
-            <div class="col-md-3">
-                <p>
-                    <img src="http://www.w3.org/html/logo/downloads/HTML5_Badge_256.png" alt="HTML 5" class="img-rounded"
-                         height="96px" width="96px">
-                    <br>
-                    HTML 5
-                </p>
-            </div>
-            <div class="col-md-3">
-                <p>
-                    <a href="//facebook.github.io/react/">
-                        <img src="//github.com/facebook/react/wiki/react-logo-1000-transparent.png" alt="ReactJS" class="img-rounded"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    ReactJS
-                </p>
-            </div>
-            <div class="col-md-3">
-                <p>
-                    <a href="//github.com/CodeStory/fluent-http">
-                        <img src="//pbs.twimg.com/profile_images/1705996674/image.jpg" alt="Fluent HTTP" class="img-rounded"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    Fluent HTTP
-                </p>
-            </div>
-            <div class="col-md-3">
-                <p>
-                    <a href="//www.elastic.co/">
-                        <img src="//pbs.twimg.com/profile_images/575347766857064448/USjimvnS.png" alt="Elastic" class="img-rounded"
-                             height="96px" width="96px">
-                    </a>
-                    <br>
-                    Elastic
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <hr>
-
-    <div id="footer" class="row text-center">
-        <div class="col-md-3">
-            <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Hébergé chez <a href="//www.clever-cloud.com">Clever
-            Cloud</a>
-        </div>
-        <div class="col-md-3">
-            <i class="fa fa-twitter"></i> Suivez-nous sur <a href="//twitter.com/DevConferences">Twitter</a>
-        </div>
-        <div class="col-md-3">
-            <i class="fa fa-bug"></i> Remontez les bugs via <a href="//github.com/devconferences/devconferences-2/issues">Github</a>
-        </div>
-        <div class="col-md-3">
-            <span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Soutenu par <a href="//www.serli.com">Serli</a>
-        </div>
-    </div>
-
-</div>
+<script src="/js/bundle.js"></script>
 
 </body>
+
 </html>

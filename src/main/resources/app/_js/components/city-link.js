@@ -1,15 +1,15 @@
 var React = require('react');
-var ReactBootstrap = require('react-bootstrap');
+var Router = require('react-router');
 
-var Button = ReactBootstrap.Button;
+var Link = Router.Link;
 
 var CityLink = React.createClass({
     render: function () {
         return (
-            <Button bsStyle='primary' className='btn-block btn-city' href={'#/city/' + this.props.city.id}>
+            <Link to="city" params={{id: this.props.city.id}} className='btn btn-primary btn-block btn-city'>
                 {this.props.city.name}
-            </Button>
-        )
+            </Link>
+        );
     }
 });
 

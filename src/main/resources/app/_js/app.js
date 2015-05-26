@@ -22,7 +22,7 @@ var App = React.createClass({
             <div>
                 <header>
                     <div className="container title">
-                        <a href="#">
+                        <a href="/">
                             Dev Conferences
                         </a>
                     </div>
@@ -54,6 +54,6 @@ var routes = (
     </Route>
 );
 
-Router.run(routes, Router.HashLocation, function (Root) {
+Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(<Root/>, document.body);
 });

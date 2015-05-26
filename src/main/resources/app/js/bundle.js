@@ -23,7 +23,7 @@ var App = React.createClass({displayName: "App",
             React.createElement("div", null, 
                 React.createElement("header", null, 
                     React.createElement("div", {className: "container title"}, 
-                        React.createElement("a", {href: "#"}, 
+                        React.createElement("a", {href: "/"}, 
                             "Dev Conferences"
                         )
                     )
@@ -55,7 +55,7 @@ var routes = (
     )
 );
 
-Router.run(routes, Router.HashLocation, function (Root) {
+Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(React.createElement(Root, null), document.body);
 });
 
@@ -39686,23 +39686,23 @@ module.exports = CityLinkList;
 
 },{"./city-link":272,"react":270,"react-bootstrap":60}],272:[function(require,module,exports){
 var React = require('react');
-var ReactBootstrap = require('react-bootstrap');
+var Router = require('react-router');
 
-var Button = ReactBootstrap.Button;
+var Link = Router.Link;
 
 var CityLink = React.createClass({displayName: "CityLink",
     render: function () {
         return (
-            React.createElement(Button, {bsStyle: "primary", className: "btn-block btn-city", href: '#/city/' + this.props.city.id}, 
+            React.createElement(Link, {to: "city", params: {id: this.props.city.id}, className: "btn btn-primary btn-block btn-city"}, 
                 this.props.city.name
             )
-        )
+        );
     }
 });
 
 module.exports = CityLink;
 
-},{"react":270,"react-bootstrap":60}],273:[function(require,module,exports){
+},{"react":270,"react-router":97}],273:[function(require,module,exports){
 var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
@@ -39808,7 +39808,6 @@ var Button = ReactBootstrap.Button;
 
 var EventAnchor = React.createClass({displayName: "EventAnchor",
     render: function () {
-        // FIXME anchors do not work because of ReactRouter
         return (
             React.createElement(Button, {bsStyle: "primary", href: '#' + this.props.event.id}, 
                 this.props.event.name
