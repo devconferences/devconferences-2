@@ -6,6 +6,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 var Home = require('./components/home');
 var City = require('./components/city');
 var NotFound = require('./components/not-found');
+var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
@@ -21,6 +22,8 @@ var App = React.createClass({displayName: "App",
     render: function () {
         return (
             React.createElement("div", null, 
+                React.createElement(BreizhcampTeaser, null), 
+
                 React.createElement("header", null, 
                     React.createElement("div", {className: "container title"}, 
                         React.createElement("a", {href: "/"}, 
@@ -59,7 +62,7 @@ Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(React.createElement(Root, null), document.body);
 });
 
-},{"./components/city":273,"./components/home":278,"./components/not-found":279,"react":270,"react-router":97,"react-tap-event-plugin":115}],2:[function(require,module,exports){
+},{"./components/breizhcamp-teaser":271,"./components/city":274,"./components/home":279,"./components/not-found":280,"react":270,"react-router":97,"react-tap-event-plugin":115}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -39653,6 +39656,76 @@ module.exports = require('./lib/React');
 
 },{"./lib/React":143}],271:[function(require,module,exports){
 var React = require('react');
+
+var BreizhcampTeaser = React.createClass({displayName: "BreizhcampTeaser",
+
+    render: function () {
+        return (
+            React.createElement("div", {id: "breizhcamp", className: "text-center"}, 
+                React.createElement("a", {href: "/breizhcamp.html"}, 
+                    "Venez coder la v2 au BreizhCamp le 10 juin de 14h à 17h30"
+                ), 
+                " avec", 
+                React.createElement("a", {href: "//github.com/cwoodrow"}, 
+                " ", 
+                    React.createElement("img", {src: "//www.gravatar.com/avatar/71ca7cf0450a8a352d98955ee460dacb?s=28", title: "Chris", alt: "Chris", className: "img-circle"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//twitter.com/TrevorReznik"}, 
+                " ", 
+                    React.createElement("img", {src: "//www.gravatar.com/avatar/79dc5d13bab6d382ae346ecbb0b9876a?s=28", title: "Mathieu", alt: "Mathieu", className: "img-circle"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//twitter.com/sebprunier"}, 
+                " ", 
+                    React.createElement("img", {src: "//www.gravatar.com/avatar/9ec96799dd90029b4f1caf6d1475c1bb?s=28", title: "Sébastien", alt: "Sébastien", className: "img-circle"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//www.serli.com"}, 
+                " ", 
+                    React.createElement("img", {src: "//pbs.twimg.com/profile_images/445868085153497089/cgPOpuas.jpeg", title: "Serli", alt: "Serli", 
+                        className: "img-circle", 
+                        height: "28px", width: "28px"}), 
+                " "
+                ), 
+                "Les technos sont sympas !", 
+                React.createElement("a", {href: "//github.com/CodeStory/fluent-http"}, 
+                " ", 
+                    React.createElement("img", {src: "//pbs.twimg.com/profile_images/1705996674/image.jpg", title: "Fluent HTTP", alt: "Fluent HTTP", 
+                        className: "img-circle", 
+                        height: "28px", width: "28px"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//facebook.github.io/react/"}, 
+                " ", 
+                    React.createElement("img", {src: "//github.com/facebook/react/wiki/react-logo-1000-transparent.png", title: "ReactJS", alt: "ReactJS", 
+                        className: "img-circle", 
+                        height: "28px", width: "28px"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//www.elastic.co/"}, 
+                " ", 
+                    React.createElement("img", {src: "//pbs.twimg.com/profile_images/575347766857064448/USjimvnS.png", title: "Elastic", alt: "Elastic", 
+                        className: "img-circle", 
+                        height: "28px", width: "28px"}), 
+                " "
+                ), 
+                React.createElement("a", {href: "//www.clever-cloud.com"}, 
+                " ", 
+                    React.createElement("img", {src: "//pbs.twimg.com/profile_images/595661754392301569/-pgTbcC5.png", title: "Clever Cloud", alt: "Clever Cloud", 
+                        className: "img-circle", 
+                        height: "28px", width: "28px"}), 
+                " "
+                )
+            )
+        )
+    }
+});
+
+module.exports = BreizhcampTeaser;
+
+},{"react":270}],272:[function(require,module,exports){
+var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
 var CityLink = require('./city-link');
@@ -39684,7 +39757,7 @@ var CityLinkList = React.createClass({displayName: "CityLinkList",
 
 module.exports = CityLinkList;
 
-},{"./city-link":272,"react":270,"react-bootstrap":60}],272:[function(require,module,exports){
+},{"./city-link":273,"react":270,"react-bootstrap":60}],273:[function(require,module,exports){
 var React = require('react');
 var Router = require('react-router');
 
@@ -39702,7 +39775,7 @@ var CityLink = React.createClass({displayName: "CityLink",
 
 module.exports = CityLink;
 
-},{"react":270,"react-router":97}],273:[function(require,module,exports){
+},{"react":270,"react-router":97}],274:[function(require,module,exports){
 var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
@@ -39775,7 +39848,7 @@ var City = React.createClass({displayName: "City",
 
 module.exports = City;
 
-},{"./event-anchor-list":274,"./event-list":276,"jquery":3,"react":270,"react-router":97}],274:[function(require,module,exports){
+},{"./event-anchor-list":275,"./event-list":277,"jquery":3,"react":270,"react-router":97}],275:[function(require,module,exports){
 var React = require('react');
 
 var EventAnchor = require('./event-anchor');
@@ -39800,7 +39873,7 @@ var EventAnchorList = React.createClass({displayName: "EventAnchorList",
 
 module.exports = EventAnchorList;
 
-},{"./event-anchor":275,"react":270}],275:[function(require,module,exports){
+},{"./event-anchor":276,"react":270}],276:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39818,7 +39891,7 @@ var EventAnchor = React.createClass({displayName: "EventAnchor",
 
 module.exports = EventAnchor;
 
-},{"react":270,"react-bootstrap":60}],276:[function(require,module,exports){
+},{"react":270,"react-bootstrap":60}],277:[function(require,module,exports){
 var React = require('react');
 
 var Event = require('./event');
@@ -39842,7 +39915,7 @@ var EventList = React.createClass({displayName: "EventList",
 
 module.exports = EventList;
 
-},{"./event":277,"react":270}],277:[function(require,module,exports){
+},{"./event":278,"react":270}],278:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39887,7 +39960,7 @@ var Event = React.createClass({displayName: "Event",
 
 module.exports = Event;
 
-},{"react":270,"react-bootstrap":60}],278:[function(require,module,exports){
+},{"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
 var React = require('react');
 var $ = require('jquery');
 
@@ -39937,7 +40010,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./city-link-list":271,"jquery":3,"react":270}],279:[function(require,module,exports){
+},{"./city-link-list":272,"jquery":3,"react":270}],280:[function(require,module,exports){
 var React = require('react');
 
 var NotFound = React.createClass({displayName: "NotFound",

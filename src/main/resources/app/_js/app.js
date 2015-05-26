@@ -5,6 +5,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 var Home = require('./components/home');
 var City = require('./components/city');
 var NotFound = require('./components/not-found');
+var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
@@ -20,6 +21,8 @@ var App = React.createClass({
     render: function () {
         return (
             <div>
+                <BreizhcampTeaser />
+
                 <header>
                     <div className="container title">
                         <a href="/">

@@ -1,83 +1,70 @@
 * {
-    font-family: 'Comfortaa', sans-serif;
-    color: #808080;
+    font-family: 'Open Sans', sans-serif;
 }
 
 body {
-    margin-bottom: 50px;
+    font-size: 16px;
 }
 
-#header {
+header, footer {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+footer {
+    padding: 20px;
+}
+
+h2 {
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+div.title {
+    font-size: 48px;
+    font-weight: bold;
+    text-align: center;
+}
+
+div.title a {
+    text-decoration: none;
+}
+
+div.title a:hover {
+    color: #337ab7;
+}
+
+.btn-city {
+    background-color: #337ab7;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 24px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.btn-city:hover {
+    color: #ffffff;
+}
+
+div.conflinks {
+    margin-top: 20px;
+    text-align: center;
+}
+
+div.conflinks a {
+    margin-bottom: 10px;
+    margin-right: 5px;
+}
+
+#breizhcamp {
     background-color: #ff5ee7;
     color: #ffffff;
-    padding: 50px;
+    width: 100%;
+    box-shadow: 2px 2px 2px 1px lightgrey;
+    padding: 5px;
 }
 
-#header h1 {
-    font-size: 72px;
-    font-weight: bold;
-    margin-top: 0;
-    margin-bottom: 0;
+#breizhcamp a {
+    color: #ffffff;
 }
-
-@media screen and (max-width: 568px) {
-    #header h1 {
-        font-size: 36px;
-    }
-}
-
-#header h2 {
-    font-size: 60px;
-    margin-top: 50px;
-    margin-bottom: 0;
-}
-
-@media screen and (max-width: 568px) {
-    #header h2 {
-        font-size: 36px;
-    }
-}
-
-#footer {
-    font-size: 14px;
-    margin-top: 15px;
-}
-
-#main {
-    margin-top: 50px;
-    font-size: 28px;
-}
-
-@media screen and (max-width: 568px) {
-    #main {
-        font-size: 24px;
-    }
-}
-
-#main h3 {
-    font-size: 32px;
-    font-weight: bold;
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-@media screen and (max-width: 568px) {
-    #main h3 {
-        font-size: 28px;
-    }
-}
-
-.thanks {
-    font-size: 18px;
-    margin-top: 15px;
-}
-
-a {
-    color: #ff5ee7;
-}
-
-hr {
-    margin-top: 50px;
-    margin-bottom: 0;
-}
-
