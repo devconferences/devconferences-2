@@ -39707,8 +39707,8 @@ var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
 
-var ConferenceAnchorList = require('./conference-anchor-list');
-var ConferenceList = require('./conference-list');
+var EventAnchorList = require('./event-anchor-list');
+var EventList = require('./event-list');
 
 var City = React.createClass({displayName: "City",
 
@@ -39738,6 +39738,13 @@ var City = React.createClass({displayName: "City",
     },
 
     render: function () {
+        var renderAnchorList = function (items, title) {
+            if (items.length > 0) {
+                return (
+                    React.createElement(EventAnchorList, {events: items, title: title})
+                )
+            }
+        };
         if (this.state.city) {
             return (
                 React.createElement("div", {className: "container"}, 
@@ -39745,11 +39752,13 @@ var City = React.createClass({displayName: "City",
                         React.createElement("h1", null, "Dev Conferences @ ", this.state.city.name)
                     ), 
 
-                    React.createElement(ConferenceAnchorList, {conferences: this.state.city.conferences}), 
+                    renderAnchorList(this.state.city.conferences, 'Conférences'), 
+                    renderAnchorList(this.state.city.communities, 'Communautés'), 
 
                     React.createElement("hr", null), 
 
-                    React.createElement(ConferenceList, {conferences: this.state.city.conferences})
+                    React.createElement(EventList, {events: this.state.city.conferences}), 
+                    React.createElement(EventList, {events: this.state.city.communities})
                 )
             )
         }
@@ -39766,74 +39775,75 @@ var City = React.createClass({displayName: "City",
 
 module.exports = City;
 
-},{"./conference-anchor-list":274,"./conference-list":276,"jquery":3,"react":270,"react-router":97}],274:[function(require,module,exports){
+},{"./event-anchor-list":274,"./event-list":276,"jquery":3,"react":270,"react-router":97}],274:[function(require,module,exports){
 var React = require('react');
 
-var ConferenceAnchor = require('./conference-anchor');
+var EventAnchor = require('./event-anchor');
 
-var ConferenceAnchorList = React.createClass({displayName: "ConferenceAnchorList",
+var EventAnchorList = React.createClass({displayName: "EventAnchorList",
 
     render: function () {
-        var renderConferenceAnchor = function (conference) {
+        var renderEventAnchor = function (event) {
             return (
-                React.createElement(ConferenceAnchor, {conference: conference})
+                React.createElement(EventAnchor, {key: event.id, event: event})
             );
         };
         return (
             React.createElement("div", {className: "conflinks"}, 
-                     this.props.conferences.map(renderConferenceAnchor) 
+                React.createElement("h3", null,  this.props.title), 
+                 this.props.events.map(renderEventAnchor) 
             )
         );
     }
 
 });
 
-module.exports = ConferenceAnchorList;
+module.exports = EventAnchorList;
 
-},{"./conference-anchor":275,"react":270}],275:[function(require,module,exports){
+},{"./event-anchor":275,"react":270}],275:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
 var Button = ReactBootstrap.Button;
 
-var ConferenceAnchor = React.createClass({displayName: "ConferenceAnchor",
+var EventAnchor = React.createClass({displayName: "EventAnchor",
     render: function () {
         // FIXME anchors do not work because of ReactRouter
         return (
-            React.createElement(Button, {bsStyle: "primary", href: '#' + this.props.conference.id}, 
-                this.props.conference.name
+            React.createElement(Button, {bsStyle: "primary", href: '#' + this.props.event.id}, 
+                this.props.event.name
             )
         )
     }
 });
 
-module.exports = ConferenceAnchor;
+module.exports = EventAnchor;
 
 },{"react":270,"react-bootstrap":60}],276:[function(require,module,exports){
 var React = require('react');
 
-var Conference = require('./conference');
+var Event = require('./event');
 
-var ConferenceList = React.createClass({displayName: "ConferenceList",
+var EventList = React.createClass({displayName: "EventList",
 
     render: function () {
-        var renderConference = function (conference) {
+        var renderEvent = function (event) {
             return (
-                React.createElement(Conference, {conference: conference})
+                React.createElement(Event, {key: event.id, event: event})
             );
         };
         return (
             React.createElement("div", null, 
-                     this.props.conferences.map(renderConference) 
+                 this.props.events.map(renderEvent) 
             )
         );
     }
 
 });
 
-module.exports = ConferenceList;
+module.exports = EventList;
 
-},{"./conference":277,"react":270}],277:[function(require,module,exports){
+},{"./event":277,"react":270}],277:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39842,28 +39852,29 @@ var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 var Glyphicon = ReactBootstrap.Glyphicon;
 
-var Conference = React.createClass({displayName: "Conference",
+var Event = React.createClass({displayName: "Event",
 
     render: function () {
+        var event = this.props.event;
         return (
             React.createElement("div", null, 
-                React.createElement("a", {name: this.props.conference.id}), 
+                React.createElement("a", {name: event.id}), 
                 React.createElement("h2", null, 
-                    React.createElement(Glyphicon, {glyph: "chevron-right"}, " ", this.props.conference.name)
+                    React.createElement(Glyphicon, {glyph: "chevron-right"}, " ", event.name)
                 ), 
 
                 React.createElement(Grid, null, 
                     React.createElement(Row, null, 
                         React.createElement(Col, {md: 2}, 
-                            React.createElement("img", {src: this.props.conference.avatar, className: "img-responsive"})
+                            React.createElement("img", {src: event.avatar, className: "img-responsive"})
                         ), 
                         React.createElement(Col, {md: 10, className: "text-justify"}, 
                             React.createElement("p", null, 
-                                this.props.conference.description
+                                event.description
                             ), 
                             React.createElement("p", null, 
                                 React.createElement(Glyphicon, {glyph: "home"}, 
-                                    React.createElement("a", {href: this.props.conference.website}, " ", this.props.conference.website)
+                                    React.createElement("a", {href: event.website}, " ", event.website)
                                 )
                             )
                         )
@@ -39875,7 +39886,7 @@ var Conference = React.createClass({displayName: "Conference",
 
 });
 
-module.exports = Conference;
+module.exports = Event;
 
 },{"react":270,"react-bootstrap":60}],278:[function(require,module,exports){
 var React = require('react');

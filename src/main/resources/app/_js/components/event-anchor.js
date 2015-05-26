@@ -3,15 +3,15 @@ var ReactBootstrap = require('react-bootstrap');
 
 var Button = ReactBootstrap.Button;
 
-var ConferenceAnchor = React.createClass({
+var EventAnchor = React.createClass({
     render: function () {
         // FIXME anchors do not work because of ReactRouter
         return (
-            <Button bsStyle='primary' href={'#' + this.props.conference.id}>
-                {this.props.conference.name}
+            <Button bsStyle='primary' href={'#' + this.props.event.id}>
+                {this.props.event.name}
             </Button>
         )
     }
 });
 
-module.exports = ConferenceAnchor;
+module.exports = EventAnchor;

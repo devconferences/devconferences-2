@@ -1,6 +1,6 @@
 package org.devconferences.v1;
 
-public class Conference {
+public class Event {
 
     public String id;
     public String name;

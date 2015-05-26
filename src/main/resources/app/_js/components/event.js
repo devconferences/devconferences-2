@@ -6,28 +6,29 @@ var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 var Glyphicon = ReactBootstrap.Glyphicon;
 
-var Conference = React.createClass({
+var Event = React.createClass({
 
     render: function () {
+        var event = this.props.event;
         return (
             <div>
-                <a name={this.props.conference.id}></a>
+                <a name={event.id}></a>
                 <h2>
-                    <Glyphicon glyph='chevron-right'> {this.props.conference.name}</Glyphicon>
+                    <Glyphicon glyph='chevron-right'> {event.name}</Glyphicon>
                 </h2>
 
                 <Grid>
                     <Row>
                         <Col md={2}>
-                            <img src={this.props.conference.avatar} className="img-responsive"/>
+                            <img src={event.avatar} className="img-responsive"/>
                         </Col>
                         <Col md={10} className="text-justify">
                             <p>
-                                {this.props.conference.description}
+                                {event.description}
                             </p>
                             <p>
                                 <Glyphicon glyph='home'>
-                                    <a href={this.props.conference.website}> {this.props.conference.website}</a>
+                                    <a href={event.website}> {event.website}</a>
                                 </Glyphicon>
                             </p>
                         </Col>
@@ -39,4 +40,4 @@ var Conference = React.createClass({
 
 });
 
-module.exports = Conference;
+module.exports = Event;

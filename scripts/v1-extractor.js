@@ -2,55 +2,79 @@ var cheerio = require('cheerio');
 var request = require('request');
 var async = require('async');
 var jf = require('jsonfile');
+var _ = require('underscore');
 
-var extractConferences = function (html) {
+var extractConferencesAndCommunities = function (html) {
     var $ = cheerio.load(html);
 
+    // Get communities identifiers from: <div class="conflinks"><h3>Communautés</h3>...</div>
+    var communitiesId = [];
+    $('div.conflinks').map(function (i, conflinks) {
+        var baseNode = $(conflinks);
+        var conferenceType = $('h3', baseNode).text();
+        if (conferenceType === 'Communautés') {
+            $('a', baseNode).map(function (i, anchor) {
+                var communityId = $(anchor).attr('href').slice(1);
+                communitiesId.push(communityId);
+            });
+        }
+    });
+
+    // Get data for each conference/community from: <a name="id"></a>...
     var conferences = [];
+    var communities = [];
     $('a[name]').map(function (i, link) {
         var baseNode = $(link);
         var titleNode = baseNode.next();
         var contentNode = titleNode.next();
 
-        var conferenceId = baseNode.attr('name');
-        var conferenceName = titleNode.text().trim();
-        var conferenceAvatar = $('div > img', contentNode).attr('src');
-        var conferenceDescription = '';
+        var id = baseNode.attr('name');
+        var name = titleNode.text().trim();
+        var avatar = $('div > img', contentNode).attr('src');
+        var description = '';
         var website = null;
         var twitter = null;
         var facebook = null;
-        $('div + div > p', contentNode).map(function (i, description) {
-            var descriptionNode = $(description);
-            if (descriptionNode.children().length === 0) {
-                conferenceDescription += descriptionNode.text().replace(/(\r\n|\n|\r)/gm, '');
-                conferenceDescription += ' ';
+        $('div + div > p', contentNode).map(function (i, paragraph) {
+            var paragraphNode = $(paragraph);
+            if (paragraphNode.children().length === 0) {
+                description += paragraphNode.text().replace(/(\r\n|\n|\r)/gm, '');
+                description += ' ';
             } else {
-                var websiteNode = $('span[class~="glyphicon-home"]', descriptionNode);
+                var websiteNode = $('span[class~="glyphicon-home"]', paragraphNode);
                 if (websiteNode.length) {
                     website = websiteNode.next().text();
                 }
-                var twitterNode = $('i[class~="fa-twitter"]', descriptionNode);
+                var twitterNode = $('i[class~="fa-twitter"]', paragraphNode);
                 if (twitterNode.length) {
                     twitter = twitterNode.next().text();
                 }
-                var facebookNode = $('i[class~="fa-facebook"]', descriptionNode);
+                var facebookNode = $('i[class~="fa-facebook"]', paragraphNode);
                 if (facebookNode.length) {
                     facebook = facebookNode.next().text();
                 }
             }
         });
 
-        conferences.push({
-            id: conferenceId,
-            name: conferenceName,
-            avatar: conferenceAvatar,
-            description: conferenceDescription.replace(/\s+/g, " ").trim(),
+        var item = {
+            id: id,
+            name: name,
+            avatar: avatar,
+            description: description.replace(/\s+/g, " ").trim(),
             website: website,
             twitter: twitter,
             facebook: facebook
-        });
+        };
+        if (_.contains(communitiesId, id)) {
+            communities.push(item);
+        } else {
+            conferences.push(item);
+        }
     });
-    return conferences;
+    return {
+        conferences: conferences,
+        communities: communities
+    };
 };
 
 var getCityName = function (city) {
@@ -78,11 +102,12 @@ async.eachSeries(cities, function (city, callback) {
     request(baseUrl + city, function (err, response, body) {
         if (err) throw err;
 
-        var conferences = extractConferences(body);
+        var data = extractConferencesAndCommunities(body);
         var cityConferences = {
             id: city,
             name: getCityName(city),
-            conferences: conferences
+            conferences: data.conferences,
+            communities: data.communities
         };
 
         var fileName = baseOutput + city + '.json';

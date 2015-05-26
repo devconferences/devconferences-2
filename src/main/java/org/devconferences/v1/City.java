@@ -6,6 +6,7 @@ public class City {
 
     public String id;
     public String name;
-    public List<Conference> conferences;
+    public List<Event> conferences;
+    public List<Event> communities;
 
 }
