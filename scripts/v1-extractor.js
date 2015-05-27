@@ -51,7 +51,7 @@ var extractConferencesAndCommunities = function (html) {
                 }
                 var facebookNode = $('i[class~="fa-facebook"]', paragraphNode);
                 if (facebookNode.length) {
-                    facebook = facebookNode.next().text();
+                    facebook = facebookNode.next().text().replace('https://www.facebook.com/','');
                 }
             }
         });

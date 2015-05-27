@@ -1,8 +1,9 @@
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
-var WebsiteLink = require('./website-link');
-var TwitterLink = require('./twitter-link');
+var WebsiteLink = require('./social/website-link');
+var TwitterLink = require('./social/twitter-link');
+var FacebookLink = require('./social/facebook-link');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -25,7 +26,16 @@ var Event = React.createClass({
             if (event.twitter) {
                 return (
                     <p>
-                        <TwitterLink twitterId={event.twitter} />
+                        <TwitterLink id={event.twitter} />
+                    </p>
+                )
+            }
+        };
+        var renderFacebook = function (event) {
+            if (event.facebook) {
+                return (
+                    <p>
+                        <FacebookLink id={event.facebook} />
                     </p>
                 )
             }
@@ -50,6 +60,7 @@ var Event = React.createClass({
                             </p>
                             { renderWebsite(event) }
                             { renderTwitter(event) }
+                            { renderFacebook(event) }
                         </Col>
                     </Row>
                 </Grid>

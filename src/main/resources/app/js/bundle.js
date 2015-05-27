@@ -39919,8 +39919,9 @@ module.exports = EventList;
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
-var WebsiteLink = require('./website-link');
-var TwitterLink = require('./twitter-link');
+var WebsiteLink = require('./social/website-link');
+var TwitterLink = require('./social/twitter-link');
+var FacebookLink = require('./social/facebook-link');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -39943,7 +39944,16 @@ var Event = React.createClass({displayName: "Event",
             if (event.twitter) {
                 return (
                     React.createElement("p", null, 
-                        React.createElement(TwitterLink, {twitterId: event.twitter})
+                        React.createElement(TwitterLink, {id: event.twitter})
+                    )
+                )
+            }
+        };
+        var renderFacebook = function (event) {
+            if (event.facebook) {
+                return (
+                    React.createElement("p", null, 
+                        React.createElement(FacebookLink, {id: event.facebook})
                     )
                 )
             }
@@ -39967,7 +39977,8 @@ var Event = React.createClass({displayName: "Event",
                                 event.description
                             ), 
                              renderWebsite(event), 
-                             renderTwitter(event) 
+                             renderTwitter(event), 
+                             renderFacebook(event) 
                         )
                     )
                 )
@@ -39979,7 +39990,7 @@ var Event = React.createClass({displayName: "Event",
 
 module.exports = Event;
 
-},{"./twitter-link":281,"./website-link":282,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
+},{"./social/facebook-link":281,"./social/twitter-link":282,"./social/website-link":283,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
 var React = require('react');
 var $ = require('jquery');
 
@@ -40047,10 +40058,27 @@ module.exports = NotFound;
 },{"react":270}],281:[function(require,module,exports){
 var React = require('react');
 
+var FacebookLink = React.createClass({displayName: "FacebookLink",
+
+    render: function () {
+        var facebookId = this.props.id;
+        return (
+            React.createElement("i", {className: "fa fa-facebook"}, 
+                React.createElement("a", {href: 'https://www.facebook.com/' + facebookId}, " ", 'facebook.com/' + facebookId)
+            )
+        )
+    }
+});
+
+module.exports = FacebookLink;
+
+},{"react":270}],282:[function(require,module,exports){
+var React = require('react');
+
 var TwitterLink = React.createClass({displayName: "TwitterLink",
 
     render: function () {
-        var twitterId = this.props.twitterId;
+        var twitterId = this.props.id;
         return (
             React.createElement("i", {className: "fa fa-twitter"}, 
                 React.createElement("a", {href: 'https://twitter.com/' + twitterId}, " ", '@' + twitterId)
@@ -40061,7 +40089,7 @@ var TwitterLink = React.createClass({displayName: "TwitterLink",
 
 module.exports = TwitterLink;
 
-},{"react":270}],282:[function(require,module,exports){
+},{"react":270}],283:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
