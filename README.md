@@ -8,7 +8,7 @@ Repository pour la version 2 de DevConferences.org
 
 Pour builder la partie ReactJS : `gulp jsx`
 
-Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé sur le master.
+Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé sur le master : [devconferences.cleverapps.io](http://devconferences.cleverapps.io)
 
 ## TODO list
 
