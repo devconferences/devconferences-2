@@ -4,6 +4,12 @@
 
 Repository pour la version 2 de DevConferences.org
 
+## Build & Deploy
+
+Pour builder la partie ReactJS : `gulp jsx`
+
+Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé sur le master.
+
 ## TODO list
 
 - [ ] ajouter des tags (ex : jug, java, php, gdg ...)
