@@ -39990,11 +39990,18 @@ var Event = React.createClass({displayName: "Event",
 
 module.exports = Event;
 
-},{"./social/facebook-link":281,"./social/twitter-link":282,"./social/website-link":283,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
+},{"./social/facebook-link":281,"./social/twitter-link":283,"./social/website-link":285,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
 var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 
 var CityLinkList = require('./city-link-list');
+var GoogleCalendar = require('./social/google-calendar');
+var TwitterTimeline = require('./social/twitter-timeline');
+
+var Grid = ReactBootstrap.Grid;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
 
 var Home = React.createClass({displayName: "Home",
 
@@ -40031,7 +40038,32 @@ var Home = React.createClass({displayName: "Home",
                     "de développeurs en France."
                 ), 
 
-                React.createElement(CityLinkList, {cities: this.state.cities})
+                React.createElement(CityLinkList, {cities: this.state.cities}), 
+
+                React.createElement(Grid, null, 
+                    React.createElement(Row, null, 
+                        React.createElement(Col, {md: 8, className: "text-center"}, 
+                            React.createElement("h2", null, "Agenda des Conférences"), 
+
+                            React.createElement("p", null, "Les dates des grandes conférences annuelles sont répertoriées ici."), 
+
+                            React.createElement("div", {className: "embed-responsive embed-responsive-4by3"}, 
+                                React.createElement(GoogleCalendar, {account: "devconferences.org@gmail.com", 
+                                    customClass: "embed-responsive-item"})
+                            )
+                        ), 
+                        React.createElement(Col, {md: 4, className: "text-center"}, 
+                            React.createElement("h2", null, "Dernières infos"), 
+
+                            React.createElement("p", null, 
+                                "Via", 
+                                React.createElement("a", {href: "https://twitter.com/devconferences"}, " @DevConferences")
+                            ), 
+
+                            React.createElement(TwitterTimeline, {twitterId: "devconferences", widgetId: "546986135780851713"})
+                        )
+                    )
+                )
 
             )
         )
@@ -40040,7 +40072,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./city-link-list":272,"jquery":3,"react":270}],280:[function(require,module,exports){
+},{"./city-link-list":272,"./social/google-calendar":282,"./social/twitter-timeline":284,"jquery":3,"react":270,"react-bootstrap":60}],280:[function(require,module,exports){
 var React = require('react');
 
 var NotFound = React.createClass({displayName: "NotFound",
@@ -40075,6 +40107,28 @@ module.exports = FacebookLink;
 },{"react":270}],282:[function(require,module,exports){
 var React = require('react');
 
+var GoogleCalendar = React.createClass({displayName: "GoogleCalendar",
+
+    render: function () {
+        var accountUri = encodeURIComponent(this.props.account);
+        return (
+            React.createElement("iframe", {src: 'https://www.google.com/calendar/embed?src=' + accountUri + '&ctz=Europe/Paris', 
+                className: this.props.customClass, 
+                style: {border: 0}, 
+                width: "800", 
+                height: "600", 
+                frameBorder: "0", 
+                scrolling: "no"}
+            )
+        )
+    }
+});
+
+module.exports = GoogleCalendar;
+
+},{"react":270}],283:[function(require,module,exports){
+var React = require('react');
+
 var TwitterLink = React.createClass({displayName: "TwitterLink",
 
     render: function () {
@@ -40089,7 +40143,38 @@ var TwitterLink = React.createClass({displayName: "TwitterLink",
 
 module.exports = TwitterLink;
 
-},{"react":270}],283:[function(require,module,exports){
+},{"react":270}],284:[function(require,module,exports){
+var React = require('react');
+
+var TwitterTimeline = React.createClass({displayName: "TwitterTimeline",
+
+    componentDidMount: function () {
+        var twitterWidget = this.refs.twitterWidget.getDOMNode();
+        var script = document.createElement('script');
+        script.id = 'twitter-wjs';
+        script.src = '//platform.twitter.com/widgets.js'
+        twitterWidget.appendChild(script);
+    },
+
+    render: function () {
+        var twitterId = this.props.twitterId;
+        var widgetId = this.props.widgetId;
+        return (
+            React.createElement("div", {ref: "twitterWidget"}, 
+                React.createElement("a", {
+                    className: "twitter-timeline", 
+                    href: 'https://twitter.com/' + twitterId, 
+                    "data-widget-id": widgetId}, 
+                    "@", twitterId
+                )
+            )
+        )
+    }
+});
+
+module.exports = TwitterTimeline;
+
+},{"react":270}],285:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 

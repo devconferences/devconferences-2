@@ -1,7 +1,14 @@
 var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 
 var CityLinkList = require('./city-link-list');
+var GoogleCalendar = require('./social/google-calendar');
+var TwitterTimeline = require('./social/twitter-timeline');
+
+var Grid = ReactBootstrap.Grid;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
 
 var Home = React.createClass({
 
@@ -39,6 +46,31 @@ var Home = React.createClass({
                 </div>
 
                 <CityLinkList cities={this.state.cities}/>
+
+                <Grid>
+                    <Row>
+                        <Col md={8} className="text-center">
+                            <h2>Agenda des Conférences</h2>
+
+                            <p>Les dates des grandes conférences annuelles sont répertoriées ici.</p>
+
+                            <div className="embed-responsive embed-responsive-4by3">
+                                <GoogleCalendar account="devconferences.org@gmail.com"
+                                    customClass="embed-responsive-item" />
+                            </div>
+                        </Col>
+                        <Col md={4} className="text-center">
+                            <h2>Dernières infos</h2>
+
+                            <p>
+                                Via
+                                <a href="https://twitter.com/devconferences"> @DevConferences</a>
+                            </p>
+
+                            <TwitterTimeline twitterId="devconferences" widgetId="546986135780851713" />
+                        </Col>
+                    </Row>
+                </Grid>
 
             </div>
         )
