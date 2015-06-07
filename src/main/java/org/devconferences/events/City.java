@@ -1,4 +1,4 @@
-package org.devconferences.v1;
+package org.devconferences.events;
 
 import java.util.List;
 

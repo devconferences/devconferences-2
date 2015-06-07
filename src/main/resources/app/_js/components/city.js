@@ -16,7 +16,7 @@ var City = React.createClass({
     },
 
     componentDidMount: function () {
-        var url = '/api/v1/city/' + this.props.params.id;
+        var url = '/api/v2/cities/' + this.props.params.id;
         $.ajax({
             url: url,
             dataType: 'json',

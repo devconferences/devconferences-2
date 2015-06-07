@@ -19,7 +19,7 @@ var Home = React.createClass({
     },
 
     componentDidMount: function () {
-        var url = '/api/v1/city';
+        var url = '/api/v2/cities';
         $.ajax({
             url: url,
             dataType: 'json',
@@ -36,7 +36,6 @@ var Home = React.createClass({
     render: function () {
         return (
             <div className="container">
-
                 <div className="text-center">
                     Annuaire des
                     <abbr title="Evénements se déroulant sur un ou plusieurs jours, généralement annuellement"> conférences </abbr>

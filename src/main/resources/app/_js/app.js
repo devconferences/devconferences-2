@@ -6,6 +6,7 @@ var Home = require('./components/home');
 var City = require('./components/city');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
+var Authentication = require('./components/authentication');
 
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
@@ -22,13 +23,16 @@ var App = React.createClass({
         return (
             <div>
                 <BreizhcampTeaser />
-
                 <header>
+                    <Authentication />
+
                     <div className="container title">
                         <a href="/">
                             Dev Conferences
                         </a>
+
                     </div>
+
                 </header>
 
                 <RouteHandler/>

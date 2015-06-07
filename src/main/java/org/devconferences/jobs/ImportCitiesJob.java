@@ -2,11 +2,10 @@ package org.devconferences.jobs;
 
 import com.google.gson.Gson;
 import io.searchbox.client.JestClient;
-import io.searchbox.indices.CreateIndex;
-import io.searchbox.indices.mapping.PutMapping;
-import org.devconferences.elastic.Repository;
-import org.devconferences.v1.City;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import io.searchbox.core.Index;
+import org.devconferences.elastic.Elastic;
+import org.devconferences.events.EventsRepository;
+import org.devconferences.events.City;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,27 +16,50 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/**
- * Created by chris on 02/06/15.
- */
+import static org.devconferences.events.Event.Type.COMMUNITY;
+import static org.devconferences.events.Event.Type.CONFERENCE;
+
+
 public class ImportCitiesJob {
 
-    public static void main(String[] args) throws IOException {
-        Repository repository = new Repository();
+    // TODO, le temps de ...
+    public static final String CITIES_TYPE = "cities";
 
-        repository.createIndexIfNotFound();
+    public static void main(String[] args) throws IOException {
+        EventsRepository eventsRepository = new EventsRepository();
+
+        Elastic.createIndexIfNotExists();
 
         URL v1Path = ImportCitiesJob.class.getResource("/v1");
         DirectoryStream<Path> directoryStream = Files.newDirectoryStream(FileSystems.getDefault().getPath(v1Path.getPath()));
         directoryStream.forEach(path -> {
             try {
                 City city = new Gson().fromJson(new FileReader(path.toString()), City.class);
-                repository.indexCity(city);
+                indexCity(city, eventsRepository);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
         });
     }
 
+    public static void indexCity(City city, EventsRepository eventsRepository) {
+        Index index = new Index.Builder(city).index(Elastic.DEV_CONFERENCES_INDEX).type(CITIES_TYPE).id(city.id).build();
+        try {
+            JestClient client = Elastic.createClient();
+            client.execute(index);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        city.communities.stream().forEach(event -> {
+            event.type = COMMUNITY;
+            event.city = city.name;
+            eventsRepository.indexEvent(event);
+        });
+        city.conferences.stream().forEach(event -> {
+            event.type = CONFERENCE;
+            event.city = city.name;
+            eventsRepository.indexEvent(event);
+        });
+    }
 }

@@ -1,4 +1,4 @@
-package org.devconferences.v1;
+package org.devconferences.events;
 
 public class Event {
 
@@ -9,5 +9,10 @@ public class Event {
     public String website;
     public String twitter;
     public String facebook;
+    public String city;
+    public Type type;
 
+    public enum Type{
+        COMMUNITY, CONFERENCE;
+    }
 }

@@ -2,6 +2,8 @@ package org.devconferences.v1;
 
 import com.google.gson.Gson;
 import com.google.inject.Singleton;
+import org.devconferences.events.City;
+import org.devconferences.events.CityLight;
 
 import java.io.FileReader;
 import java.nio.file.DirectoryStream;

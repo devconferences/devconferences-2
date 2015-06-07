@@ -7,6 +7,7 @@ var Home = require('./components/home');
 var City = require('./components/city');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
+var Authentication = require('./components/authentication');
 
 var Route = Router.Route;
 var RouteHandler = Router.RouteHandler;
@@ -23,13 +24,16 @@ var App = React.createClass({displayName: "App",
         return (
             React.createElement("div", null, 
                 React.createElement(BreizhcampTeaser, null), 
-
                 React.createElement("header", null, 
+                    React.createElement(Authentication, null), 
+
                     React.createElement("div", {className: "container title"}, 
                         React.createElement("a", {href: "/"}, 
                             "Dev Conferences"
                         )
+
                     )
+
                 ), 
 
                 React.createElement(RouteHandler, null), 
@@ -62,7 +66,7 @@ Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(React.createElement(Root, null), document.body);
 });
 
-},{"./components/breizhcamp-teaser":271,"./components/city":274,"./components/home":279,"./components/not-found":280,"react":270,"react-router":97,"react-tap-event-plugin":115}],2:[function(require,module,exports){
+},{"./components/authentication":271,"./components/breizhcamp-teaser":272,"./components/city":275,"./components/home":280,"./components/not-found":281,"react":270,"react-router":97,"react-tap-event-plugin":115}],2:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -16404,47 +16408,49 @@ module.exports = exports['default'];
   http://jedwatson.github.io/classnames
 */
 
-function classNames () {
+(function () {
 	'use strict';
 
-	var classes = '';
+	function classNames () {
 
-	for (var i = 0; i < arguments.length; i++) {
-		var arg = arguments[i];
-		if (!arg) continue;
+		var classes = '';
 
-		var argType = typeof arg;
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
 
-		if ('string' === argType || 'number' === argType) {
-			classes += ' ' + arg;
+			var argType = typeof arg;
 
-		} else if (Array.isArray(arg)) {
-			classes += ' ' + classNames.apply(null, arg);
+			if ('string' === argType || 'number' === argType) {
+				classes += ' ' + arg;
 
-		} else if ('object' === argType) {
-			for (var key in arg) {
-				if (arg.hasOwnProperty(key) && arg[key]) {
-					classes += ' ' + key;
+			} else if (Array.isArray(arg)) {
+				classes += ' ' + classNames.apply(null, arg);
+
+			} else if ('object' === argType) {
+				for (var key in arg) {
+					if (arg.hasOwnProperty(key) && arg[key]) {
+						classes += ' ' + key;
+					}
 				}
 			}
 		}
+
+		return classes.substr(1);
 	}
 
-	return classes.substr(1);
-}
+	if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(function () {
+			return classNames;
+		});
+	} else if (typeof module !== 'undefined' && module.exports) {
+		module.exports = classNames;
+	} else {
+		window.classNames = classNames;
+	}
 
-// safely export classNames for node / browserify
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = classNames;
-}
-
-/* global define */
-// safely export classNames for RequireJS
-if (typeof define !== 'undefined' && define.amd) {
-	define('classnames', [], function() {
-		return classNames;
-	});
-}
+}());
 
 },{}],73:[function(require,module,exports){
 /**
@@ -39657,6 +39663,39 @@ module.exports = require('./lib/React');
 },{"./lib/React":143}],271:[function(require,module,exports){
 var React = require('react');
 
+var Authentication = React.createClass({displayName: "Authentication",
+
+    render: function () {
+        // TODO : il y a probablement mieux à faire...
+        var user = document.cookie.split(";")
+            .map(function (entry) {return entry.trim().split("=")})
+            .filter(function (entry) {return entry[0] === "user"})
+            .map(function (entry) {return JSON.parse(entry[1])})
+            .reduce(function (a, b) {return a === undefined ? b : a;}, undefined);
+
+        var href = user ? "#" : "https://github.com/login/oauth/authorize?client_id=9a8a7843de53c0561a73";
+        var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
+        var title = user ? user.login : "Connectez-vous avez Github";
+
+        return (
+            React.createElement("div", {className: "authentication"}, 
+                React.createElement("a", {href: href}, 
+                    React.createElement("image", {src: imageUrl, 
+                           title: title, 
+                           alt: title, 
+                           className: "img-circle", 
+                           height: "50px", width: "50px"})
+                )
+            )
+        );
+    }
+});
+
+module.exports = Authentication;
+
+},{"react":270}],272:[function(require,module,exports){
+var React = require('react');
+
 var BreizhcampTeaser = React.createClass({displayName: "BreizhcampTeaser",
 
     render: function () {
@@ -39724,7 +39763,7 @@ var BreizhcampTeaser = React.createClass({displayName: "BreizhcampTeaser",
 
 module.exports = BreizhcampTeaser;
 
-},{"react":270}],272:[function(require,module,exports){
+},{"react":270}],273:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39757,7 +39796,7 @@ var CityLinkList = React.createClass({displayName: "CityLinkList",
 
 module.exports = CityLinkList;
 
-},{"./city-link":273,"react":270,"react-bootstrap":60}],273:[function(require,module,exports){
+},{"./city-link":274,"react":270,"react-bootstrap":60}],274:[function(require,module,exports){
 var React = require('react');
 var Router = require('react-router');
 
@@ -39767,7 +39806,7 @@ var CityLink = React.createClass({displayName: "CityLink",
     render: function () {
         return (
             React.createElement(Link, {to: "city", params: {id: this.props.city.id}, className: "btn btn-primary btn-block btn-city"}, 
-                this.props.city.name
+                this.props.city.name, "-", this.props.city.count
             )
         );
     }
@@ -39775,7 +39814,7 @@ var CityLink = React.createClass({displayName: "CityLink",
 
 module.exports = CityLink;
 
-},{"react":270,"react-router":97}],274:[function(require,module,exports){
+},{"react":270,"react-router":97}],275:[function(require,module,exports){
 var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
@@ -39794,7 +39833,7 @@ var City = React.createClass({displayName: "City",
     },
 
     componentDidMount: function () {
-        var url = '/api/v1/city/' + this.props.params.id;
+        var url = '/api/v2/cities/' + this.props.params.id;
         $.ajax({
             url: url,
             dataType: 'json',
@@ -39848,7 +39887,7 @@ var City = React.createClass({displayName: "City",
 
 module.exports = City;
 
-},{"./event-anchor-list":275,"./event-list":277,"jquery":3,"react":270,"react-router":97}],275:[function(require,module,exports){
+},{"./event-anchor-list":276,"./event-list":278,"jquery":3,"react":270,"react-router":97}],276:[function(require,module,exports){
 var React = require('react');
 
 var EventAnchor = require('./event-anchor');
@@ -39873,7 +39912,7 @@ var EventAnchorList = React.createClass({displayName: "EventAnchorList",
 
 module.exports = EventAnchorList;
 
-},{"./event-anchor":276,"react":270}],276:[function(require,module,exports){
+},{"./event-anchor":277,"react":270}],277:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39891,7 +39930,7 @@ var EventAnchor = React.createClass({displayName: "EventAnchor",
 
 module.exports = EventAnchor;
 
-},{"react":270,"react-bootstrap":60}],277:[function(require,module,exports){
+},{"react":270,"react-bootstrap":60}],278:[function(require,module,exports){
 var React = require('react');
 
 var Event = require('./event');
@@ -39915,7 +39954,7 @@ var EventList = React.createClass({displayName: "EventList",
 
 module.exports = EventList;
 
-},{"./event":278,"react":270}],278:[function(require,module,exports){
+},{"./event":279,"react":270}],279:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -39990,7 +40029,7 @@ var Event = React.createClass({displayName: "Event",
 
 module.exports = Event;
 
-},{"./social/facebook-link":281,"./social/twitter-link":283,"./social/website-link":285,"react":270,"react-bootstrap":60}],279:[function(require,module,exports){
+},{"./social/facebook-link":282,"./social/twitter-link":284,"./social/website-link":286,"react":270,"react-bootstrap":60}],280:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
@@ -40012,7 +40051,7 @@ var Home = React.createClass({displayName: "Home",
     },
 
     componentDidMount: function () {
-        var url = '/api/v1/city';
+        var url = '/api/v2/cities';
         $.ajax({
             url: url,
             dataType: 'json',
@@ -40029,7 +40068,6 @@ var Home = React.createClass({displayName: "Home",
     render: function () {
         return (
             React.createElement("div", {className: "container"}, 
-
                 React.createElement("div", {className: "text-center"}, 
                     "Annuaire des", 
                     React.createElement("abbr", {title: "Evénements se déroulant sur un ou plusieurs jours, généralement annuellement"}, " conférences "), 
@@ -40072,7 +40110,7 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"./city-link-list":272,"./social/google-calendar":282,"./social/twitter-timeline":284,"jquery":3,"react":270,"react-bootstrap":60}],280:[function(require,module,exports){
+},{"./city-link-list":273,"./social/google-calendar":283,"./social/twitter-timeline":285,"jquery":3,"react":270,"react-bootstrap":60}],281:[function(require,module,exports){
 var React = require('react');
 
 var NotFound = React.createClass({displayName: "NotFound",
@@ -40087,7 +40125,7 @@ var NotFound = React.createClass({displayName: "NotFound",
 
 module.exports = NotFound;
 
-},{"react":270}],281:[function(require,module,exports){
+},{"react":270}],282:[function(require,module,exports){
 var React = require('react');
 
 var FacebookLink = React.createClass({displayName: "FacebookLink",
@@ -40104,7 +40142,7 @@ var FacebookLink = React.createClass({displayName: "FacebookLink",
 
 module.exports = FacebookLink;
 
-},{"react":270}],282:[function(require,module,exports){
+},{"react":270}],283:[function(require,module,exports){
 var React = require('react');
 
 var GoogleCalendar = React.createClass({displayName: "GoogleCalendar",
@@ -40126,7 +40164,7 @@ var GoogleCalendar = React.createClass({displayName: "GoogleCalendar",
 
 module.exports = GoogleCalendar;
 
-},{"react":270}],283:[function(require,module,exports){
+},{"react":270}],284:[function(require,module,exports){
 var React = require('react');
 
 var TwitterLink = React.createClass({displayName: "TwitterLink",
@@ -40143,7 +40181,7 @@ var TwitterLink = React.createClass({displayName: "TwitterLink",
 
 module.exports = TwitterLink;
 
-},{"react":270}],284:[function(require,module,exports){
+},{"react":270}],285:[function(require,module,exports){
 var React = require('react');
 
 var TwitterTimeline = React.createClass({displayName: "TwitterTimeline",
@@ -40174,7 +40212,7 @@ var TwitterTimeline = React.createClass({displayName: "TwitterTimeline",
 
 module.exports = TwitterTimeline;
 
-},{"react":270}],285:[function(require,module,exports){
+},{"react":270}],286:[function(require,module,exports){
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
 

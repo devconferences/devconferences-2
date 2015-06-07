@@ -3,33 +3,32 @@ package org.devconferences.v1;
 import com.google.inject.Inject;
 import net.codestory.http.annotations.Get;
 import net.codestory.http.annotations.Prefix;
-import org.devconferences.elastic.Repository;
+import org.devconferences.events.EventsRepository;
+import org.devconferences.events.City;
+import org.devconferences.events.CityLight;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Prefix("api/v1")
 public class BackportV1Resource {
 
     private final BackportV1Data backportV1Data;
-    private final Repository repository;
+    private final EventsRepository eventsRepository;
 
     @Inject
-    public BackportV1Resource(BackportV1Data backportV1Data, Repository repository) {
+    public BackportV1Resource(BackportV1Data backportV1Data, EventsRepository eventsRepository) {
         this.backportV1Data = backportV1Data;
-        this.repository = repository;
+        this.eventsRepository = eventsRepository;
     }
 
     @Get("/city")
     public List<CityLight> cities() {
-        return repository.getAllCities().stream().map(city -> {
-            return new CityLight(city.id, city.name);
-        }).collect(Collectors.toList());
+        return eventsRepository.getAllCities();
     }
 
     @Get("/city/:id")
     public City cityConferencies(String id) {
-        return repository.getCity(id);
-
+        return eventsRepository.getCity(id);
     }
+
 }
