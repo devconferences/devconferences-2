@@ -12,6 +12,7 @@ import net.codestory.http.annotations.Get;
 import net.codestory.http.annotations.Prefix;
 import net.codestory.http.constants.Headers;
 import net.codestory.http.constants.HttpStatus;
+import net.codestory.http.errors.NotFoundException;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Form;
@@ -70,29 +71,34 @@ public class Authentication {
             User user = getUser(authenticationResponse.accessToken);
             usersRepository.save(user);
 
-            NewCookie newCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt(authenticationResponse.accessToken), true);
+            NewCookie accessTokenCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt(authenticationResponse.accessToken), true);
             //TODO move to secure (HTTPS only) newCookie.setSecure(true);
             return Payload.seeOther("/")
-                    .withCookie(newCookie)
-                    .withCookie("user", gson.toJson(user));
+                    .withCookie(accessTokenCookie);
+            //.withCookie("user", gson.toJson(user));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     @Get("disconnect")
-    public Payload disconnect(Context context){
+    public Payload disconnect(Context context) {
         return Payload.seeOther("/");
     }
 
     @Get("connected-user")
+    public User getConnectedUser(Context context) {
+        User user = getUser(context);
+        return NotFoundException.notFoundIfNull(user);
+    }
+
     public User getUser(Context context) {
         String accessToken = extractAccessToken(context);
         return getUser(accessToken);
     }
 
     @Get("client-id")
-    public String getClientId(){
+    public String getClientId() {
         return clientId;
     }
 
@@ -111,6 +117,9 @@ public class Authentication {
     }
 
     private User getUser(String accessToken) {
+        if (accessToken == null) {
+            return null;
+        }
         try {
             Content content = Request.Get("https://api.github.com/user?access_token=" + accessToken)
                     .execute()

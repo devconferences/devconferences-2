@@ -4,34 +4,46 @@ var $ = require('jquery');
 var Authentication = React.createClass({
     getInitialState: function () {
         return {
-            clientId: ""
+            clientId: "",
+            user : {}
         };
     },
     componentDidMount: function () {
-        var url = '/auth/client-id';
+        var clientIdURL = '/auth/client-id';
         $.ajax({
-            url: url,
+            url: clientIdURL,
             dataType: 'text',
+            cache: true,
+            success: function (data) {
+                this.clientId = data;
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(clientIdURL, status, err.toString());
+            }.bind(this)
+        });
+
+        var connectedUserURL = '/auth/connected-user';
+        $.ajax({
+            url: connectedUserURL,
+            dataType: 'json',
             cache: false,
             success: function (data) {
                 console.log(data);
-                this.setState({clientId: data});
+                this.setState({user: data});
             }.bind(this),
             error: function (xhr, status, err) {
-                console.error(url, status, err.toString());
+                if(xhr.status === 404){
+                    this.setState({user : undefined});
+                }else{
+                    console.error(connectedUserURL, status, err.toString());
+                }
             }.bind(this)
-        });
+        })
     },
     render: function () {
-        // TODO : il y a probablement mieux à faire...
-        var user = document.cookie.split(";")
-            .map(function (entry) {return entry.trim().split("=")})
-            .filter(function (entry) {return entry[0] === "user"})
-            .map(function (entry) {return JSON.parse(entry[1])})
-            .reduce(function (a, b) {return a === undefined ? b : a;}, undefined);
-
-
-        var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.state.clientId;
+        //// TODO : il y a probablement mieux à faire...
+        var user = this.state.user;
+        var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.clientId;
         var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
         var title = user ? user.login : "Connectez-vous avez Github";
 
@@ -47,7 +59,6 @@ var Authentication = React.createClass({
             </div>
         );
     }
-
 });
 
 module.exports = Authentication;
