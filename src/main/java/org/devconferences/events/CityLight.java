@@ -2,8 +2,8 @@ package org.devconferences.events;
 
 public class CityLight {
 
-    private final String id;
-    private final String name;
+    public final String id;
+    public final String name;
     public long count;
 
     public CityLight(String id, String name) {

@@ -1,7 +1,27 @@
 var React = require('react');
+var $ = require('jquery');
 
 var Authentication = React.createClass({
-
+    getInitialState: function () {
+        return {
+            clientId: ""
+        };
+    },
+    componentDidMount: function () {
+        var url = '/auth/client-id';
+        $.ajax({
+            url: url,
+            dataType: 'text',
+            cache: false,
+            success: function (data) {
+                console.log(data);
+                this.setState({clientId: data});
+            }.bind(this),
+            error: function (xhr, status, err) {
+                console.error(url, status, err.toString());
+            }.bind(this)
+        });
+    },
     render: function () {
         // TODO : il y a probablement mieux à faire...
         var user = document.cookie.split(";")
@@ -10,7 +30,8 @@ var Authentication = React.createClass({
             .map(function (entry) {return JSON.parse(entry[1])})
             .reduce(function (a, b) {return a === undefined ? b : a;}, undefined);
 
-        var href = user ? "#" : "https://github.com/login/oauth/authorize?client_id=9a8a7843de53c0561a73";
+
+        var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.state.clientId;
         var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
         var title = user ? user.login : "Connectez-vous avez Github";
 
@@ -26,6 +47,7 @@ var Authentication = React.createClass({
             </div>
         );
     }
+
 });
 
 module.exports = Authentication;

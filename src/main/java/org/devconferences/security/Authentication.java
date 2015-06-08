@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
+import net.codestory.http.Cookies;
 import net.codestory.http.NewCookie;
+import net.codestory.http.annotations.Delete;
 import net.codestory.http.annotations.Get;
 import net.codestory.http.annotations.Prefix;
 import net.codestory.http.constants.Headers;
@@ -28,7 +30,7 @@ import static org.devconferences.env.EnvUtils.fromEnv;
 /**
  * Created by chris on 05/06/15.
  */
-@Prefix("auth")
+@Prefix("auth/")
 public class Authentication {
     public static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
     public static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
@@ -51,7 +53,7 @@ public class Authentication {
         this.usersRepository = usersRepository;
     }
 
-    @Get("/?code=:code")
+    @Get("?code=:code")
     public Payload oauthCallBack(String code) {
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();) {
             Content content = Request.Post("https://github.com/login/oauth/access_token")
@@ -78,9 +80,20 @@ public class Authentication {
         }
     }
 
+    @Get("disconnect")
+    public Payload disconnect(Context context){
+        return Payload.seeOther("/");
+    }
+
+    @Get("connected-user")
     public User getUser(Context context) {
         String accessToken = extractAccessToken(context);
         return getUser(accessToken);
+    }
+
+    @Get("client-id")
+    public String getClientId(){
+        return clientId;
     }
 
     public boolean isAuthenticated(Context context) throws IOException {
