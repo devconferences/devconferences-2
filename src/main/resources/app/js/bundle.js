@@ -41521,6 +41521,32 @@ function createClient(actualUrl) {
         return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/events/search?q=" + q)["catch"](errorCallback);
     }
 
+    function event(id) {
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/events/" + id)["catch"](errorCallback);
+    }
+
+    function creationEvent(event) {
+        if (!event.id) {
+            throw new Error("Event does not have an id");
+        }
+        return _axios2["default"].post("" + actualUrl + "/" + apiRoot + "/events/", event)["catch"](errorCallback);
+    }
+
+    function updateEvent(event) {
+        if (!event.id) {
+            throw new Error("Event does not have an id");
+        }
+        return _axios2["default"].put("" + actualUrl + "/" + apiRoot + "/events/" + event.id, event)["catch"](errorCallback);
+    }
+
+    function deleteEvent(event) {
+        return _axios2["default"]["delete"]("" + actualUrl + "/" + apiRoot + "/events/" + event.id)["catch"](errorCallback);
+    }
+
+    function connectedUser() {
+        return _axios2["default"].get("" + actualUrl + "/auth/connected-user")["catch"](errorCallback);
+    }
+
     return {
         useDevUrl: function useDevUrl() {
             return createClient(DEV_URL);
@@ -41530,7 +41556,12 @@ function createClient(actualUrl) {
         },
         cities: cities,
         city: city,
-        searchEvents: searchEvents
+        event: event,
+        searchEvents: searchEvents,
+        creationEvent: creationEvent,
+        updateEvent: updateEvent,
+        deleteEvent: deleteEvent,
+        connectedUser: connectedUser
     };
 }
 
@@ -41549,8 +41580,7 @@ var Authentication = React.createClass({
 
     getInitialState: function getInitialState() {
         return {
-            clientId: '',
-            user: {}
+            user: undefined
         };
     },
     componentDidMount: function componentDidMount() {
@@ -41560,7 +41590,6 @@ var Authentication = React.createClass({
             dataType: 'text',
             cache: true,
             success: (function (data) {
-                console.log(data);
                 this.clientId = data;
             }).bind(this),
             error: (function (xhr, status, err) {
@@ -41588,12 +41617,6 @@ var Authentication = React.createClass({
     },
     render: function render() {
         //// TODO : il y a probablement mieux à faire...
-        //var user = document.cookie.split(";")
-        //    .map(function (entry) {return entry.trim().split("=")})
-        //    .filter(function (entry) {return entry[0] === "user"})
-        //    .map(function (entry) {return JSON.parse(entry[1])})
-        //    .reduce(function (a, b) {return a === undefined ? b : a;}, undefined);
-
         var user = this.state.user;
         var href = user ? '/auth/disconnect' : 'https://github.com/login/oauth/authorize?client_id=' + this.clientId;
         var imageUrl = user ? user.avatarURL : 'https://www.clever-cloud.com/assets/img/github-icon.svg';
