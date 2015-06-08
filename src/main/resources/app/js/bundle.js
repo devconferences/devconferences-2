@@ -79,7 +79,7 @@ Router.run(routes, Router.HistoryLocation, function (Root) {
 });
 
 DevConferencesClient.useCleverUrl().cities().then(function (cities) {
-    return console.log(cities.data);
+    return console.log(cities);
 });
 
 
@@ -41503,24 +41503,22 @@ var CLEVER_URL = "http://devconferences.cleverapps.io";
 var DEV_URL = "http://localhost:8080";
 var apiRoot = "api/v2";
 
+var errorCallback = function errorCallback(response) {
+    return console.error("" + response.status + " - '" + response.statusText + "'", response);
+};
+
 function createClient(actualUrl) {
 
     function cities() {
-        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/citiies")["catch"](function (response) {
-            return console.error(response);
-        });
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/citiies")["catch"](errorCallback);
     }
 
     function city(id) {
-        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/cities/" + id)["catch"](function (response) {
-            return console.error(response);
-        });
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/cities/" + id)["catch"](errorCallback);
     }
 
     function searchEvents(q) {
-        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/events/search?q=" + q)["catch"](function (response) {
-            return console.error(response);
-        });
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/events/search?q=" + q)["catch"](errorCallback);
     }
 
     return {
