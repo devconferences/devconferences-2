@@ -4,8 +4,7 @@ var $ = require('jquery');
 var Authentication = React.createClass({
     getInitialState: function () {
         return {
-            clientId: "",
-            user : {}
+            user : undefined
         };
     },
     componentDidMount: function () {

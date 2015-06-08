@@ -1,12 +1,11 @@
 package org.devconferences.events;
 
 import io.searchbox.client.JestClient;
-import io.searchbox.core.Delete;
-import io.searchbox.core.Index;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
+import io.searchbox.client.JestResult;
+import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.City;
 import org.devconferences.events.CityLight;
 import org.devconferences.events.Event;
@@ -27,7 +26,7 @@ import static org.devconferences.elastic.Elastic.createClient;
 public class EventsRepository {
     public static final String EVENTS_TYPE = "events";
 
-    public final JestClient client;
+    public final RuntimeJestClient client;
 
     public EventsRepository() {
         client = createClient();
@@ -35,11 +34,7 @@ public class EventsRepository {
 
     public void indexEvent(Event event) {
         Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).id(event.id).build();
-        try {
-            client.execute(index);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        client.execute(index);
     }
 
     public List<CityLight> getAllCities() {
@@ -64,20 +59,17 @@ public class EventsRepository {
                 .addType(EVENTS_TYPE)
                 .build();
 
-        try {
-            SearchResult searchResult = client.execute(search);
+        SearchResult searchResult = client.execute(search);
 
-            MetricAggregation aggregations = searchResult.getAggregations();
-            TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
+        MetricAggregation aggregations = searchResult.getAggregations();
+        TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
-            return cities.getBuckets().stream()
-                    .map(entry -> {
-                        return new CityLight(entry.getKey(), entry.getKey(), entry.getCount());
-                    })
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return cities.getBuckets().stream()
+                .map(entry -> {
+                    return new CityLight(entry.getKey(), entry.getKey(), entry.getCount());
+                })
+                .collect(Collectors.toList());
+
     }
 
     public City getCity(String cityId) {
@@ -96,27 +88,24 @@ public class EventsRepository {
                 .addIndex(DEV_CONFERENCES_INDEX)
                 .addType(EVENTS_TYPE).build();
 
-        try {
-            City city = new City();
-            city.id = cityId;
-            city.name = cityId;
-            city.communities = new ArrayList<>();
-            city.conferences = new ArrayList<>();
+        City city = new City();
+        city.id = cityId;
+        city.name = cityId;
+        city.communities = new ArrayList<>();
+        city.conferences = new ArrayList<>();
 
-            SearchResult searchResult = client.execute(search);
-            searchResult.getHits(Event.class)
-                    .stream()
-                    .map(hit -> {
-                        return hit.source;
-                    })
-                    .forEach(event -> {
-                        addEventToCityObject(city, event);
-                    });
+        SearchResult searchResult = client.execute(search);
+        searchResult.getHits(Event.class)
+                .stream()
+                .map(hit -> {
+                    return hit.source;
+                })
+                .forEach(event -> {
+                    addEventToCityObject(city, event);
+                });
 
-            return city;
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
+        return city;
+
 
     }
 
@@ -147,27 +136,25 @@ public class EventsRepository {
                 .addType(EVENTS_TYPE)
                 .build();
 
-        try {
-            SearchResult searchResult = client.execute(search);
+        SearchResult searchResult = client.execute(search);
 
-            return StreamSupport.stream(
-                    Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
-                    false).map(hitResult -> hitResult.source).collect(Collectors.toList());
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
+                false).map(hitResult -> hitResult.source).collect(Collectors.toList());
 
 
     }
 
-    public void deleteEvent(Event event) {
-        Delete delete = new Delete.Builder(event.id).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
+    public void deleteEvent(String eventId) {
+        Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
 
-        try {
-            client.execute(delete);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        client.execute(delete);
+    }
+
+    public Event getEvent(String id) {
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, id).type(EVENTS_TYPE).build();
+
+        JestResult result = client.execute(get);
+        return result.getSourceAsObject(Event.class);
     }
 }
