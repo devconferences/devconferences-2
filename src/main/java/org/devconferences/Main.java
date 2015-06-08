@@ -3,10 +3,15 @@ package org.devconferences;
 import net.codestory.http.WebServer;
 import net.codestory.http.injection.GuiceAdapter;
 import net.codestory.http.templating.ModelAndView;
+import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.events.EventsEndPoint;
 import org.devconferences.meetup.MeetupEndPoint;
 import org.devconferences.security.Authentication;
 import org.devconferences.security.SecurityFilter;
+
+import java.util.Collections;
+import java.util.Properties;
+import java.util.stream.StreamSupport;
 
 public class Main {
 
@@ -25,6 +30,13 @@ public class Main {
                 }
         );
         webServer.start(PORT);
+
+        boolean prodMode = Boolean.parseBoolean(System.getProperty("PROD_MODE", "false"));
+        boolean skipDevNode= Boolean.parseBoolean(System.getProperty("SKIP_DEV_NODE", "false"));
+        if(!prodMode && !skipDevNode){
+            System.out.println("-DSKIP_DEV_NODE=true To skip ES dev node creation");
+            DeveloppementESNode.createDevNode();
+        }
     }
 
 }

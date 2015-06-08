@@ -25,13 +25,22 @@ public class ImportCitiesJob {
     // TODO, le temps de ...
     public static final String CITIES_TYPE = "cities";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        runJob();
+    }
+
+    public static void runJob() {
         EventsRepository eventsRepository = new EventsRepository();
 
         Elastic.createIndexIfNotExists();
 
         URL v1Path = ImportCitiesJob.class.getResource("/v1");
-        DirectoryStream<Path> directoryStream = Files.newDirectoryStream(FileSystems.getDefault().getPath(v1Path.getPath()));
+        DirectoryStream<Path> directoryStream;
+        try {
+            directoryStream = Files.newDirectoryStream(FileSystems.getDefault().getPath(v1Path.getPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         directoryStream.forEach(path -> {
             try {
                 City city = new Gson().fromJson(new FileReader(path.toString()), City.class);

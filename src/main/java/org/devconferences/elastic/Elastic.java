@@ -33,8 +33,8 @@ public class Elastic {
         return new RuntimeJestClientAdapter(factory.getObject());
     }
 
-    public static void createIndexIfNotExists() throws IOException {
-        JestClient client = createClient();
+    public static void createIndexIfNotExists()  {
+        RuntimeJestClient client = createClient();
 
         IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
         JestResult indexExistsResult = client.execute(indicesExists);
@@ -48,15 +48,19 @@ public class Elastic {
                             .build();
             client.execute(createIndex);
 
-            //createMapping(EventsRepository.CITIES_TYPE, "/elastic/cities-mapping.json");
             createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
         }
     }
 
-    private static void createMapping(String type, String mappingFilePath) throws IOException {
-        JestClient client = createClient();
+    private static void createMapping(String type, String mappingFilePath) {
+        RuntimeJestClient client = createClient();
 
-        String mappingFile = new String(Files.readAllBytes(FileSystems.getDefault().getPath(EventsRepository.class.getResource(mappingFilePath).getPath())));
+        String mappingFile;
+        try {
+            mappingFile = new String(Files.readAllBytes(FileSystems.getDefault().getPath(EventsRepository.class.getResource(mappingFilePath).getPath())));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         PutMapping putMapping = new PutMapping.Builder(DEV_CONFERENCES_INDEX, type, mappingFile).build();
         client.execute(putMapping);
