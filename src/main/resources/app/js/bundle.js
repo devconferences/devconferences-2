@@ -41510,7 +41510,7 @@ var errorCallback = function errorCallback(response) {
 function createClient(actualUrl) {
 
     function cities() {
-        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/citiies")["catch"](errorCallback);
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/cities")["catch"](errorCallback);
     }
 
     function city(id) {
