@@ -9,7 +9,6 @@ public class MeetupInfo {
 
     public static class NextEventInfo {
         public String name;
-        public String description;
         public String url;
         public long time;
     }
