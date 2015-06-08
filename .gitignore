@@ -1,6 +1,9 @@
 # Itellij idea
 *.iml
 .idea
+*.ipr
+*.iws
+.DS_Store
 
 # Temp files
 *~
