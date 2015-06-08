@@ -10,6 +10,14 @@ function createClient(actualUrl) {
         return Axios.get(`${actualUrl}/${apiRoot}/cities`).catch(response => console.error(response));
     }
 
+    function city(id) {
+        return Axios.get(`${actualUrl}/${apiRoot}/cities/${id}`).catch(response => console.error(response));
+    }
+
+    function searchEvents(q) {
+        return Axios.get(`${actualUrl}/${apiRoot}/events/search?q=${q}`).catch(response => console.error(response));
+    }
+
     return {
         useDevUrl() {
             return createClient(DEV_URL);
@@ -17,7 +25,9 @@ function createClient(actualUrl) {
         useCleverUrl() {
             return createClient(CLEVER_URL);
         },
-        cities
+        cities,
+        city,
+        searchCities
     };
 }
 

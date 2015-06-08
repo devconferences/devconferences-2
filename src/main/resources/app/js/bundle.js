@@ -78,6 +78,10 @@ Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(React.createElement(Root, null), document.body);
 });
 
+DevConferencesClient.useCleverUrl().cities().then(function (cities) {
+    return console.log(cities.data);
+});
+
 
 },{"./client/client":286,"./components/authentication":287,"./components/breizhcamp-teaser":288,"./components/city":291,"./components/home":296,"./components/not-found":297,"react":285,"react-router":112,"react-tap-event-plugin":130}],2:[function(require,module,exports){
 module.exports = require('./lib/axios');
@@ -41507,6 +41511,18 @@ function createClient(actualUrl) {
         });
     }
 
+    function city(id) {
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/cities/" + id)["catch"](function (response) {
+            return console.error(response);
+        });
+    }
+
+    function searchEvents(q) {
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/events/search?q=" + q)["catch"](function (response) {
+            return console.error(response);
+        });
+    }
+
     return {
         useDevUrl: function useDevUrl() {
             return createClient(DEV_URL);
@@ -41514,7 +41530,9 @@ function createClient(actualUrl) {
         useCleverUrl: function useCleverUrl() {
             return createClient(CLEVER_URL);
         },
-        cities: cities
+        cities: cities,
+        city: city,
+        searchCities: searchCities
     };
 }
 
@@ -41523,49 +41541,71 @@ module.exports = exports["default"];
 
 
 },{"axios":2}],287:[function(require,module,exports){
-"use strict";
+'use strict';
 
-var React = require("react");
+var React = require('react');
+var $ = require('jquery');
 
 var Authentication = React.createClass({
-    displayName: "Authentication",
+    displayName: 'Authentication',
 
+    getInitialState: function getInitialState() {
+        return {
+            clientId: ''
+        };
+    },
+    componentDidMount: function componentDidMount() {
+        var url = '/auth/client-id';
+        $.ajax({
+            url: url,
+            dataType: 'text',
+            cache: false,
+            success: (function (data) {
+                console.log(data);
+                this.setState({ clientId: data });
+            }).bind(this),
+            error: (function (xhr, status, err) {
+                console.error(url, status, err.toString());
+            }).bind(this)
+        });
+    },
     render: function render() {
         // TODO : il y a probablement mieux à faire...
-        var user = document.cookie.split(";").map(function (entry) {
-            return entry.trim().split("=");
+        var user = document.cookie.split(';').map(function (entry) {
+            return entry.trim().split('=');
         }).filter(function (entry) {
-            return entry[0] === "user";
+            return entry[0] === 'user';
         }).map(function (entry) {
             return JSON.parse(entry[1]);
         }).reduce(function (a, b) {
             return a === undefined ? b : a;
         }, undefined);
 
-        var href = user ? "#" : "https://github.com/login/oauth/authorize?client_id=9a8a7843de53c0561a73";
-        var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
-        var title = user ? user.login : "Connectez-vous avez Github";
+        var href = user ? '/auth/disconnect' : 'https://github.com/login/oauth/authorize?client_id=' + this.state.clientId;
+        var imageUrl = user ? user.avatarURL : 'https://www.clever-cloud.com/assets/img/github-icon.svg';
+        var title = user ? user.login : 'Connectez-vous avez Github';
 
         return React.createElement(
-            "div",
-            { className: "authentication" },
+            'div',
+            { className: 'authentication' },
             React.createElement(
-                "a",
+                'a',
                 { href: href },
-                React.createElement("image", { src: imageUrl,
+                React.createElement('image', { src: imageUrl,
                     title: title,
                     alt: title,
-                    className: "img-circle",
-                    height: "50px", width: "50px" })
+                    className: 'img-circle',
+                    height: '50px', width: '50px' })
             )
         );
     }
+
 });
 
 module.exports = Authentication;
 
 
-},{"react":285}],288:[function(require,module,exports){
+},{"jquery":18,"react":285}],288:[function(require,module,exports){
 "use strict";
 
 var React = require("react");

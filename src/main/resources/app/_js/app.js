@@ -66,3 +66,5 @@ var routes = (
 Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(<Root/>, document.body);
 });
+
+DevConferencesClient.useCleverUrl().cities().then(cities => console.log(cities.data));
