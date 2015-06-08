@@ -56,7 +56,7 @@ public class Authentication {
 
     @Get("?code=:code")
     public Payload oauthCallBack(String code) {
-        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build();) {
+        try {
             Content content = Request.Post("https://github.com/login/oauth/access_token")
                     .bodyForm(Form.form()
                             .add("client_id", clientId)

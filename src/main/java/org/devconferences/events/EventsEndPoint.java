@@ -51,7 +51,7 @@ public class EventsEndPoint {
     @Post("events/")
     @AllowOrigin("*")
     public void createEvent(Event event){
-        eventsRepository.indexEvent(event);
+        eventsRepository.createEvent(event);
     }
 
     @Put("events/:id")
@@ -59,7 +59,7 @@ public class EventsEndPoint {
     @Roles({ADMIN, EVENT_MANAGER})
     public void updateEvent(String id, Event event, Context context) {
         checkUsersEvent(event.id, context);
-        eventsRepository.indexEvent(event);
+        eventsRepository.indexOrUpdate(event);
     }
 
     @Delete("events/:id")

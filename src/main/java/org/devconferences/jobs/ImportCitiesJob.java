@@ -54,12 +54,12 @@ public class ImportCitiesJob {
         city.communities.stream().forEach(event -> {
             event.type = COMMUNITY;
             event.city = city.name;
-            eventsRepository.indexEvent(event);
+            eventsRepository.indexOrUpdate(event);
         });
         city.conferences.stream().forEach(event -> {
             event.type = CONFERENCE;
             event.city = city.name;
-            eventsRepository.indexEvent(event);
+            eventsRepository.indexOrUpdate(event);
         });
     }
 }

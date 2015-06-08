@@ -1,5 +1,6 @@
 package org.devconferences.events;
 
+import com.google.common.base.Preconditions;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
@@ -32,27 +33,35 @@ public class EventsRepository {
         client = createClient();
     }
 
-    public void indexEvent(Event event) {
+    public void createEvent(Event event){
+        if(getEvent(event.id) == null){
+            throw new RuntimeException("Event allready exists with same id");
+        }else{
+            indexOrUpdate(event);
+        }
+    }
+
+    public void indexOrUpdate(Event event) {
         Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).id(event.id).build();
         client.execute(index);
     }
 
     public List<CityLight> getAllCities() {
-        String allCitiesQuery =
+        String allCitiesQuery = "" +
                 "{" +
-                        "  \"size\": 0," +
-                        "  \"aggs\": {" +
-                        "    \"cities\": {" +
-                        "      \"terms\": {" +
-                        "        \"field\": \"city\"," +
-                        "        \"size\": 100," +
-                        "        \"order\": {" +
-                        "          \"_term\": \"asc\"" +
-                        "        }" +
-                        "      }" +
-                        "    }" +
-                        "  }" +
-                        "}";
+                "  \"size\": 0," +
+                "  \"aggs\": {" +
+                "    \"cities\": {" +
+                "      \"terms\": {" +
+                "        \"field\": \"city\"," +
+                "        \"size\": 100," +
+                "        \"order\": {" +
+                "          \"_term\": \"asc\"" +
+                "        }" +
+                "      }" +
+                "    }" +
+                "  }" +
+                "}";
 
         Search search = new Search.Builder(allCitiesQuery)
                 .addIndex(DEV_CONFERENCES_INDEX)
@@ -73,16 +82,16 @@ public class EventsRepository {
     }
 
     public City getCity(String cityId) {
-        String query =
+        String query = "" +
                 "{" +
-                        "  \"query\": {" +
-                        "    \"term\": {" +
-                        "      \"city\": {" +
-                        "        \"value\": \"" + cityId + "\"" +
-                        "      }" +
-                        "    }" +
-                        "  }" +
-                        "}";
+                "  \"query\": {" +
+                "    \"term\": {" +
+                "      \"city\": {" +
+                "        \"value\": \"" + cityId + "\"" +
+                "      }" +
+                "    }" +
+                "  }" +
+                "}";
 
         Search search = new Search.Builder(query)
                 .addIndex(DEV_CONFERENCES_INDEX)
@@ -122,8 +131,16 @@ public class EventsRepository {
         }
     }
 
+    public Event getEvent(String eventId) {
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(EVENTS_TYPE).build();
+
+        JestResult result = client.execute(get);
+        return result.getSourceAsObject(Event.class);
+    }
+
     public List<Event> search(String query) {
-        String matchAllQuery = "{" +
+        String matchAllQuery = "" +
+                "{" +
                 "   \"query\": {" +
                 "      \"query_string\": {" +
                 "           \"query\" : \"" + query + "\"" +
@@ -146,15 +163,11 @@ public class EventsRepository {
     }
 
     public void deleteEvent(String eventId) {
-        Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
+        Preconditions.checkArgument(eventId != "");
 
+        Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
         client.execute(delete);
     }
 
-    public Event getEvent(String id) {
-        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, id).type(EVENTS_TYPE).build();
 
-        JestResult result = client.execute(get);
-        return result.getSourceAsObject(Event.class);
-    }
 }
