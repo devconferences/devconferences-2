@@ -23,22 +23,22 @@ public class EventsEndPoint {
         this.eventsRepository = eventsRepository;
     }
 
-    @Gets({@Get("cities"), @Get("cities/")})
+    @Gets({@Get("cities"), @Get("cities/")}) @AllowOrigin("*")
     public List<CityLight> allCities() {
         return eventsRepository.getAllCities();
     }
 
-    @Get("cities/:id")
+    @Get("cities/:id") @AllowOrigin("*")
     public City city(String id) {
         return eventsRepository.getCity(id);
     }
 
-    @Get("events/search?q=:query")
+    @Get("events/search?q=:query") @AllowOrigin("*")
     public List<Event> eventsSearch(String query) {
         return eventsRepository.search(query);
     }
 
-    @Put("events/:id")
+    @Put("events/:id") @AllowOrigin("*")
     @Roles({ADMIN, EVENT_MANAGER})
     public void updateEvent(String id, Event event, Context context) {
         checkUsersEvent(event, context);
@@ -46,7 +46,7 @@ public class EventsEndPoint {
         eventsRepository.indexEvent(event);
     }
 
-    @Delete
+    @Delete @AllowOrigin("*")
     @Roles({ADMIN, EVENT_MANAGER})
     public void deleteEvent(Event event, Context context) {
         checkUsersEvent(event, context);

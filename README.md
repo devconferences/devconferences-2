@@ -4,9 +4,23 @@
 
 Repository pour la version 2 de DevConferences.org
 
+## Dev
+
+Après le clone du repo, lancer 
+
+```
+$ npm install
+```
+
+Puis pour builder le front en mode `watch`, lancer 
+
+```
+$ npm start
+```
+
 ## Build & Deploy
 
-Pour builder la partie ReactJS : `gulp jsx`
+Pour builder la partie ReactJS : `npm run build`
 
 Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé sur le master : [devconferences.cleverapps.io](http://devconferences.cleverapps.io)
 
