@@ -7,7 +7,7 @@ const apiRoot = "api/v2";
 function createClient(actualUrl) {
 
     function cities() {
-        return Axios.get(`${actualUrl}/${apiRoot}/cities`).catch(response => console.error(response));
+        return Axios.get(`${actualUrl}/${apiRoot}/citiies`).catch(response => console.error(response));
     }
 
     function city(id) {
@@ -27,7 +27,7 @@ function createClient(actualUrl) {
         },
         cities,
         city,
-        searchCities
+        searchEvents
     };
 }
 

@@ -41506,7 +41506,7 @@ var apiRoot = "api/v2";
 function createClient(actualUrl) {
 
     function cities() {
-        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/cities")["catch"](function (response) {
+        return _axios2["default"].get("" + actualUrl + "/" + apiRoot + "/citiies")["catch"](function (response) {
             return console.error(response);
         });
     }
@@ -41532,7 +41532,7 @@ function createClient(actualUrl) {
         },
         cities: cities,
         city: city,
-        searchCities: searchCities
+        searchEvents: searchEvents
     };
 }
 
