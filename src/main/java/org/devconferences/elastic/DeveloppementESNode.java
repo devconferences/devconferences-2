@@ -15,7 +15,7 @@ public class DeveloppementESNode {
         Settings settings = ImmutableSettings.builder()
                 .put("http.port", "9200")
                 .put("network.host", "localhost")
-                .put("path.data", "tmp/es-loval-data")
+                .put("path.data", "tmp/es-local-data")
                 .build();
 
         Node node = NodeBuilder.nodeBuilder()
