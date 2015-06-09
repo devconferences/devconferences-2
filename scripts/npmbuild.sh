@@ -3,8 +3,7 @@
 echo 'NPM Setup'
 
 source /home/bas/.nvm/nvm.sh
-nvm install stable
-nvm use stable
+nvm use 0.10
 
 echo 'NPM install deps'
 
