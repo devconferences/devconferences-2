@@ -17,3 +17,7 @@ npm-debug.log
 
 # Tmp
 tmp
+
+src/main/resources/app/js/*.json
+src/main/resources/app/js/*.js
+src/main/resources/app/js/*.map
