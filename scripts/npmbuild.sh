@@ -3,10 +3,8 @@
 echo 'NPM Setup'
 
 source /home/bas/.nvm/nvm.sh
+nvm install stable
 nvm use stable
-nvm ls
-nvm exec 0.10 node --version
-nvm exec 0.10 npm --version
 
 echo 'NPM install deps'
 
