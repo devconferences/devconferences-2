@@ -95,7 +95,10 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>source /home/bas/.nvm/nvm.sh;npm install</executable>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                     <execution>
@@ -105,7 +108,11 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>source /home/bas/.nvm/nvm.sh;npm run build</executable>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>run</argument>
+                                <argument>build</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
