@@ -95,7 +95,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>/usr/bin/npm</executable>
+                            <executable>/home/bas/.nvm/v0.10.38/bin/npm</executable>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
@@ -108,7 +108,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>/usr/bin/npm</executable>
+                            <executable>/home/bas/.nvm/v0.10.38/bin/npm</executable>
                             <arguments>
                                 <argument>run</argument>
                                 <argument>build</argument>
