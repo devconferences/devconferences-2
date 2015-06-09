@@ -24,11 +24,7 @@ public class SecurityFilter implements Filter {
         if (authentication.isAuthenticated(context)) {
             User user = authentication.getUser(context);
             context.setCurrentUser(user);
-            System.out.println("user : " + user.login + " is authenticated");
-        }else{
-            System.out.println("unauthenticated user");
         }
-
         return nextFilter.get();
     }
 

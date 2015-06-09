@@ -1,18 +1,18 @@
 package org.devconferences.elastic;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.IndicesExists;
 import io.searchbox.indices.mapping.PutMapping;
+import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
 import org.elasticsearch.common.settings.ImmutableSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
 
 import static org.devconferences.env.EnvUtils.fromEnv;
 
@@ -22,6 +22,8 @@ import static org.devconferences.env.EnvUtils.fromEnv;
 public class Elastic {
     public static final String ES_URL = "ES_URL";
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences";
+    private static final Logger LOGGER = LoggerFactory.getLogger(Elastic.class);
+
 
     public static RuntimeJestClient createClient() {
         String esURL = fromEnv(ES_URL, "http://localhost:9200");
@@ -33,7 +35,7 @@ public class Elastic {
         return new RuntimeJestClientAdapter(factory.getObject());
     }
 
-    public static void createIndexIfNotExists()  {
+    public static void createIndexIfNotExists() {
         RuntimeJestClient client = createClient();
 
         IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
@@ -41,13 +43,15 @@ public class Elastic {
         boolean found = indexExistsResult.getJsonObject().getAsJsonPrimitive("found").getAsBoolean();
 
         if (!found) {
-            System.out.println("Creating index : " + DEV_CONFERENCES_INDEX);
+            LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
             CreateIndex createIndex =
                     new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
                             .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
                             .build();
-            client.execute(createIndex);
-
+            JestResult jestResult = client.execute(createIndex);
+            if(!jestResult.isSucceeded()){
+                throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
+            }
             createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
         }
     }
@@ -57,7 +61,7 @@ public class Elastic {
 
         String mappingFile;
         try {
-            mappingFile = new String(Files.readAllBytes(FileSystems.getDefault().getPath(EventsRepository.class.getResource(mappingFilePath).getPath())));
+            mappingFile = IOUtils.toString(EventsRepository.class.getResourceAsStream(mappingFilePath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
