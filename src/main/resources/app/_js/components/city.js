@@ -4,6 +4,7 @@ var $ = require('jquery');
 
 var EventAnchorList = require('./event-anchor-list');
 var EventList = require('./event-list');
+var DevConferencesClient = require('../client/client');
 
 var City = React.createClass({
 
