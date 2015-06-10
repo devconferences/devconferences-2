@@ -79,8 +79,6 @@ public class ImportCitiesJob {
         }
     }
 
-//}
-
     public static void indexCity(City city, EventsRepository eventsRepository) {
         Index index = new Index.Builder(city).index(Elastic.DEV_CONFERENCES_INDEX).type(CITIES_TYPE).id(city.id).build();
         try {
