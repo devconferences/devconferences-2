@@ -3,13 +3,20 @@ package org.devconferences.events;
 import com.google.common.base.Preconditions;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
+import io.searchbox.core.search.aggregation.Bucket;
+import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.elasticsearch.common.geo.GeoHashUtils;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
@@ -17,6 +24,10 @@ import java.util.stream.StreamSupport;
 
 import static org.devconferences.elastic.Elastic.DEV_CONFERENCES_INDEX;
 import static org.devconferences.elastic.Elastic.createClient;
+import static org.elasticsearch.common.unit.DistanceUnit.*;
+import static org.elasticsearch.index.query.FilterBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 @Singleton
 public class EventsRepository {
@@ -105,6 +116,22 @@ public class EventsRepository {
         return city;
 
 
+    }
+
+    public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
+        String eventLocations = new SearchSourceBuilder()
+                .query(filteredQuery(matchAllQuery(),
+                        geoDistanceFilter("location")
+                        .distance(distance, KILOMETERS)
+                        .lat(lat).lon(lon)
+                ))
+                .size(0)
+                .aggregation(AggregationBuilders.geohashGrid("event_locations").field("location").precision(geohashPrecision))
+                .toString();
+
+        SearchResult result = client.execute(new Search.Builder(eventLocations).build());
+        GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
+        return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
     }
 
     private void addEventToCityObject(City city, Event event) {

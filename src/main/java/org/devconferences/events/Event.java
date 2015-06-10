@@ -1,5 +1,7 @@
 package org.devconferences.events;
 
+import org.elasticsearch.common.geo.GeoPoint;
+
 public class Event {
 
     public String id;
@@ -11,6 +13,7 @@ public class Event {
     public String facebook;
     public String city;
     public Type type;
+    public GeoPoint location;
 
     public enum Type{
         COMMUNITY, CONFERENCE;

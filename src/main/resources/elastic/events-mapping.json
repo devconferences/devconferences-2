@@ -32,6 +32,9 @@
       "city": {
         "type": "string",
         "index": "not_analyzed"
+      },
+      "location" : {
+        "type" : "geo_point"
       }
     }
   }
