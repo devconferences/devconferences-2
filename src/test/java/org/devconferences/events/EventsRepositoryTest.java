@@ -9,6 +9,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.internal.InternalNode;
 import org.elasticsearch.test.ElasticsearchIntegrationTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class EventsRepositoryTest extends ElasticsearchIntegrationTest {
         ElasticUtils.createIndexIfNotExists();
     }
 
+    @Ignore
     @Test
     public void should_find_event() {
         Event event = new Event();
@@ -46,6 +48,7 @@ public class EventsRepositoryTest extends ElasticsearchIntegrationTest {
         Assertions.assertThat(matches).hasSize(1);
     }
 
+    @Ignore
     @Test
     public void should_find_event_around() {
         Event event = new Event();
@@ -65,6 +68,7 @@ public class EventsRepositoryTest extends ElasticsearchIntegrationTest {
         Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
     }
 
+    @Ignore
     @Test
     public void should_not_find_event_far_away() {
         Event event = new Event();

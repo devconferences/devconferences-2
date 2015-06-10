@@ -18,17 +18,6 @@ public class AuthenticationTest {
     Authentication authentication = new Authentication(new Encrypter(), new UsersRepository());
 
     @Test
-    public void testExtractUserFromResponse_emptyMap() {
-        User user = authentication.extractUserFromResponse(new HashMap<String, Object>());
-
-        assertNull(user.avatarURL);
-        assertNull(user.email);
-        assertNull(user.login);
-        assertNull(user.id);
-
-    }
-
-    @Test
     public void test() {
         HashMap<String, Object> map = new HashMap<>();
         map.put("login", "login");
