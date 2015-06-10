@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.UUID;
 
 /**
  * Created by chris on 08/06/15.
@@ -40,7 +41,7 @@ public class DeveloppementESNode {
         Node node = NodeBuilder.nodeBuilder()
                 .local(true)
                 .data(true)
-                .clusterName("elasticSearch")
+                .clusterName("elasticSearch" + UUID.randomUUID())
                 .settings(settings)
                 .build();
         node.start();
