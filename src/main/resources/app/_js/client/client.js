@@ -6,7 +6,7 @@ const apiRoot = "api/v2";
 
 const errorCallback = response => console.error(`${response.status} - '${response.statusText}'`,response);
 
-function createClient(actualUrl) {
+function createClient(u) {
 
     function cities() {
         return Axios.get(`${actualUrl}/${apiRoot}/cities`).catch(errorCallback);

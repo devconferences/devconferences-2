@@ -16,20 +16,7 @@ var City = React.createClass({
     },
 
     componentDidMount: function () {
-        var url = '/api/v2/cities/' + this.props.params.id;
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-                this.setState({city: data});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                // Redirect to homepage
-                console.error(url, status, err.toString());
-                this.transitionTo('/');
-            }.bind(this)
-        });
+      DevConferencesClient.city(this.props.params.id).then(city => this.setState({ city: city.data }));
     },
 
     render: function () {
