@@ -1,5 +1,8 @@
 package org.devconferences.events;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Event {
 
     public String id;
@@ -10,6 +13,7 @@ public class Event {
     public String twitter;
     public String facebook;
     public String city;
+    public List<String> tags = new ArrayList<>();
     public Type type;
 
     public enum Type{

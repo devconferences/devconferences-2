@@ -15,7 +15,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.CodeSource;
 import java.util.Collections;
 import java.util.List;
 import java.util.jar.JarFile;
