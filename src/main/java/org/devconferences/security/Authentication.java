@@ -147,7 +147,7 @@ public class Authentication {
 
     User extractUserFromResponse(Map<String, Object> map) {
         String login = (String) map.get("login");
-        String id = (String) map.get("id");
+        String id = map.get("id").toString();
         String avatarUrl = (String) map.get("avatar_url");
         String email = (String) map.get("email");
 
