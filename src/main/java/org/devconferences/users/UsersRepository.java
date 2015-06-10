@@ -1,17 +1,13 @@
 package org.devconferences.users;
 
 import com.google.inject.Singleton;
-import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.users.User;
 
-import java.io.IOException;
-
-import static org.devconferences.elastic.Elastic.DEV_CONFERENCES_INDEX;
-import static org.devconferences.elastic.Elastic.createClient;
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
+import static org.devconferences.elastic.ElasticUtils.createClient;
 
 /**
  * Created by chris on 07/06/15.

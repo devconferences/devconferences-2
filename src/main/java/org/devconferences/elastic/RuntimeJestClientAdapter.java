@@ -41,4 +41,9 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     public void setServers(Set<String> servers) {
         jestClient.setServers(servers);
     }
+
+    @Override
+    public void close() {
+        shutdownClient();
+    }
 }

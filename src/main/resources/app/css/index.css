@@ -12,7 +12,7 @@ header, footer {
 }
 
 footer {
-    padding: 20px;
+    font-size: 14px;
 }
 
 h2 {
@@ -40,15 +40,14 @@ div.title a:hover {
     font-weight: bold;
     /* TODO needs to get back to 24?*/
     font-size: 21px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 20px 10px;
 }
 
 .btn-city:hover {
     color: #ffffff;
 }
 
-.authentication{
+.authentication {
     position: absolute;
     right: 10px;
 }
