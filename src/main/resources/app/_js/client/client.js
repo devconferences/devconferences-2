@@ -46,6 +46,13 @@ function createClient(actualUrl) {
         return Axios.get(`${actualUrl}/auth/connected-user`).catch(errorCallback);
     }
 
+    if (actualUrl === '') {
+      Axios.get(`${actualUrl}/ping`).catch(function(e) {
+        console.log('Using Clever Cloud as datasource');
+        actualUrl = CLEVER_URL;
+      });
+    }
+
     return {
         useDevUrl() {
             return createClient(DEV_URL);
@@ -65,4 +72,3 @@ function createClient(actualUrl) {
 }
 
 export default createClient("");
-
