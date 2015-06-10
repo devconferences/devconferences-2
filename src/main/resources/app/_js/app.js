@@ -1,5 +1,6 @@
 var React = require('react');
 var Router = require('react-router');
+var ReactBootstrap = require('react-bootstrap');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 
 var Home = require('./components/home');
@@ -13,6 +14,11 @@ var RouteHandler = Router.RouteHandler;
 var DefaultRoute = Router.DefaultRoute;
 var NotFoundRoute = Router.NotFoundRoute;
 
+var Grid = ReactBootstrap.Grid;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
+var Glyphicon = ReactBootstrap.Glyphicon;
+
 var DevConferencesClient = require('./client/client');
 
 // Needed for onTouchTap
@@ -24,7 +30,6 @@ var App = React.createClass({
     render: function () {
         return (
             <div>
-                <BreizhcampTeaser />
                 <header>
                     <Authentication />
 
@@ -39,16 +44,34 @@ var App = React.createClass({
 
                 <RouteHandler/>
 
+                <hr />
+
                 <footer>
-                    <hr />
-                    <div className="container text-center">
-                        Il manque une ville &#63; Il manque une conférence &#63;
-                        <br />
-                        <a href="https://github.com/devconferences/devconferences.github.io">
-                            Contribuez sur Github &#33;
-                        </a>
-                    </div>
+                    <Grid>
+                        <Row className="text-center">
+                            <Col md={4}>
+                                <Glyphicon glyph="cloud-upload">
+                                &nbsp;Hébergé chez&nbsp;
+                                    <a href="//www.clever-cloud.com">Clever Cloud</a>
+                                </Glyphicon>
+                            </Col>
+                            <Col md={4}>
+                                <i className="fa fa-twitter">
+                                &nbsp;Suivez-nous sur&nbsp;
+                                    <a href="//twitter.com/DevConferences">Twitter</a>
+                                </i>
+                            </Col>
+                            <Col md={4}>
+                                <i className="fa fa-bug">
+                                &nbsp;Remontez les bugs via&nbsp;
+                                    <a href="//github.com/devconferences/devconferences-2/issues">&nbsp;Github</a>
+                                </i>
+
+                            </Col>
+                        </Row>
+                    </Grid>
                 </footer>
+
             </div>
         )
     }
