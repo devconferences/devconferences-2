@@ -1,18 +1,13 @@
 package org.devconferences.events;
 
 import com.google.common.base.Preconditions;
-import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.City;
-import org.devconferences.events.CityLight;
-import org.devconferences.events.Event;
 
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
@@ -34,8 +29,8 @@ public class EventsRepository {
     }
 
     public void createEvent(Event event){
-        if(getEvent(event.id) == null){
-            throw new RuntimeException("Event allready exists with same id");
+        if(getEvent(event.id) != null){
+            throw new RuntimeException("Event already exists with same id");
         }else{
             indexOrUpdate(event);
         }
@@ -74,9 +69,7 @@ public class EventsRepository {
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
         return cities.getBuckets().stream()
-                .map(entry -> {
-                    return new CityLight(entry.getKey(), entry.getKey(), entry.getCount());
-                })
+                .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount()))
                 .collect(Collectors.toList());
 
     }
@@ -106,12 +99,8 @@ public class EventsRepository {
         SearchResult searchResult = client.execute(search);
         searchResult.getHits(Event.class)
                 .stream()
-                .map(hit -> {
-                    return hit.source;
-                })
-                .forEach(event -> {
-                    addEventToCityObject(city, event);
-                });
+                .map(hit -> hit.source)
+                .forEach(event -> addEventToCityObject(city, event));
 
         return city;
 
@@ -163,7 +152,7 @@ public class EventsRepository {
     }
 
     public void deleteEvent(String eventId) {
-        Preconditions.checkArgument(eventId != "");
+        Preconditions.checkArgument(!eventId.equals(""));
 
         Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
         client.execute(delete);
