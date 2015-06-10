@@ -29,7 +29,7 @@ public class Main {
                     routes.add(MeetupEndPoint.class);
                     routes.get("/ping", (context) -> "pong");
                     routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
-                    routes.get("/search", (context, id) -> ModelAndView.of("index"));
+                    routes.get("/search", (context) -> ModelAndView.of("index"));
                 }
         );
         webServer.start(PORT);
