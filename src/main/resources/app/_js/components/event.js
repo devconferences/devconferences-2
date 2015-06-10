@@ -4,6 +4,7 @@ var ReactBootstrap = require('react-bootstrap');
 var WebsiteLink = require('./social/website-link');
 var TwitterLink = require('./social/twitter-link');
 var FacebookLink = require('./social/facebook-link');
+var MeetupLink = require('./social/meetup-link');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -40,7 +41,15 @@ var Event = React.createClass({
                 )
             }
         };
-
+        var renderMeetup = function (event) {
+          if (event.meetup) {
+              return (
+                <p>
+                    <MeetupLink id={event.meetup}/>
+                </p>
+              );
+          }
+        };
         var event = this.props.event;
         return (
             <div>
@@ -61,6 +70,7 @@ var Event = React.createClass({
                             { renderWebsite(event) }
                             { renderTwitter(event) }
                             { renderFacebook(event) }
+                            { renderMeetup(event) }
                         </Col>
                     </Row>
                 </Grid>

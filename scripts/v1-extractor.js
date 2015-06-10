@@ -35,6 +35,7 @@ var extractConferencesAndCommunities = function (html) {
         var website = null;
         var twitter = null;
         var facebook = null;
+        var meetup = null;
         $('div + div > p', contentNode).map(function (i, paragraph) {
             var paragraphNode = $(paragraph);
             if (paragraphNode.children().length === 0) {
@@ -63,7 +64,8 @@ var extractConferencesAndCommunities = function (html) {
             description: description.replace(/\s+/g, " ").trim(),
             website: website,
             twitter: twitter,
-            facebook: facebook
+            facebook: facebook,
+            meetup: meetup
         };
         if (_.contains(communitiesId, id)) {
             communities.push(item);
