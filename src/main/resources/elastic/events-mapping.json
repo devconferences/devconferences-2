@@ -22,6 +22,10 @@
         "type": "string",
         "index": "not_analyzed"
       },
+      "meetup": {
+        "type": "string",
+        "index": "not_analyzed"
+      },
       "website": {
         "type": "string"
       },

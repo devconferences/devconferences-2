@@ -13,10 +13,12 @@ public class Event {
     public String website;
     public String twitter;
     public String facebook;
+    public String meetup;
     public String city;
     public List<String> tags = new ArrayList<>();
     public Type type;
     public GeoPoint location;
+
 
     public enum Type{
         COMMUNITY, CONFERENCE;
