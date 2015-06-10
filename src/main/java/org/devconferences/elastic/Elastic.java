@@ -38,36 +38,44 @@ public class Elastic {
     public static void createIndexIfNotExists() {
         RuntimeJestClient client = createClient();
 
-        IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
-        JestResult indexExistsResult = client.execute(indicesExists);
-        boolean found = indexExistsResult.getJsonObject().getAsJsonPrimitive("found").getAsBoolean();
+        try {
+            IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
+            JestResult indexExistsResult = client.execute(indicesExists);
+            boolean found = indexExistsResult.getJsonObject().getAsJsonPrimitive("found").getAsBoolean();
 
-        if (!found) {
-            LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
-            CreateIndex createIndex =
-                    new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
-                            .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
-                            .build();
-            JestResult jestResult = client.execute(createIndex);
-            if(!jestResult.isSucceeded()){
-                throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
+            if (!found) {
+                LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
+                CreateIndex createIndex =
+                        new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
+                                .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
+                                .build();
+                JestResult jestResult = client.execute(createIndex);
+                if (!jestResult.isSucceeded()) {
+                    throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
+                }
+                createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
             }
-            createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
+        } finally {
+            client.shutdownClient();
         }
     }
 
     private static void createMapping(String type, String mappingFilePath) {
         RuntimeJestClient client = createClient();
 
-        String mappingFile;
         try {
-            mappingFile = IOUtils.toString(EventsRepository.class.getResourceAsStream(mappingFilePath));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+            String mappingFile;
+            try {
+                mappingFile = IOUtils.toString(EventsRepository.class.getResourceAsStream(mappingFilePath));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-        PutMapping putMapping = new PutMapping.Builder(DEV_CONFERENCES_INDEX, type, mappingFile).build();
-        client.execute(putMapping);
+            PutMapping putMapping = new PutMapping.Builder(DEV_CONFERENCES_INDEX, type, mappingFile).build();
+            client.execute(putMapping);
+        } finally {
+            client.shutdownClient();
+        }
     }
 
 }
