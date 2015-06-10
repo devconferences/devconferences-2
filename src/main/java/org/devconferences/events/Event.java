@@ -2,6 +2,7 @@ package org.devconferences.events;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.elasticsearch.common.geo.GeoPoint;
 
 public class Event {
 
@@ -15,6 +16,7 @@ public class Event {
     public String city;
     public List<String> tags = new ArrayList<>();
     public Type type;
+    public GeoPoint location;
 
     public enum Type{
         COMMUNITY, CONFERENCE;
