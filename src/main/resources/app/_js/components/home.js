@@ -5,6 +5,7 @@ var $ = require('jquery');
 var CityLinkList = require('./city-link-list');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
+var DevConferencesClient = require('../client/client');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -19,18 +20,7 @@ var Home = React.createClass({
     },
 
     componentDidMount: function () {
-        var url = '/api/v2/cities';
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-                this.setState({cities: data});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(url, status, err.toString());
-            }.bind(this)
-        });
+        DevConferencesClient.cities().then(cities => this.setState({ cities: cities.data }));
     },
 
     render: function () {

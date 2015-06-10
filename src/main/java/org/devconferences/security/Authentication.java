@@ -145,11 +145,11 @@ public class Authentication {
         }
     }
 
-    private User extractUserFromResponse(Map<String, Object> map) {
-        String login = map.get("login").toString();
+    User extractUserFromResponse(Map<String, Object> map) {
+        String login = (String) map.get("login");
         String id = map.get("id").toString();
-        String avatarUrl = map.get("avatar_url").toString();
-        String email = map.get("email").toString();
+        String avatarUrl = (String) map.get("avatar_url");
+        String email = (String) map.get("email");
 
         User user = new User(login, id, email, avatarUrl);
         return user;

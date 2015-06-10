@@ -3,26 +3,18 @@ var ReactBootstrap = require('react-bootstrap');
 
 var CityLink = require('./city-link');
 
-var Grid = ReactBootstrap.Grid;
-var Row = ReactBootstrap.Row;
-var Col = ReactBootstrap.Col;
-
 var CityLinkList = React.createClass({
 
     render: function () {
         var renderCity = function (city) {
             return (
-                <Col key={city.id} md={2}>
-                    <CityLink city={city} />
-                </Col>
+                <CityLink city={city} />
             );
         };
         return (
-            <Grid>
-                <Row>
+            <div className="text-center">
                     { this.props.cities.map(renderCity) }
-                </Row>
-            </Grid>
+            </div>
         );
     }
 

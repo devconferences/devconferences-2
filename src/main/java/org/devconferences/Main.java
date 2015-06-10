@@ -27,6 +27,7 @@ public class Main {
                     routes.add(Authentication.class);
                     routes.add(EventsEndPoint.class);
                     routes.add(MeetupEndPoint.class);
+                    routes.get("/ping", (context) -> "pong");
                     routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
                 }
         );

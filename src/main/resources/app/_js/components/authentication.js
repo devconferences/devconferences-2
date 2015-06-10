@@ -4,7 +4,8 @@ var $ = require('jquery');
 var Authentication = React.createClass({
     getInitialState: function () {
         return {
-            user : undefined
+            user : undefined,
+            clientId: undefined
         };
     },
     componentDidMount: function () {
@@ -14,7 +15,7 @@ var Authentication = React.createClass({
             dataType: 'text',
             cache: true,
             success: function (data) {
-                this.clientId = data;
+                this.setState({clientId:data});
             }.bind(this),
             error: function (xhr, status, err) {
                 console.error(clientIdURL, status, err.toString());
@@ -40,9 +41,12 @@ var Authentication = React.createClass({
         })
     },
     render: function () {
+        if(!this.state.clientId){
+            return <div></div>;
+        }
         //// TODO : il y a probablement mieux à faire...
         var user = this.state.user;
-        var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.clientId;
+        var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.state.clientId;
         var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
         var title = user ? user.login : "Connectez-vous avez Github";
 
