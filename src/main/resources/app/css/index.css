@@ -73,3 +73,9 @@ div.conflinks a {
 #breizhcamp a {
     color: #ffffff;
 }
+
+.input-text {
+    width:50%;
+    margin-left: 25%;
+    margin-right: 25%;
+}

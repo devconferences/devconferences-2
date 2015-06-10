@@ -1,4 +1,5 @@
 var React = require('react');
+var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 
@@ -10,6 +11,8 @@ var DevConferencesClient = require('../client/client');
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
+
+var Link = Router.Link;
 
 var Home = React.createClass({
 
@@ -33,6 +36,10 @@ var Home = React.createClass({
                     <abbr title="Groupes d'utilisateurs se rencontrant généralement mensuellement"> communautés </abbr>
                     de développeurs en France.
                 </div>
+
+                <Link to="search" className='btn btn-primary btn-block btn-city'>
+                    Recherche
+                </Link>
 
                 <CityLinkList cities={this.state.cities}/>
 

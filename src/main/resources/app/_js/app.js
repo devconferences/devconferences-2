@@ -5,6 +5,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 
 var Home = require('./components/home');
 var City = require('./components/city');
+var Search = require('./components/search');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 var Authentication = require('./components/authentication');
@@ -83,10 +84,10 @@ var routes = (
         <NotFoundRoute handler={NotFound} />
 
         <Route name="city" path="city/:id" handler={City}/>
+        <Route name="search" path="search" handler={Search}/>
     </Route>
 );
 
 Router.run(routes, Router.HistoryLocation, function (Root) {
     React.render(<Root/>, document.body);
 });
-
