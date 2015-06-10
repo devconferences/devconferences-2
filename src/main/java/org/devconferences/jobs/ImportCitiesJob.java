@@ -1,16 +1,15 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Index;
-import org.apache.commons.io.Charsets;
-import org.apache.commons.io.IOUtils;
-import org.devconferences.elastic.Elastic;
-import org.devconferences.events.EventsRepository;
+import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.City;
+import org.devconferences.events.EventsRepository;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -37,7 +36,7 @@ public class ImportCitiesJob {
     public static void runJob() {
         EventsRepository eventsRepository = new EventsRepository();
 
-        Elastic.createIndexIfNotExists();
+        ElasticUtils.createIndexIfNotExists();
 
         listV1Entries().forEach(path -> {
             City city = new Gson().fromJson(new InputStreamReader(ImportCitiesJob.class.getResourceAsStream(path.toString())), City.class);
@@ -79,12 +78,9 @@ public class ImportCitiesJob {
     }
 
     public static void indexCity(City city, EventsRepository eventsRepository) {
-        Index index = new Index.Builder(city).index(Elastic.DEV_CONFERENCES_INDEX).type(CITIES_TYPE).id(city.id).build();
-        try {
-            JestClient client = Elastic.createClient();
+        Index index = new Index.Builder(city).index(ElasticUtils.DEV_CONFERENCES_INDEX).type(CITIES_TYPE).id(city.id).build();
+        try (RuntimeJestClient client = ElasticUtils.createClient();) {
             client.execute(index);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         city.communities.stream().forEach(event -> {

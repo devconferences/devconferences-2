@@ -1,18 +1,13 @@
 package org.devconferences.events;
 
 import com.google.common.base.Preconditions;
-import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.City;
-import org.devconferences.events.CityLight;
-import org.devconferences.events.Event;
 
 import javax.inject.Singleton;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
@@ -20,8 +15,8 @@ import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static org.devconferences.elastic.Elastic.DEV_CONFERENCES_INDEX;
-import static org.devconferences.elastic.Elastic.createClient;
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
+import static org.devconferences.elastic.ElasticUtils.createClient;
 
 @Singleton
 public class EventsRepository {
