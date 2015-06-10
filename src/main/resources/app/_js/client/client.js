@@ -8,6 +8,8 @@ const errorCallback = response => console.error(`${response.status} - '${respons
 
 function createClient(u) {
 
+    let actualUrl = u;
+
     function cities() {
         return Axios.get(`${actualUrl}/${apiRoot}/cities`).catch(errorCallback);
     }
