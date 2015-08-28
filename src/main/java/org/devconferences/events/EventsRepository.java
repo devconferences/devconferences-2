@@ -90,7 +90,8 @@ public class EventsRepository {
                 "        \"value\": \"" + cityId + "\"" +
                 "      }" +
                 "    }" +
-                "  }" +
+                "  }," +
+                "  \"size\" : " + Integer.MAX_VALUE +
                 "}";
 
         Search search = new Search.Builder(query)
