@@ -20,7 +20,7 @@ npm-debug.log
 tmp
 
 src/main/resources/app/js/*.json
-src/main/resources/app/js/*.js
+#src/main/resources/app/js/*.js
 src/main/resources/app/js/*.map
 
 # elasticsearch data
