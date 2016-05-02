@@ -3,6 +3,13 @@ var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 
+var ReactTabs = require('react-tabs');
+var Tab = ReactTabs.Tab;
+var Tabs = ReactTabs.Tabs;
+var TabList = ReactTabs.TabList;
+var TabPanel = ReactTabs.TabPanel;
+
+var CityMap = require('./map');
 var CityLinkList = require('./city-link-list');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
@@ -41,7 +48,26 @@ var Home = React.createClass({
                     Recherche
                 </Link>
 
-                <CityLinkList cities={this.state.cities}/>
+                <Tabs
+                onSelect={this.handleSelected}
+                selectedIndex={1}
+                >
+
+                    <TabList>
+                        <Tab>La liste</Tab>
+                        <Tab>La carte</Tab>
+
+                    </TabList>
+
+
+                    <TabPanel>
+                        <CityLinkList cities={this.state.cities}/>
+                    </TabPanel>
+                    <TabPanel>
+                        <CityMap cities={this.state.cities}/>
+                    </TabPanel>
+
+                </Tabs>
 
                 <Grid>
                     <Row>
