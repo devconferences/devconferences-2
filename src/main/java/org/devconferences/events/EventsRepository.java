@@ -158,6 +158,7 @@ public class EventsRepository {
     public List<Event> search(String query) {
         String matchAllQuery = "" +
                 "{" +
+                "   \"size\" : 500," + // Not definitive
                 "   \"query\": {" +
                 "      \"query_string\": {" +
                 "           \"query\" : \"" + query + "\"" +
