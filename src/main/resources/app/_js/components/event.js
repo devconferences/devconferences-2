@@ -11,6 +11,19 @@ var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 var Glyphicon = ReactBootstrap.Glyphicon;
 
+var Tags = React.createClass({
+    render: function() {
+        var aTag = function(tag) {
+            return ( <a>{tag}</a> );
+        };
+        return (
+            <i className="fa fa-key">
+                { this.props.tags.map(aTag) }
+            </i>
+        );
+    }
+});
+
 var Event = React.createClass({
 
     render: function () {
@@ -50,6 +63,15 @@ var Event = React.createClass({
               );
           }
         };
+        var renderTags = function (event) {
+            if(event.tags) {
+                return (
+                    <p>
+                        <Tags tags={event.tags} />
+                    </p>
+                );
+            }
+        };
         var event = this.props.event;
         return (
             <div>
@@ -71,6 +93,7 @@ var Event = React.createClass({
                             { renderTwitter(event) }
                             { renderFacebook(event) }
                             { renderMeetup(event) }
+                            { renderTags(event) }
                         </Col>
                     </Row>
                 </Grid>
