@@ -3,6 +3,7 @@ var Router = require('react-router');
 var $ = require('jquery');
 
 var Event = require('./event');
+var DevConferencesClient = require('../client/client');
 
 var Search = React.createClass({
 
@@ -23,21 +24,9 @@ var Search = React.createClass({
     },
 
     changeInput: function (e) {
-
         var searchValue = this.refs.searchInput.getDOMNode().value;
-        var url = "http://devconferences.cleverapps.io/api/v2/events/search?q=" + searchValue;
 
-        $.ajax({
-            url: url,
-            dataType: 'json',
-            cache: false,
-            success: function(data) {
-                this.setState({items: data});
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(url, status, err.toString());
-            }.bind(this)
-        });
+        DevConferencesClient.searchEvents(searchValue).then(items => this.setState({items: items.data}));
     },
 
     render: function () {
