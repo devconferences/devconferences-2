@@ -14,7 +14,7 @@ var Glyphicon = ReactBootstrap.Glyphicon;
 var Tags = React.createClass({
     render: function() {
         var aTag = function(tag) {
-            return ( <a>{tag}</a> );
+            return ( <span> <a>{tag}</a>; </span> );
         };
         return (
             <i className="fa fa-key">
