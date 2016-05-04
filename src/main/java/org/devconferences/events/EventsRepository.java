@@ -156,17 +156,27 @@ public class EventsRepository {
     }
 
     public List<Event> search(String query) {
-        String matchAllQuery = "" +
-                "{" +
-                "   \"size\" : 500," + // Not definitive
+        String matchAllQueryPart1 = "" +
+                "{";
+        String matchAllQueryPart2 = "" +
                 "   \"query\": {" +
                 "      \"query_string\": {" +
-                "           \"query\" : \"" + query + "\"" +
+                "         \"query\" : \"" + query + "\"" +
                 "       }" +
                 "   }" +
                 "}";
 
-        Search search = new Search.Builder(matchAllQuery)
+        Count count = new Count.Builder()
+                .query(matchAllQueryPart1 + matchAllQueryPart2)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(EVENTS_TYPE)
+                .build();
+
+        CountResult countResult = client.execute(count);
+
+        Search search = new Search.Builder(matchAllQueryPart1 +
+                    "   \"size\": " + countResult.getCount().intValue() + "," +
+                    matchAllQueryPart2)
                 .addIndex(DEV_CONFERENCES_INDEX)
                 .addType(EVENTS_TYPE)
                 .build();
