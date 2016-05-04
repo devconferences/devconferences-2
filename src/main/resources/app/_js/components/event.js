@@ -5,6 +5,7 @@ var WebsiteLink = require('./social/website-link');
 var TwitterLink = require('./social/twitter-link');
 var FacebookLink = require('./social/facebook-link');
 var MeetupLink = require('./social/meetup-link');
+var Tags = require('./tags');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -50,6 +51,15 @@ var Event = React.createClass({
               );
           }
         };
+        var renderTags = function (event) {
+            if(event.tags) {
+                return (
+                    <p>
+                        <Tags tags={event.tags} />
+                    </p>
+                );
+            }
+        };
         var event = this.props.event;
         return (
             <div>
@@ -71,6 +81,7 @@ var Event = React.createClass({
                             { renderTwitter(event) }
                             { renderFacebook(event) }
                             { renderMeetup(event) }
+                            { renderTags(event) }
                         </Col>
                     </Row>
                 </Grid>
