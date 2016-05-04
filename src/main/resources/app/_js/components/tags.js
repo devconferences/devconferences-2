@@ -1,9 +1,13 @@
 var React = require('react');
+var Router = require('react-router');
+
+var Link = Router.Link;
 
 var Tags = React.createClass({
     render: function() {
         var aTag = function(tag) {
-            return ( <span> <a>{tag}</a>; </span> );
+            var linkToURL = "/search/" + tag;
+            return ( <span> <Link to={linkToURL} >{tag}</Link>; </span> );
         };
         return (
             <i className="fa fa-key">
