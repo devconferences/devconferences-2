@@ -57,6 +57,7 @@ public class Main {
                     routes.get("/ping", (context) -> "pong");
                     routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
                     routes.get("/search", (context) -> ModelAndView.of("index"));
+                    routes.get("/search/:query", (context, query) -> ModelAndView.of("index"));
                 }
         );
         webServer.start(PORT);

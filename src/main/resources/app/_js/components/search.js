@@ -1,13 +1,21 @@
 var React = require('react');
+var Router = require('react-router');
 var $ = require('jquery');
+
 var Event = require('./event');
 
 var Search = React.createClass({
+
+    mixins: [Router.Navigation],
 
     getInitialState: function(){
         return {
             items:  []
         }
+    },
+
+    componentDidMount: function() {
+        this.changeInput(null);
     },
 
     selectEvent: function (e) {
@@ -40,10 +48,10 @@ var Search = React.createClass({
                 </li>
             );
         }.bind(this));
-
+        var query = this.props.params.query || "";
         return (
             <div className="search">
-                <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" />
+                <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" defaultValue={query}/>
                 <div className="search-result">
                     <ul>
                         {items}

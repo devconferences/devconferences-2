@@ -85,6 +85,7 @@ var routes = (
 
         <Route name="city" path="city/:id" handler={City}/>
         <Route name="search" path="search" handler={Search}/>
+        <Route name="searchWithParam" path="search/:query" handler={Search}/>
     </Route>
 );
 
