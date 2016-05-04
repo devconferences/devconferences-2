@@ -5,24 +5,12 @@ var WebsiteLink = require('./social/website-link');
 var TwitterLink = require('./social/twitter-link');
 var FacebookLink = require('./social/facebook-link');
 var MeetupLink = require('./social/meetup-link');
+var Tags = require('./tags');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 var Glyphicon = ReactBootstrap.Glyphicon;
-
-var Tags = React.createClass({
-    render: function() {
-        var aTag = function(tag) {
-            return ( <span> <a>{tag}</a>; </span> );
-        };
-        return (
-            <i className="fa fa-key">
-                { this.props.tags.map(aTag) }
-            </i>
-        );
-    }
-});
 
 var Event = React.createClass({
 
