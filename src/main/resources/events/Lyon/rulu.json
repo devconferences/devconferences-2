@@ -1,0 +1,10 @@
+{
+    "id": "rulu",
+    "name": "RuLu - Ruby Conference",
+    "avatar": "https://pbs.twimg.com/profile_images/1923034152/logo.png",
+    "description": "Ruby Lugdunum (aka Rulu) is a two day conference dedicated to the Ruby Programming Language.",
+    "website": "http://rulu.eu",
+    "twitter": "rulu",
+    "facebook": null,
+    "type": "CONFERENCE"
+}

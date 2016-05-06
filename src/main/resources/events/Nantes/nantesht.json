@@ -1,0 +1,10 @@
+{
+    "id": "nantesht",
+    "name": "Human Talks Nantes",
+    "avatar": "http://humantalks.com/assets/logo-HumanTalks-5e952765425ff87840b0c920975c89ef.png",
+    "description": "Human Talks, c'est un événement mensuel pour les développeurs. Chaque mois, des développeurs se succèdent pour présenter en 10 minutes un sujet de leur choix (language, méthode de programmation, projet perso, design...) Quelque soit votre niveau vous pouvez proposer un talk aux organisateurs du Human Talks de votre ville. L'accès est gratuit !",
+    "website": "http://humantalks.com/cities/nantes",
+    "twitter": "HumanTalks",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

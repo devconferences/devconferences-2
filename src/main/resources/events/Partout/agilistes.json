@@ -1,0 +1,10 @@
+{
+    "id": "agilistes",
+    "name": "Agenda des Agilistes",
+    "avatar": "http://www.agenda-agile.org/adl-specific/css/logo.png",
+    "description": "L'agenda des évènements autour de l'Agilité en France (et pas trop loin)",
+    "website": "http://www.agenda-agile.org",
+    "twitter": "AgendaAgile",
+    "facebook": null,
+    "type": "CONFERENCE"
+}

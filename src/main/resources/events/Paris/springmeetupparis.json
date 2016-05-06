@@ -1,0 +1,10 @@
+{
+    "id": "springmeetupparis",
+    "name": "Spring Meetup Paris",
+    "avatar": "https://pbs.twimg.com/profile_images/378800000763105506/56d6335957965e9ba72c6a7bcb01a6e7_400x400.jpeg",
+    "description": "Spring Meetup Paris regroupe les acteurs locaux & globaux de l'écosystème Pivotal (Spring Framework, Rabbit MQ, Redis ...).",
+    "website": "http://spring-meetup-paris.github.io",
+    "twitter": "interface21_ug",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

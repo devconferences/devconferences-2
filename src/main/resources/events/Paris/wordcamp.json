@@ -1,0 +1,10 @@
+{
+    "id": "wordcamp",
+    "name": "WordCamp Paris",
+    "avatar": "http://2015.paris.wordcamp.org/files/2014/11/250-250.jpg",
+    "description": "Le WordCamp Paris 2015 sera la 4e édition parisienne de la conférence WordCamp. Technique, design, contenu, business, etc. L’événement incontournable autour du CMS WordPress et de sa communauté revient à Paris les 23 et 24 janvier 2015.",
+    "website": "http://2015.paris.wordcamp.org",
+    "twitter": null,
+    "facebook": null,
+    "type": "CONFERENCE"
+}

@@ -1,0 +1,10 @@
+{
+    "id": "rivierajug",
+    "name": "Riviera JUG",
+    "avatar": "http://www.rivierajug.org/xwiki/bin/skin/XWiki/DefaultSkin/logo.png",
+    "description": "Java User Group de Nice et Sophia-Antipolis. Notre but et d'unir les développeurs Java de Toulon jusqu'à Monaco (pourquoi pas une partie de l'Italie si nos amis Italiens se montrent intéressés). Nous organisons des réunions régulières depuis janvier 2009 à Sophia-Antipolis. Tous les mois en général, après le travail, nous nous réunissons et accueillons des intervenants régionaux et internationaux pour nous parler de technologies Java",
+    "website": "http://www.rivierajug.org",
+    "twitter": "rivierajug",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

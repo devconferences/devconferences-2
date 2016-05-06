@@ -1,0 +1,10 @@
+{
+    "id": "strasbourgjs",
+    "name": "StrasbourgJS",
+    "avatar": "http://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png",
+    "description": "StrasbourgJS is a meetup to talk about all sides of Javascript, for client-side and server side usage. We might also talk about the rising frameworks like angular, ember and backbone or even meteor. Beginners are welcome as well as the most experimented programmers.",
+    "website": "http://www.meetup.com/StrasbourgJS",
+    "twitter": "StrasbourgJS",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

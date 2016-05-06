@@ -1,0 +1,10 @@
+{
+    "id": "pyconfr",
+    "name": "PyConFR",
+    "avatar": "http://www.pycon.fr/2014_static/pyconfr/images/banner.png",
+    "description": "PyConFR est le rassemblement annuel de la communauté francophone utilisant et développant le langage de programmation open source Python. La conférence est gratuite, libre d'accès et intégralement organisée par des bénévoles.",
+    "website": "http://www.pycon.fr",
+    "twitter": "pyconfr",
+    "facebook": null,
+    "type": "CONFERENCE"
+}
