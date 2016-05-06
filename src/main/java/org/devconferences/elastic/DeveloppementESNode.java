@@ -3,6 +3,7 @@ package org.devconferences.elastic;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.jobs.ImportCitiesJob;
+import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -46,7 +47,7 @@ public class DeveloppementESNode {
                 .build();
         node.start();
 
-        ImportCitiesJob.runJob();
+        ImportEventsJob.runJob();
     }
 
 }
