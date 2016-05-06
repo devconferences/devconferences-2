@@ -1,0 +1,35 @@
+{
+    "id": "rouen",
+    "name": "Rouen",
+    "conferences": [
+        {
+            "id": "codeursenseine",
+            "name": "Codeurs en Seine",
+            "avatar": "http://www.codeursenseine.com/assets/img/logo-codeurs-en-seine.png",
+            "description": "Codeurs en Seine est une conférence gratuite qui se déroule à Rouen, sur 4 thèmes en simultané : le Java, l'Agile, le Web et l'Innovation. Vous pourrez défricher des sujets comme les bases de données NoSQL, l'histoire du web, Java 8, les objets connectés et tout se qui tourne autour du cloud. La conférence est organisée bénévolement par Normandy Web Xperts, le Normandy Agile User Group, Le Normandy Java User Group et l'Université de Rouen ; elle est également une étape de l'agile tour.",
+            "website": "http://www.codeursenseine.com",
+            "twitter": "codeursenseine",
+            "facebook": null
+        }
+    ],
+    "communities": [
+        {
+            "id": "normandyjug",
+            "name": "Normandy JUG",
+            "avatar": "https://pbs.twimg.com/profile_images/95094747/logo-juggy2.png",
+            "description": "Le NormandyJUG est une association loi 1901 qui vise à réunir toutes les personnes intéressées par le langage Java en Normandie et désireuses de discuter, de partager et d’apprendre autour de cette technologie, des outils et méthodes associées Le JUG est ouvert à tous : étudiants, développeurs, responsables informatiques, geeks … Les dates et conditions des réunions ne sont pas encore fixées mais seront sans doutes Bimestrielles ou mensuelles selon l’engouement des acteurs informatiques Normands.",
+            "website": "http://www.normandyjug.org",
+            "twitter": "normandyjug",
+            "facebook": null
+        },
+        {
+            "id": "nwx",
+            "name": "Normandie Web Xperts",
+            "avatar": "https://pbs.twimg.com/profile_images/3077599043/473504306bab96364364dd8ea15bf959.png",
+            "description": "Association regroupant les acteurs de l'internet normand possédant une expertise pointue dans leur domaine. Organisateur de la conférence annuelle #NWX",
+            "website": "http://www.nwx.fr",
+            "twitter": "n_w_x",
+            "facebook": null
+        }
+    ]
+}

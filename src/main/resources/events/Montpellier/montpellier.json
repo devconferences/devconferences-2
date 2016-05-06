@@ -1,0 +1,34 @@
+{
+    "id": "montpellier",
+    "name": "Montpellier",
+    "conferences": [],
+    "communities": [
+        {
+            "id": "montpellierjug",
+            "name": "Montpellier JUG",
+            "avatar": "http://www.jug-montpellier.org/public/images/logo.png",
+            "description": "Java User Group de Montpellier. L’activité principale du JUG Montpellier consiste à organiser des évènements (conférences, forums, tables rondes, ateliers…) autour des technologies Java.",
+            "website": "http://www.jug-montpellier.org",
+            "twitter": "montpellierjug",
+            "facebook": null
+        },
+        {
+            "id": "htmontpellier",
+            "name": "Human Talks Montpellier",
+            "avatar": "http://humantalks.com/assets/logo-HumanTalks-5e952765425ff87840b0c920975c89ef.png",
+            "description": "Human Talks, c'est un événement mensuel pour les développeurs. Chaque mois, des développeurs se succèdent pour présenter en 10 minutes un sujet de leur choix (language, méthode de programmation, projet perso, design...) Quelque soit votre niveau vous pouvez proposer un talk aux organisateurs du Human Talks de votre ville. L'accès est gratuit !",
+            "website": "http://humantalks.com/cities/montpellier",
+            "twitter": "HTMontpellier",
+            "facebook": null
+        },
+        {
+            "id": "montpellierjs",
+            "name": "Montpellier JS",
+            "avatar": "https://pbs.twimg.com/profile_images/378800000016255607/be27c3ab621547894b4c8569f8bd7305.png",
+            "description": "Communauté des utilisateurs Javascript de Montpellier.",
+            "website": "https://github.com/MontpellierJS/MontpellierJS",
+            "twitter": "MontpellierJS",
+            "facebook": null
+        }
+    ]
+}

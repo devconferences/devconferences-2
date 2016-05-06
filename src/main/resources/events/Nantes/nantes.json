@@ -1,0 +1,127 @@
+{
+    "id": "nantes",
+    "name": "Nantes",
+    "conferences": [
+        {
+            "id": "devfest",
+            "name": "DevFest Nantes",
+            "avatar": "http://www.devfest.info/images/gdgbig.png",
+            "description": "Il s’agit d’une journée complète de conférences sur Android, Dart, AppEngine, Angular JS, Chrome, HTML5, Google Drive, Go, GWT... Une occasion unique de partager et d’échanger autour des technologies du Web et du Cloud. Cet évènement a regroupé plus de 500 participants en 2014 à Nantes.",
+            "website": "http://devfest.gdgnantes.com",
+            "twitter": "gdgnantes",
+            "facebook": null
+        },
+        {
+            "id": "web2day",
+            "name": "Web2Day",
+            "avatar": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xfa1/v/t1.0-1/p160x160/10173650_10154214770540085_5248290910534750476_n.png?oh=a32e5babaac5cb37d8fc59dc9146be7e&oe=5507021E&__gda__=1425970734_80e38ad8be27f0ad06b9430fc67145b2",
+            "description": "Le web2day est le festival du numérique organisé par Atlantic 2.0 le réseau des acteurs du web et de l'innovation des Pays de la Loire. Prochaine édition les 3, 4 et 5 Juin 2015 ! Au programme 3 jours de conférences, de débats et d'animation sur les sujets qui font l'actualité des nouvelles technologie. Une centaine d'experts de France et d'ailleurs sont présents pour échanger pendant ces 3 jours intenses du numérique.",
+            "website": "http://www.web2day-nantes.org/",
+            "twitter": "web2dayNantes",
+            "facebook": null
+        },
+        {
+            "id": "agiletour",
+            "name": "Agile Tour Nantes",
+            "avatar": "http://www.agilenantes.org/wp-content/uploads/2014/08/agiletourNantes2014logos.png",
+            "description": "Une journée complète autour des méthodologies Agile à Nantes",
+            "website": "http://www.agilenantes.org/agile-tour-nantes-2014/",
+            "twitter": "agilenantes",
+            "facebook": null
+        },
+        {
+            "id": "rebuild",
+            "name": "Rebuild",
+            "avatar": "https://lescommunautesms-public.sharepoint.com/logos/rebuild_logo_main.png",
+            "description": "Ce salon informatique et communautaire, vous propose de rencontrer des experts Microsoft reconnus, de découvrir l’écosystème des partenaires Microsoft et de vous aider à mieux comprendre les produits et les technologies Microsoft pour les intégrer dans vos projets informatiques.",
+            "website": "https://lescommunautesms-public.sharepoint.com/rebuild",
+            "twitter": null,
+            "facebook": null
+        }
+    ],
+    "communities": [
+        {
+            "id": "nantesjug",
+            "name": "Nantes JUG",
+            "avatar": "http://www.nantesjug.org/images/site/logo-rond-bleu-transparent.png",
+            "description": "L'objectif du Nantes Java User Group est de permettre à des acteurs et utilisateurs du langage Java (professionnels, communautés open source, universitaires, étudiants) de se rencontrer et d'échanger autour des technologies Java. Des rencontres seront organisées tous mois, sous forme de réunions gratuites, ouvertes à tous.",
+            "website": "http://www.nantesjug.org",
+            "twitter": "nantesjug",
+            "facebook": null
+        },
+        {
+            "id": "nantesgdg",
+            "name": "GDG Nantes",
+            "avatar": "https://lh4.googleusercontent.com/-4VB6XGFv75Q/AAAAAAAAAAI/AAAAAAAAAGg/NbuA_LKEmtk/photo.jpg",
+            "description": "Les Google Developer Groups (GDGs) sont des groupes de développeurs intéressés par les technologies Google :GWT, Android, App Engine, les APIs Google, mais également les techno du Web comme HTML5, CSS3... Nous nous intéressons à tout type de techno que ce soit dans le domaine de la mobilité, du cloud ou du web. L’objectif du GDG Nantes est d’organiser des évènements de manière régulière :",
+            "website": "http://www.gdgnantes.com",
+            "twitter": "gdgnantes",
+            "facebook": null,
+            "meetup": "GDG-Nantes"
+        },
+        {
+            "id": "nantesht",
+            "name": "Human Talks Nantes",
+            "avatar": "http://humantalks.com/assets/logo-HumanTalks-5e952765425ff87840b0c920975c89ef.png",
+            "description": "Human Talks, c'est un événement mensuel pour les développeurs. Chaque mois, des développeurs se succèdent pour présenter en 10 minutes un sujet de leur choix (language, méthode de programmation, projet perso, design...) Quelque soit votre niveau vous pouvez proposer un talk aux organisateurs du Human Talks de votre ville. L'accès est gratuit !",
+            "website": "http://humantalks.com/cities/nantes",
+            "twitter": "HumanTalks",
+            "facebook": null
+        },
+        {
+            "id": "nantesjs",
+            "name": "Nantes JS",
+            "avatar": "http://nantesjs.org/nantesjs-logo.svg",
+            "description": "Communauté Nantaise des utilisateurs de JavaScript",
+            "website": "http://www.nantesjs.org",
+            "twitter": "NantesJS",
+            "facebook": null
+        },
+        {
+            "id": "nantesfp",
+            "name": "Nantes FP",
+            "avatar": "https://pbs.twimg.com/profile_images/1745815565/logo.png",
+            "description": "Nantes FP est un groupe centré sur la découverte et l’apprentissage de la programmation fonctionnelle. Des séances sont organisées régulièrement à Nantes autour de sujets divers (découverte de haskell, prolog, coq, …). Les débutants et ceux ne connaissant pas encore la programmation fonctionnelle sont bienvenus et sont accompagnés dans leur découverte.",
+            "website": "http://nantes-fp.github.io",
+            "twitter": "NantesJS",
+            "facebook": null
+        },
+        {
+            "id": "nantesmug",
+            "name": "MongoDB User Group Nantes",
+            "avatar": "http://photos3.meetupstatic.com/photos/theme_head/a/0/7/3/full_6641075.jpeg",
+            "description": "Groupe des utilisateurs (ou pas) de MongoDB à Nantes.",
+            "website": "http://www.meetup.com/Nantes-MongoDB-User-Group",
+            "twitter": null,
+            "facebook": null
+        },
+        {
+            "id": "nantesagile",
+            "name": "Agile Nantes",
+            "avatar": "https://pbs.twimg.com/profile_images/2649428614/1ae2858cd8bc6841cf1281dc4e7fd52c_reasonably_small.png",
+            "description": "Association de promotion des méthodes Agiles sur Nantes et sa région.",
+            "website": "http://www.agilenantes.org",
+            "twitter": "agilenantes",
+            "facebook": null
+        },
+        {
+            "id": "nantespy",
+            "name": "Nantes Python Meetup",
+            "avatar": "https://pbs.twimg.com/profile_images/467702363122188289/u0Nm3kUU.png",
+            "description": "Groupe d'utilisateurs Python de Nantes. Un rendez-vous pour la communauté développeurs Python et ceux qui s'intéressent à cet éco-système. Ce peut être un lieu de présentation de projets et d'échanges conviviaux.",
+            "website": "http://www.meetup.com/Nantes-Python-Meetup",
+            "twitter": "pythonnantes",
+            "facebook": null
+        },
+        {
+            "id": "nantesml",
+            "name": "Nantes Machine Learning Meetup",
+            "avatar": "/img/no_logo.png",
+            "description": "Nous sommes développeurs et chercheurs avec un intérêt dans l'apprentissage automatique. Nous nous retrouverons pour discuter concrètement nos projets dans l'apprentissage automatique, réseau de neurones artificiels, modèles graphiques probabilistes, et traitement automatique du langage naturel. Nous pourrions également, pour ceux que s'y intéressent, former des groupes pour suivre des MOOC ML (Stanford et Toronto, par exemple).",
+            "website": null,
+            "twitter": null,
+            "facebook": null,
+            "meetup": "Nantes-Machine-Learning-Meetup"
+        }
+    ]
+}

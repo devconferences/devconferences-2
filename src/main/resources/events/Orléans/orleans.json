@@ -1,0 +1,16 @@
+{
+    "id": "orleans",
+    "name": "Orléans",
+    "conferences": [],
+    "communities": [
+        {
+            "id": "jugorleans",
+            "name": "JUG’Orléans",
+            "avatar": "https://pbs.twimg.com/profile_images/502068864113328128/ELSOFmuK.png",
+            "description": "JUG’Orléans (JUG pour Java User Group) est une association de loi 1901 dont le but premier est de partager une passion pour la plateforme Java / JEE et les technologies du Web sur Orléans.",
+            "website": "http://www.jugorleans.fr",
+            "twitter": "JugOrleans",
+            "facebook": null
+        }
+    ]
+}
