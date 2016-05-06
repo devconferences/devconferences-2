@@ -41,6 +41,7 @@ public class ImportEventsJob {
 
         listEvents().forEach(path -> {
             Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path.toString())), Event.class);
+            event.city = path.split("/")[2]; // <null> / events / <city> / <idEvent>.json
             indexEvent(event, eventsRepository);
         });
     }
