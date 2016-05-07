@@ -1,0 +1,21 @@
+/* Tamplate pour la création d'un Event.
+ *
+ * Pensez à enlever les commentaires, ainsi les champs qui ne sont pas édités
+ * (mis à null).
+ */{
+    "id": "eventexemple",
+    "name": "Exemple d'Event",
+    "avatar": "Url vers l'avatar",
+    "description": "Il s'agit du template de création d'un Event.",
+    "website": "http://www.urldelevent.com",
+    "twitter": "EventExemple",
+    "facebook": "EventExemple", // ou "groups/123456789012"
+    "meetup": "Meetup-EventEemple",
+    "type": "COMMUNITY", // ou "CONFERENCE"
+    "tags": [
+        "Tag1",
+        "Tag2",
+        "Tag3"
+    ],
+    "location": "46.6695,0.3635" // "latitude.0000, longitude.0000"
+}
