@@ -53,7 +53,7 @@ public class ImportEventsJob {
             try (final JarFile jar = new JarFile(jarFile);) {
                 return Collections.list(jar.entries()).stream()
                         .filter(jarEntry -> {
-                            return jarEntry.toString().startsWith("events") && !jarEntry.isDirectory();
+                            return jarEntry.toString().startsWith("events") && !jarEntry.isDirectory() && jarEntry.toString().endsWith(".json");
                         })
                         .map(jarEntry -> {
                             return "/" + jarEntry.toString();
