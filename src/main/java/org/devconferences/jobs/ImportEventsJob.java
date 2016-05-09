@@ -51,6 +51,17 @@ public class ImportEventsJob {
         });
     }
 
+    public static void checkAllEvents() {
+        listEvents().forEach(path -> {
+            Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path.toString())), Event.class);
+            try {
+                checkEvent(event, path); // This line might throw an exception
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e.getMessage() + " - file path : " + path);
+            }
+        });
+    }
+
     public static void checkEvent(Event event, String path) {
         if(event.id == null) {
             throw new RuntimeException("Invalid Event : missed 'id' field");
