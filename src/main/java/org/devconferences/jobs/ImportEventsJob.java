@@ -4,22 +4,24 @@ import com.google.gson.Gson;
 import io.searchbox.core.Index;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.City;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 import static org.devconferences.events.Event.Type.COMMUNITY;
 import static org.devconferences.events.Event.Type.CONFERENCE;
@@ -40,7 +42,7 @@ public class ImportEventsJob {
         ElasticUtils.createIndexIfNotExists();
 
         listEvents().forEach(path -> {
-            Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path.toString())), Event.class);
+            Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
             try {
                 checkEvent(event, path); // This line might throw an exception
                 event.city = path.split("/")[2]; // <null> / events / <city> / <idEvent>.json
@@ -53,7 +55,7 @@ public class ImportEventsJob {
 
     public static void checkAllEvents() {
         listEvents().forEach(path -> {
-            Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path.toString())), Event.class);
+            Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
             try {
                 checkEvent(event, path); // This line might throw an exception
             } catch (RuntimeException e) {
@@ -81,36 +83,50 @@ public class ImportEventsJob {
     }
 
     private static List<String> listEvents() {
-        final File jarFile = new File(ImportEventsJob.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        Path rootPath = null;
+        HashMap<String,String> env = new HashMap<>();
+        URL events = ImportEventsJob.class.getClassLoader().getResource("events");
 
-        if (jarFile.isFile()) {
-            try (final JarFile jar = new JarFile(jarFile);) {
-                return Collections.list(jar.entries()).stream()
-                        .filter(jarEntry -> {
-                            return jarEntry.toString().startsWith("events") && !jarEntry.isDirectory() && jarEntry.toString().endsWith(".json");
-                        })
-                        .map(jarEntry -> {
-                            return "/" + jarEntry.toString();
-                        })
-                        .collect(Collectors.toList());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        // Get root path of the jar
+        if(events.getProtocol().equals("jar")) {
+            try {
+                FileSystem mountedJar = FileSystems.newFileSystem(events.toURI(), env);
+                rootPath = mountedJar.getRootDirectories().iterator().next(); // There is only one...
+            } catch (URISyntaxException | IOException e) {
+                e.printStackTrace();
             }
         } else {
-            DirectoryStream<Path> directoryStream;
             try {
-                String v1Path = ImportEventsJob.class.getResource("/events").getPath();
-                directoryStream = Files.newDirectoryStream(FileSystems.getDefault().getPath(v1Path));
-                return StreamSupport.stream(directoryStream.spliterator(), false)
-                        .map(path -> {
-                            return "/events" + path.toString().substring(v1Path.length());
-                        })
-                        .collect(Collectors.toList());
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                File rootFile = new File(events.toURI());
+                rootPath = rootFile.toPath();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
         }
+
+        try {
+            Stream<Path> res = Files.find(rootPath, 3,
+                    (path, attr) -> isEventJSONFile(path, attr));
+            return res.map(path -> path.toString())
+                    .map(path -> {
+                        if(!events.getProtocol().equals("jar")) {
+                            // Replace absolute path with jar-like path
+                            return path.replace(events.getPath(), "/events");
+                        } else {
+                            return path;
+                        }
+                    })
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
+    }
+
+    private static boolean isEventJSONFile(Path path, BasicFileAttributes attr) {
+        return path.toString().contains("/events/") && !attr.isDirectory() &&
+                path.toString().endsWith(".json");
     }
 
     public static void indexEvent(Event event, EventsRepository eventsRepository) {
