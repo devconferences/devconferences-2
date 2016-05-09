@@ -27,8 +27,12 @@ et un seul attribut par ligne), par souci de lisibilité pour tous.
 ## Procédure
 
 Tout d'abord, il est nécessaire de fork le projet, et d'installer les dépendances, ce
-qui vous permettra notamment de tester le jeu de données en local.
-Voir [le README du dépôt](http://www.github.com/devconferences/devconferences-2).
+qui vous permettra notamment de tester le jeu de données en local. Cependant, pensez à
+lancer `mvn clean` entre chaque compilation, sinon les anciens fichiers JSON peuvent
+être utilisé lors de la création du noeud Elastic, et qui peut entraîner des bugs.
+
+Voir [le README du dépôt](http://www.github.com/devconferences/devconferences-2) pour
+les installations nécessaires.
 
 ### Modification d'un Event
 
@@ -43,8 +47,9 @@ convention de nommage !
 
 ### Création du Pull Request
 
-Enfin, créez une Pull Request sur le projet, avec le tag `setevent`. Une petite explication
-est toujours la bienvenue ! Travis vérifiera alors la PR.
+Enfin, créez une Pull Request sur le projet, avec le tag `event modification`. Une petite explication
+est toujours la bienvenue ! Travis vérifiera alors la PR, avant qu'un administrateur ne valide
+ou non la PR.
 
 ## Liste des attributs des fichiers JSON
 
