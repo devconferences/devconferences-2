@@ -41,24 +41,6 @@ public class EventsRepository {
         }
     }
 
-    public void checkEvent(Event event, String path) {
-        if(event.id == null) {
-            throw new RuntimeException("Invalid Event : missed 'id' field");
-        }
-        if(!(event.id + ".json").equals(path.split("/")[3])) {
-            throw new RuntimeException("Invalid Event : filename and 'id' field mismatch");
-        }
-        if(event.type == null) {
-            throw new RuntimeException("Invalid Event : missed 'type' field");
-        }
-        if(event.name == null) {
-            throw new RuntimeException("Invalid Event : missed 'name' field");
-        }
-        if(event.description == null) {
-            throw new RuntimeException("Invalid Event : missed 'description' field");
-        }
-    }
-
     public void indexOrUpdate(Event event) {
         Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).id(event.id).build();
         client.execute(index);

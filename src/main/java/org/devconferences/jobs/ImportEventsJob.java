@@ -42,13 +42,31 @@ public class ImportEventsJob {
         listEvents().forEach(path -> {
             Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path.toString())), Event.class);
             try {
-                eventsRepository.checkEvent(event, path); // This line might throw an exception
+                checkEvent(event, path); // This line might throw an exception
                 event.city = path.split("/")[2]; // <null> / events / <city> / <idEvent>.json
                 indexEvent(event, eventsRepository);
             } catch (RuntimeException e) {
                 throw new RuntimeException(e.getMessage() + " - file path : " + path);
             }
         });
+    }
+
+    public static void checkEvent(Event event, String path) {
+        if(event.id == null) {
+            throw new RuntimeException("Invalid Event : missed 'id' field");
+        }
+        if(!(event.id + ".json").equals(path.split("/")[3])) {
+            throw new RuntimeException("Invalid Event : filename and 'id' field mismatch");
+        }
+        if(event.type == null) {
+            throw new RuntimeException("Invalid Event : missed 'type' field");
+        }
+        if(event.name == null) {
+            throw new RuntimeException("Invalid Event : missed 'name' field");
+        }
+        if(event.description == null) {
+            throw new RuntimeException("Invalid Event : missed 'description' field");
+        }
     }
 
     private static List<String> listEvents() {
