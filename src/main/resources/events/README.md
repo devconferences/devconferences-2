@@ -34,6 +34,18 @@ lancer `mvn clean` entre chaque compilation, sinon les anciens fichiers JSON peu
 Voir [le README du dépôt](http://www.github.com/devconferences/devconferences-2) pour
 les installations nécessaires.
 
+### Vérification du jeu de données
+
+Pour vérifier TOUS les Events, il faut faire une compilation classique, et lancer le
+main de `org.devconferences.Main` avec l'option `-DONLY_CHECK_EVENTS=true`.
+
+Par exemple, en ligne de commande :
+```
+mvn clean package exec:java -DONLY_CHECK_EVENTS=true
+```
+
+Cela lèvera une RuntimeException si un fichier est corrompu.
+
 ### Modification d'un Event
 
 Pour modifier un Event, rien de plus simple : il suffit de modifier le fichiers JSON
