@@ -52,7 +52,7 @@ var Event = React.createClass({
           }
         };
         var renderTags = function (event) {
-            if(event.tags) {
+            if(event.tags.length > 0) {
                 return (
                     <p>
                         <Tags tags={event.tags} />
