@@ -11,7 +11,8 @@ var Search = React.createClass({
 
     getInitialState: function(){
         return {
-            items:  []
+            items:  [],
+            nbrResults: 0
         }
     },
 
@@ -28,7 +29,8 @@ var Search = React.createClass({
 
         DevConferencesClient.searchEvents(searchValue).then(result => {
             this.setState({
-                items: result.data.hits
+                items: result.data.hits,
+                nbrResults: result.data.totalHits
             })
         });
     },
@@ -41,10 +43,14 @@ var Search = React.createClass({
                 </li>
             );
         }.bind(this));
+        var resultsHead = function(nbrResults) {
+            return <div className="container text-center">{nbrResults} résultat(s)</div>;
+        }
         var query = this.props.params.query || "";
         return (
             <div className="search">
                 <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" defaultValue={query}/>
+                {resultsHead(this.state.nbrResults)}
                 <div className="search-result">
                     <ul>
                         {items}
