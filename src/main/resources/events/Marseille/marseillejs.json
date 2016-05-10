@@ -1,0 +1,10 @@
+{
+    "id": "marseillejs",
+    "name": "Marseille JS",
+    "avatar": "http://francejs.org/MarseilleJS/assets/logo.png",
+    "description": "Nous sommes un petit groupe d'utilisateurs de JavaScript de Marseille et ses alentours. Notre objectif est de se rencontrer et d'échanger autour de JavaScript et de son écosystème et de se connecter avec les autres groupes locaux.",
+    "website": "http://francejs.org/MarseilleJS",
+    "twitter": "MarseilleJS",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

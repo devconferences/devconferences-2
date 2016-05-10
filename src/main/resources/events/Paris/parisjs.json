@@ -1,0 +1,10 @@
+{
+    "id": "parisjs",
+    "name": "Paris.js",
+    "avatar": "http://parisjs.org/images/logo.png",
+    "description": "Evénements pour les développeurs Javascript à Paris.",
+    "website": "http://parisjs.org",
+    "twitter": "parisjs",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

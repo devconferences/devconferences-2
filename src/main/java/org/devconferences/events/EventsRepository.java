@@ -138,10 +138,10 @@ public class EventsRepository {
     private void addEventToCityObject(City city, Event event) {
         switch (event.type) {
             case COMMUNITY:
-                city.conferences.add(event);
+                city.communities.add(event);
                 break;
             case CONFERENCE:
-                city.communities.add(event);
+                city.conferences.add(event);
                 break;
             default:
                 throw new IllegalStateException("Unknown type : " + event.type);

@@ -1,0 +1,10 @@
+{
+    "id": "alpesjug",
+    "name": "Alpes JUG",
+    "avatar": "http://www.alpesjug.fr/wp-content/images/alpesjug-logo.png",
+    "description": "Le Java User Group des Alpes ! Alpes Jug est un groupe d’utilisateurs Java de la région grenobloise ayant pour but de réunir les acteurs du langage (professionnels, communautés open source, institutions, étudiants, enseignants…) afin d’échanger des idées et discuter des avancées technologiques de la plateforme Java. Nous nous rencontrons au moins une fois par mois. Les réunions sont gratuites, ouvertes à tous et consistent en une présentation technique, une démonstration d’un produit, une table ronde, une séance de travaux pratiques, ou toute autre formule à inventer ! Après la réunion nous nous retrouvons pour un échange informel autour d’un verre.",
+    "website": "http://www.alpesjug.org",
+    "twitter": "alpesjug",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

@@ -5,6 +5,7 @@ import net.codestory.http.injection.GuiceAdapter;
 import net.codestory.http.templating.ModelAndView;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.events.EventsEndPoint;
+import org.devconferences.jobs.ImportEventsJob;
 import org.devconferences.meetup.MeetupEndPoint;
 import org.devconferences.security.Authentication;
 import org.devconferences.security.SecurityFilter;
@@ -14,11 +15,37 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     public static final int PORT = 8080;
+    // All options with '-D'
+    public static final String PROD_MODE = "PROD_MODE";
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
+    public static final String CREATE_INDEX = "CREATE_INDEX";
+    public static final String REMAPPING_EVENTS = "REMAPPING_EVENTS";
+    public static final String CHECK_EVENTS = "CHECK_EVENTS";
+    public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
+        boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
+        boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
+        boolean onlycheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
+        // Vérification des Events dans le dossier ressource "/events/"
+        if(prodMode || checkEvents || onlycheckEvents) {
+            LOGGER.info("Checking all Events...");
+            try {
+                ImportEventsJob.checkAllEvents(); // This might throw an RuntimeException
+            } catch(RuntimeException e) {
+                LOGGER.error(e.getMessage());
+
+                throw e;
+            }
+            LOGGER.info("All Events are good !");
+
+            if(onlycheckEvents) {
+                return;
+            }
+        }
+
         WebServer webServer = new WebServer();
 
         webServer.configure(routes -> {
@@ -34,11 +61,17 @@ public class Main {
         );
         webServer.start(PORT);
 
-        boolean prodMode = Boolean.parseBoolean(System.getProperty("PROD_MODE", "false"));
-        boolean skipDevNode= Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
-        if(!prodMode && !skipDevNode){
-            LOGGER.info("-D"+ SKIP_CREATE_ES_DEV_NODE +"=true To skip ES dev node creation");
+        boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
+        boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
+        boolean remapping = Boolean.parseBoolean(System.getProperty(REMAPPING_EVENTS, "false"));
+        if (!prodMode && !skipDevNode) {
+            LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
+        } else if(createIndex) {
+            ImportEventsJob.createIndex();
+        } else if(prodMode || remapping) {
+            LOGGER.info("Remapping events...");
+            ImportEventsJob.reMappingEvents();
         }
     }
 

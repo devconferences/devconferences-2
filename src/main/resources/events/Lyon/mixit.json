@@ -1,0 +1,10 @@
+{
+    "id": "mixit",
+    "name": "Mix-IT",
+    "avatar": "http://www.mix-it.fr/public/images/logo-mixit.png",
+    "description": "Mix-IT est l’aboutissement de la collaboration entre le Lyon Java User Group et le Club Agile Rhône-Alpes (première édition en 2011). Mix-it est né d’une envie commune de créer une conférence à Lyon accessible à tous, sur l’agilité, l'écosystème Java et les innovations IT, Web ou mobile. Le staff de Mix-it vous accueille pour des sessions d’expertise, des jeux et des rencontres. Entrepreneurs, Chefs de Projet, développeurs vous trouverez forcément des idées pour vos projets ! Les conférences peuvent être aussi bien en français qu'en anglais.",
+    "website": "http://www.mix-it.fr",
+    "twitter": "mixIT_lyon",
+    "facebook": null,
+    "type": "CONFERENCE"
+}

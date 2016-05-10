@@ -1,0 +1,10 @@
+{
+    "id": "kiwiparty",
+    "name": "Kiwi Party",
+    "avatar": "http://kiwiparty.fr/xmedia/kiwiparty/2014/logo.png",
+    "description": "La KiwiParty est un événement gratuit organisé par Alsacréations réunissant conférences et ateliers, autour des thèmes de la conception web et de ses bonnes pratiques : accessibilité, ergonomie, nouveautés technologiques, conformité aux standards.",
+    "website": "http://kiwiparty.fr",
+    "twitter": null,
+    "facebook": null,
+    "type": "CONFERENCE"
+}

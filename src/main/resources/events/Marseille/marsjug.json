@@ -1,0 +1,10 @@
+{
+    "id": "marsjug",
+    "name": "Marseille JUG",
+    "avatar": "http://marsjug.org/images/logo.png",
+    "description": "Le Mars JUG réunit régulièrement la communauté Java de Marseille et de sa région autour d'intervenants qui viennent parler de la plateforme Java et de son écosystème.",
+    "website": "http://www.marsjug.org",
+    "twitter": "marsjug",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

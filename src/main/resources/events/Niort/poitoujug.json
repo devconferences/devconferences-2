@@ -1,0 +1,10 @@
+{
+    "id": "poitoujug",
+    "name": "Poitou-Charentes JUG",
+    "avatar": "http://www.poitoucharentesjug.org/xwiki/bin/download/Main/media/poitoucharentesjug800wf.png",
+    "description": "Le Poitou-Charentes Java User Group permet aux acteurs et utilisateurs du langage Java de la région Poitou-Charentes (professionnels, communautés open source,universitaires, étudiants) de se rencontrer et d'échanger autour des technologies Java. Chaque mois, une conférence est organisée autour de thèmes \"terrain\" ou \"veille\", avec des intervenants d'horizons divers : acteurs des communautés Open Source, éditeurs, entreprises utilisatrices, experts indépendants... Ces évènements donnent lieu à des échanges riches entre utilisateurs des technologies et acteurs de l'évolution de la plate-forme Java. Les réunions sont ouvertes, gratuites et suivies d'un buffet qui permet de prolonger les discussions de façon informelle et conviviale.",
+    "website": "http://www.poitoucharentesjug.org",
+    "twitter": "poitoujug",
+    "facebook": null,
+    "type": "COMMUNITY"
+}

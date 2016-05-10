@@ -1,8 +1,7 @@
 package org.devconferences.elastic;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.devconferences.jobs.ImportCitiesJob;
+import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.UUID;
 
 /**
@@ -46,7 +44,7 @@ public class DeveloppementESNode {
                 .build();
         node.start();
 
-        ImportCitiesJob.runJob();
+        ImportEventsJob.createIndex();
     }
 
 }
