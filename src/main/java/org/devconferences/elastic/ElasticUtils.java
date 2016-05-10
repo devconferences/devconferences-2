@@ -5,6 +5,7 @@ import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.IndicesExists;
+import io.searchbox.indices.mapping.DeleteMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
@@ -61,6 +62,16 @@ public final class ElasticUtils {
         }
     }
 
+    private static void deleteMapping(String type) {
+        try (RuntimeJestClient client = createClient();) {
+            DeleteMapping deleteMap = new DeleteMapping.Builder(DEV_CONFERENCES_INDEX, type).build();
+            JestResult deleteMapResult = client.execute(deleteMap);
+            if(!deleteMapResult.isSucceeded()) {
+                throw new IllegalStateException("Flush data failed : " + deleteMapResult.getJsonString());
+            }
+        }
+    }
+
     private static void createMapping(String type, String mappingFilePath) {
         try (RuntimeJestClient client = createClient();) {
             String mappingFile;
@@ -73,6 +84,17 @@ public final class ElasticUtils {
             PutMapping putMapping = new PutMapping.Builder(DEV_CONFERENCES_INDEX, type, mappingFile).build();
             client.execute(putMapping);
         }
+    }
+
+    public static void flushData() {
+        LOGGER.info("Flush data...");
+        // Need to delete Mapping then re-create it...
+        try {
+            deleteMapping(EventsRepository.EVENTS_TYPE);
+        } catch(IllegalStateException e) {
+            LOGGER.warn("Mapping '" + EventsRepository.EVENTS_TYPE + "' doesn't exist !");
+        }
+        createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
     }
 
 }

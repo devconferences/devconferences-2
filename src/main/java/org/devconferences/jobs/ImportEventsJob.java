@@ -1,9 +1,7 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
-import io.searchbox.core.Index;
 import org.devconferences.elastic.ElasticUtils;
-import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.slf4j.Logger;
@@ -14,20 +12,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.devconferences.events.Event.Type.COMMUNITY;
-import static org.devconferences.events.Event.Type.CONFERENCE;
-
 
 public class ImportEventsJob {
 
@@ -36,15 +27,25 @@ public class ImportEventsJob {
     public static final String EVENTS_TYPE = "events";
 
     public static void main(String[] args) {
-        runJob();
+        createIndex();
     }
 
-    public static void runJob() {
-        EventsRepository eventsRepository = new EventsRepository();
-        final int[] totalEvents = {0}; // For logging...
-
+    public static void createIndex() {
         ElasticUtils.createIndexIfNotExists();
 
+        importEvents();
+    }
+
+    public static void reMappingEvents() {
+        ElasticUtils.flushData();
+
+        importEvents();
+    }
+
+    private static void importEvents() {
+        EventsRepository eventsRepository = new EventsRepository();
+
+        final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import events...");
         listEvents().forEach(path -> {
             Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
