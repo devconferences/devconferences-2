@@ -1,7 +1,6 @@
 {
     "id": "nantesml",
     "name": "Nantes Machine Learning Meetup",
-    "avatar": "/img/no_logo.png",
     "description": "Nous sommes développeurs et chercheurs avec un intérêt dans l'apprentissage automatique. Nous nous retrouverons pour discuter concrètement nos projets dans l'apprentissage automatique, réseau de neurones artificiels, modèles graphiques probabilistes, et traitement automatique du langage naturel. Nous pourrions également, pour ceux que s'y intéressent, former des groupes pour suivre des MOOC ML (Stanford et Toronto, par exemple).",
     "website": null,
     "twitter": null,

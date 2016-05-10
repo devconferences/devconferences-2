@@ -50,7 +50,13 @@ public class ImportEventsJob {
             Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
             try {
                 checkEvent(event, path); // This line might throw an exception
+
+                // Default avatar
+                if(event.avatar == null) {
+                    event.avatar = "/img/no_logo.png";
+                }
                 event.city = path.split("/")[2]; // <null> / events / <city> / <idEvent>.json
+
                 indexEvent(event, eventsRepository);
                 totalEvents[0]++;
             } catch (RuntimeException e) {
