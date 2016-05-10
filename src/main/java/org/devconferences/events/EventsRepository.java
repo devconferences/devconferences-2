@@ -155,7 +155,7 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
-    public List<Event> search(String query) {
+    public EventSearch search(String query) {
         String matchAllQueryPart1 = "" +
                 "{";
         String matchAllQueryPart2 = "" +
@@ -183,9 +183,17 @@ public class EventsRepository {
 
         SearchResult searchResult = client.execute(search);
 
-        return StreamSupport.stream(
+        EventSearch res = new EventSearch();
+
+        res.totalHits = String.valueOf(countResult.getCount().intValue());
+        res.currPage = "1";
+        res.totalPage = "1";
+        res.hitsAPage = res.totalHits;
+        res.hits = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+
+        return res;
 
 
     }

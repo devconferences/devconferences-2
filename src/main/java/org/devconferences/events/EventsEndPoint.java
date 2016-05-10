@@ -38,7 +38,7 @@ public class EventsEndPoint {
 
     @Get("events/search?q=:query")
     @AllowOrigin("*")
-    public List<Event> eventsSearch(String query) {
+    public EventSearch eventsSearch(String query) {
         return eventsRepository.search(query);
     }
 

@@ -26,7 +26,11 @@ var Search = React.createClass({
     changeInput: function (e) {
         var searchValue = this.refs.searchInput.getDOMNode().value;
 
-        DevConferencesClient.searchEvents(searchValue).then(items => this.setState({items: items.data}));
+        DevConferencesClient.searchEvents(searchValue).then(result => {
+            this.setState({
+                items: result.data.hits
+            })
+        });
     },
 
     render: function () {
