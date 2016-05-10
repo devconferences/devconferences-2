@@ -26,9 +26,11 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
+        boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
         boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
         boolean onlycheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
-        if(checkEvents || onlycheckEvents) {
+        // Vérification des Events dans le dossier ressource "/events/"
+        if(prodMode || checkEvents || onlycheckEvents) {
             LOGGER.info("Checking all Events...");
             try {
                 ImportEventsJob.checkAllEvents(); // This might throw an RuntimeException
@@ -59,7 +61,6 @@ public class Main {
         );
         webServer.start(PORT);
 
-        boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
         boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
         boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
         boolean remapping = Boolean.parseBoolean(System.getProperty(REMAPPING_EVENTS, "false"));
@@ -68,7 +69,7 @@ public class Main {
             DeveloppementESNode.createDevNode();
         } else if(createIndex) {
             ImportEventsJob.createIndex();
-        } else if(remapping) {
+        } else if(prodMode || remapping) {
             LOGGER.info("Remapping events...");
             ImportEventsJob.reMappingEvents();
         }
