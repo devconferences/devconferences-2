@@ -20,13 +20,15 @@ public class Main {
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
     public static final String CREATE_INDEX = "CREATE_INDEX";
     public static final String REMAPPING_EVENTS = "REMAPPING_EVENTS";
+    public static final String CHECK_EVENTS = "CHECK_EVENTS";
     public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        boolean checkEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
-        if(checkEvents) {
+        boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
+        boolean onlycheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
+        if(checkEvents || onlycheckEvents) {
             LOGGER.info("Checking all Events...");
             try {
                 ImportEventsJob.checkAllEvents(); // This might throw an RuntimeException
@@ -36,36 +38,39 @@ public class Main {
                 throw e;
             }
             LOGGER.info("All Events are good !");
-        } else {
 
-            WebServer webServer = new WebServer();
-
-            webServer.configure(routes -> {
-                        routes.setIocAdapter(new GuiceAdapter());
-                        routes.filter(SecurityFilter.class);
-                        routes.add(Authentication.class);
-                        routes.add(EventsEndPoint.class);
-                        routes.add(MeetupEndPoint.class);
-                        routes.get("/ping", (context) -> "pong");
-                        routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
-                        routes.get("/search", (context) -> ModelAndView.of("index"));
-                    }
-            );
-            webServer.start(PORT);
-
-            boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
-            boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
-            boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
-            boolean remapping = Boolean.parseBoolean(System.getProperty(REMAPPING_EVENTS, "false"));
-            if (!prodMode && !skipDevNode) {
-                LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
-                DeveloppementESNode.createDevNode();
-            } else if(createIndex) {
-                ImportEventsJob.createIndex();
-            } else if(remapping) {
-                LOGGER.info("Remapping events...");
-                ImportEventsJob.reMappingEvents();
+            if(onlycheckEvents) {
+                return;
             }
+        }
+
+        WebServer webServer = new WebServer();
+
+        webServer.configure(routes -> {
+                    routes.setIocAdapter(new GuiceAdapter());
+                    routes.filter(SecurityFilter.class);
+                    routes.add(Authentication.class);
+                    routes.add(EventsEndPoint.class);
+                    routes.add(MeetupEndPoint.class);
+                    routes.get("/ping", (context) -> "pong");
+                    routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
+                    routes.get("/search", (context) -> ModelAndView.of("index"));
+                }
+        );
+        webServer.start(PORT);
+
+        boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
+        boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
+        boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
+        boolean remapping = Boolean.parseBoolean(System.getProperty(REMAPPING_EVENTS, "false"));
+        if (!prodMode && !skipDevNode) {
+            LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
+            DeveloppementESNode.createDevNode();
+        } else if(createIndex) {
+            ImportEventsJob.createIndex();
+        } else if(remapping) {
+            LOGGER.info("Remapping events...");
+            ImportEventsJob.reMappingEvents();
         }
     }
 
