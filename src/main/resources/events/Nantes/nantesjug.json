@@ -6,5 +6,9 @@
     "website": "http://www.nantesjug.org",
     "twitter": "nantesjug",
     "facebook": null,
+    "tags": [
+        "java",
+        "jug"
+    ],
     "type": "COMMUNITY"
 }
