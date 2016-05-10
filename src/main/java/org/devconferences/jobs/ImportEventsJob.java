@@ -6,6 +6,8 @@ import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import static org.devconferences.events.Event.Type.CONFERENCE;
 
 public class ImportEventsJob {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportEventsJob.class);
     // TODO, le temps de ...
     public static final String EVENTS_TYPE = "events";
 
@@ -38,19 +41,23 @@ public class ImportEventsJob {
 
     public static void runJob() {
         EventsRepository eventsRepository = new EventsRepository();
+        final int[] totalEvents = {0}; // For logging...
 
         ElasticUtils.createIndexIfNotExists();
 
+        LOGGER.info("Import events...");
         listEvents().forEach(path -> {
             Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
             try {
                 checkEvent(event, path); // This line might throw an exception
                 event.city = path.split("/")[2]; // <null> / events / <city> / <idEvent>.json
                 indexEvent(event, eventsRepository);
+                totalEvents[0]++;
             } catch (RuntimeException e) {
                 throw new RuntimeException(e.getMessage() + " - file path : " + path);
             }
         });
+        LOGGER.info(totalEvents[0] + " events imported !");
     }
 
     public static void checkAllEvents() {
@@ -121,7 +128,7 @@ public class ImportEventsJob {
             e.printStackTrace();
         }
 
-        return new ArrayList<>();
+        return new ArrayList<>(); // Avoid NullPointerException
     }
 
     private static boolean isEventJSONFile(Path path, BasicFileAttributes attr) {
@@ -130,9 +137,6 @@ public class ImportEventsJob {
     }
 
     public static void indexEvent(Event event, EventsRepository eventsRepository) {
-        Index index = new Index.Builder(event).index(ElasticUtils.DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).id(event.id).build();
-        try (RuntimeJestClient client = ElasticUtils.createClient();) {
-            client.execute(index);
-        }
+        eventsRepository.indexOrUpdate(event);
     }
 }
