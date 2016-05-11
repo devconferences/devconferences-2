@@ -36,10 +36,10 @@ public class EventsEndPoint {
         return eventsRepository.getCity(id);
     }
 
-    @Get("events/search?q=:query")
+    @Get("search/events?q=:query&p=:page")
     @AllowOrigin("*")
-    public EventSearch eventsSearch(String query) {
-        return eventsRepository.search(query);
+    public EventSearch eventsSearch(String query, String page) {
+        return eventsRepository.search(query, page);
     }
 
     @Get("events/:id")

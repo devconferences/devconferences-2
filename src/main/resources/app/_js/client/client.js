@@ -23,8 +23,8 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities/${id}`).catch(errorCallback));
     }
 
-    function searchEvents(q) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/events/search?q=${q}`).catch(errorCallback));
+    function searchEvents(q,p) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&p=${p}`).catch(errorCallback));
     }
 
     function event(id) {

@@ -26,8 +26,14 @@ var Search = React.createClass({
 
     changeInput: function (e) {
         var searchValue = this.refs.searchInput.getDOMNode().value;
+        var query = this.props.params.query || "";
+        var page = 1;
 
-        DevConferencesClient.searchEvents(searchValue).then(result => {
+        if(query != "" && searchValue == query) {
+            page = this.props.params.page || 1;
+        }
+
+        DevConferencesClient.searchEvents(searchValue, page).then(result => {
             this.setState({
                 items: result.data.hits,
                 nbrResults: result.data.totalHits

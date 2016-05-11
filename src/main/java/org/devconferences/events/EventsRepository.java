@@ -155,7 +155,7 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
-    public EventSearch search(String query) {
+    public EventSearch search(String query, String page) {
         String matchAllQueryPart1 = "" +
                 "{";
         String matchAllQueryPart2 = "" +
@@ -165,6 +165,7 @@ public class EventsRepository {
                 "       }" +
                 "   }" +
                 "}";
+        int pageInt = Integer.decode(page);
 
         Count count = new Count.Builder()
                 .query(matchAllQueryPart1 + matchAllQueryPart2)
@@ -175,7 +176,8 @@ public class EventsRepository {
         CountResult countResult = client.execute(count);
 
         Search search = new Search.Builder(matchAllQueryPart1 +
-                    "   \"size\": " + countResult.getCount().intValue() + "," +
+                    "   \"size\": 10," +
+                    "   \"from\": " + ((pageInt - 1) * 10) + "," +
                     matchAllQueryPart2)
                 .addIndex(DEV_CONFERENCES_INDEX)
                 .addType(EVENTS_TYPE)
@@ -185,10 +187,15 @@ public class EventsRepository {
 
         EventSearch res = new EventSearch();
 
+
         res.totalHits = String.valueOf(countResult.getCount().intValue());
-        res.currPage = "1";
-        res.totalPage = "1";
-        res.hitsAPage = res.totalHits;
+        res.query = query;
+        res.currPage = String.valueOf(page);
+
+        int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / 10.0f);
+
+        res.totalPage = String.valueOf(totalPages);
+        res.hitsAPage = "10";
         res.hits = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList());

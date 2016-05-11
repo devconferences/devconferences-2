@@ -44,7 +44,7 @@ public class EventsRepositoryTest extends ElasticsearchIntegrationTest {
         eventsRepository.createEvent(event);
         refresh();
 
-        List<Event> matches = eventsRepository.search("awesome").hits;
+        List<Event> matches = eventsRepository.search("awesome", "1").hits;
         Assertions.assertThat(matches).hasSize(1);
     }
 
