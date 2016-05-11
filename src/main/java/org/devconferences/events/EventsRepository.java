@@ -155,6 +155,7 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
+    // If page = "0", return ALL matches events
     public EventSearch search(String query, String page) {
         String matchAllQueryPart1 = "" +
                 "{";
@@ -166,6 +167,7 @@ public class EventsRepository {
                 "   }" +
                 "}";
         int pageInt = Integer.decode(page);
+        int size = 10;
 
         Count count = new Count.Builder()
                 .query(matchAllQueryPart1 + matchAllQueryPart2)
@@ -175,10 +177,21 @@ public class EventsRepository {
 
         CountResult countResult = client.execute(count);
 
-        Search search = new Search.Builder(matchAllQueryPart1 +
-                    "   \"size\": 10," +
+        String querySearch;
+        if(pageInt == 0) {
+            querySearch = matchAllQueryPart1 +
+                    "   \"size\": " + countResult.getCount().intValue() + "," +
+                    matchAllQueryPart2;
+        } else if (pageInt > 0) {
+            querySearch = matchAllQueryPart1 +
+                    "   \"size\": " + size + "," +
                     "   \"from\": " + ((pageInt - 1) * 10) + "," +
-                    matchAllQueryPart2)
+                    matchAllQueryPart2;
+        } else {
+            throw new RuntimeException("Can't search events with a negative page");
+        }
+
+        Search search = new Search.Builder(querySearch)
                 .addIndex(DEV_CONFERENCES_INDEX)
                 .addType(EVENTS_TYPE)
                 .build();
@@ -192,10 +205,15 @@ public class EventsRepository {
         res.query = query;
         res.currPage = String.valueOf(page);
 
-        int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / 10.0f);
+        int totalPages;
+        if(pageInt > 0) {
+            totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / 10.0f);
+        } else {
+            totalPages = 0;
+        }
 
         res.totalPage = String.valueOf(totalPages);
-        res.hitsAPage = "10";
+        res.hitsAPage = (pageInt > 0 ? "10" : String.valueOf(res.totalHits));
         res.hits = StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList());
