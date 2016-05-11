@@ -14,10 +14,17 @@ public class Event {
     public String twitter;
     public String facebook;
     public String meetup;
+    public Youtube youtube;
+    public String parlays;
     public String city;
     public List<String> tags = new ArrayList<>();
     public Type type;
     public GeoPoint location;
+
+    public class Youtube {
+        public String channel;
+        public String name;
+    }
 
 
     public enum Type{

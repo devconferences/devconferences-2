@@ -5,6 +5,7 @@ var WebsiteLink = require('./social/website-link');
 var TwitterLink = require('./social/twitter-link');
 var FacebookLink = require('./social/facebook-link');
 var MeetupLink = require('./social/meetup-link');
+var YoutubeLink = require('./social/youtube-link');
 var Tags = require('./tags');
 
 var Grid = ReactBootstrap.Grid;
@@ -60,6 +61,15 @@ var Event = React.createClass({
                 );
             }
         };
+        var renderYoutube = function (event) {
+                    if(event.youtube) {
+                        return (
+                            <p>
+                                <YoutubeLink youtube={event.youtube} />
+                            </p>
+                        );
+                    }
+                };
         var event = this.props.event;
         return (
             <div>
@@ -82,6 +92,7 @@ var Event = React.createClass({
                             { renderFacebook(event) }
                             { renderMeetup(event) }
                             { renderTags(event) }
+                            { renderYoutube(event) }
                         </Col>
                     </Row>
                 </Grid>

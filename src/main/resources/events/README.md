@@ -128,6 +128,22 @@ Le compte Meetup de l'Event.
 Si cet attribut est ajouté, DevConferences affichera alors le prochain événement
 du compte.
 
+#### `youtube`
+
+Objet représentant une chaîne Youtube.
+
+Cet attribut contient 2 propriétés :
+
+##### `channel`
+
+L'identifiant de la chaîne.
+
+C'est ce qu'il se trouve après `https://www.youtube.com/channel/`.
+
+##### `name`
+
+Le nom que le lien vers la chaîne portera.
+
 #### `tags`
 
 Les différents tags de l'Event.

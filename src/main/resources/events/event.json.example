@@ -11,6 +11,10 @@
     "twitter": "EventExemple",
     "facebook": "EventExemple", // ou "groups/123456789012"
     "meetup": "Meetup-EventEemple",
+    "youtube": {
+        "channel": "sgmk11g4g368746465qs",
+        "name": "Une Chaine Test"
+    }
     "type": "COMMUNITY", // ou "CONFERENCE"
     "tags": [
         "Tag1",

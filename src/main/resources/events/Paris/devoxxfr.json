@@ -6,5 +6,9 @@
     "website": "http://www.devoxx.fr",
     "twitter": "DevoxxFR",
     "facebook": null,
-    "type": "CONFERENCE"
+    "type": "CONFERENCE",
+    "youtube": {
+        "channel": "UCsVPQfo5RZErDL41LoWvk0A",
+        "name": "Devoxx FR 2016"
+    }
 }
