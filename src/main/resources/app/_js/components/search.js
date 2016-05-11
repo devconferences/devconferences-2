@@ -5,19 +5,24 @@ var $ = require('jquery');
 var Event = require('./event');
 var DevConferencesClient = require('../client/client');
 
+var Link = Router.Link;
+
 var Search = React.createClass({
 
     mixins: [Router.Navigation],
 
     getInitialState: function(){
         return {
-            items:  [],
-            nbrResults: 0
+            lastSearch: null
         }
     },
 
     componentDidMount: function() {
         this.changeInput(null);
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        this.research(newProps.params.query, newProps.params.page);
     },
 
     selectEvent: function (e) {
@@ -33,33 +38,76 @@ var Search = React.createClass({
             page = this.props.params.page || 1;
         }
 
-        DevConferencesClient.searchEvents(searchValue, page).then(result => {
+        this.research(searchValue, page);
+    },
+
+    research: function(query, page) {
+        DevConferencesClient.searchEvents(query, page).then(result => {
             this.setState({
-                items: result.data.hits,
-                nbrResults: result.data.totalHits
+                lastSearch: result.data
             })
         });
     },
 
     render: function () {
-        var items = this.state.items.map(function (event) {
+        var items = function(lastSearch) {
+            var list = [];
+            if(lastSearch) {
+                list = lastSearch.hits;
+            }
             return (
-                <li>
-                    <Event event={event} />
-                </li>
+                list.map(function (event) {
+                    return (
+                        <li>
+                            <Event event={event} />
+                        </li>
+                    );
+                }.bind(this))
+            )
+        };
+        var resultsHead = function(lastSearch) {
+            var nbrResults = 0;
+            var totalPage = 0;
+            var currPage = 1;
+            var query = "";
+            if(lastSearch) {
+                nbrResults = lastSearch.totalHits;
+                totalPage = lastSearch.totalPage;
+                currPage = lastSearch.currPage;
+                query = lastSearch.query;
+            }
+            var pageLinks = function() {
+                var linkList = [];
+                for(var i = 1; i <= totalPage; i++) {
+                    var linkURL = "/search/" + query + "/" + i;
+                    if(i == currPage) {
+                        linkList.push(<span> {i} </span>);
+                    } else {
+                        linkList.push(<span> <Link to={linkURL}>{i}</Link> </span>);
+                    }
+                }
+                return (
+                    <div>
+                        {linkList}
+                    </div>
+                );
+            }.bind(this);
+
+            return (
+                <div className="container text-center">
+                    {nbrResults} résultat(s)
+                    {pageLinks()}
+                </div>
             );
-        }.bind(this));
-        var resultsHead = function(nbrResults) {
-            return <div className="container text-center">{nbrResults} résultat(s)</div>;
-        }
+        }.bind(this);
         var query = this.props.params.query || "";
         return (
             <div className="search">
                 <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" defaultValue={query}/>
-                {resultsHead(this.state.nbrResults)}
-                <div className="search-result">
+                {resultsHead(this.state.lastSearch)}
+                    <div className="search-result">
                     <ul>
-                        {items}
+                        {items(this.state.lastSearch)}
                     </ul>
                 </div>
             </div>
