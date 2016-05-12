@@ -81,14 +81,16 @@ var Search = React.createClass({
                 for(var i = 1; i <= totalPage; i++) {
                     var linkURL = "/search/" + query + "/" + i;
                     if(i == currPage) {
-                        linkList.push(<span> {i} </span>);
+                        linkList.push(<li className="active"><Link to={linkURL}>{i}</Link></li>);
                     } else {
-                        linkList.push(<span> <Link to={linkURL}>{i}</Link> </span>);
+                        linkList.push(<li><Link to={linkURL}>{i}</Link></li>);
                     }
                 }
                 return (
                     <div>
-                        {linkList}
+                        <ul className="pagination">
+                            {linkList}
+                        </ul>
                     </div>
                 );
             }.bind(this);
