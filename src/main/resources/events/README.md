@@ -60,8 +60,7 @@ convention de nommage !
 ### Création du Pull Request
 
 Enfin, créez une Pull Request sur le projet, avec le tag `event modification`. Une petite explication
-est toujours la bienvenue ! Travis vérifiera alors la PR, avant qu'un administrateur ne valide
-ou non la PR.
+est toujours la bienvenue !
 
 ## Liste des attributs des fichiers JSON
 
@@ -143,6 +142,12 @@ C'est ce qu'il se trouve après `https://www.youtube.com/channel/`.
 ##### `name`
 
 Le nom que le lien vers la chaîne portera.
+
+#### `parleys`
+
+L'identifiant de la chaîne Parleys.
+
+C'est ce qu'il se trouve après `https://www.parleys.com/channel/`.
 
 #### `tags`
 

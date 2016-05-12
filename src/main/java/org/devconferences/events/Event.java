@@ -15,7 +15,7 @@ public class Event {
     public String facebook;
     public String meetup;
     public Youtube youtube;
-    public String parlays;
+    public String parleys;
     public String city;
     public List<String> tags = new ArrayList<>();
     public Type type;
