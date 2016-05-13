@@ -41,8 +41,13 @@ public class ImportEventsJob {
 
         importEvents();
 
+        // Import CalendarEvents for test
         EventsRepository er = new EventsRepository();
         CalendarEvent ce = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream("/calendar/testEvent.json")), CalendarEvent.class);
+        er.indexOrUpdate(ce);
+        ce = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream("/calendar/testEvent2.json")), CalendarEvent.class);
+        er.indexOrUpdate(ce);
+        ce = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream("/calendar/testEvent3.json")), CalendarEvent.class);
         er.indexOrUpdate(ce);
     }
 

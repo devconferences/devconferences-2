@@ -7,6 +7,7 @@ import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import io.searchbox.core.search.sort.Sort;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -207,7 +208,10 @@ public class EventsRepository {
     public List<CalendarEvent> getCalendarEvents() {
         String query = "" +
                 "{" +
-                "  \"size\" : " + Integer.MAX_VALUE +
+                "  \"size\" : " + Integer.MAX_VALUE + "," +
+                "  \"sort\" : [" +
+                "    {\"date\" : \"asc\"}" +
+                "  ]" +
                 "}";
 
         SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, query);
