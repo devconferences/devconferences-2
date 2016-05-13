@@ -4,6 +4,7 @@ var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 
 var CityLinkList = require('./city-link-list');
+var TimelineEventList = require('./timeline-event-list');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
 var DevConferencesClient = require('../client/client');
@@ -67,6 +68,14 @@ var Home = React.createClass({
                         </Col>
                     </Row>
                 </Grid>
+
+                <div className="text-center">
+                    <h2>Prochains événements</h2>
+                    <p>
+                        Les prochains événements sont ici.
+                    </p>
+                    <TimelineEventList />
+                </div>
 
             </div>
         )
