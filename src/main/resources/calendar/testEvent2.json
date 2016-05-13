@@ -1,7 +1,7 @@
 {
     "id": "kejfnvslvngb",
     "name": "Devoxx France 2016",
-    "date": "1461132000000",
+    "date": 1461132000000,
     "url": "http://www.devoxx.fr/",
     "description": "Devoxx France est une conférence en 2 temps forts, sur 3 jours. La première journée, appelée \"University\", vous permet d'assister à des présentations longues et de participer à des ateliers. Par exemple une session sur Docker, puis un atelier sur Angular 2, et enfin des présentations d'outils en fin de journée.",
     "organizerName": "Devoxx France",
