@@ -53,6 +53,10 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/auth/connected-user`).catch(errorCallback));
     }
 
+    function meetupInfo(meetupName) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/meetup/${meetupName}`).catch(errorCallback));
+    }
+
     return {
         useDevUrl() {
             return createClient(DEV_URL);
@@ -67,7 +71,8 @@ function createClient(u) {
         creationEvent,
         updateEvent,
         deleteEvent,
-        connectedUser
+        connectedUser,
+        meetupInfo
     };
 }
 

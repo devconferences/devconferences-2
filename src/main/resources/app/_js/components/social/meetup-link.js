@@ -3,6 +3,8 @@ var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
 var moment = require('moment');
 
+var DevConferencesClient = require('../../client/client');
+
 var Glyphicon = ReactBootstrap.Glyphicon;
 var Label = ReactBootstrap.Label;
 
@@ -15,37 +17,37 @@ var MeetupLink = React.createClass({
   },
 
   componentDidMount: function () {
-    var url = '/api/v2/meetup/' + this.props.id;
-    $.ajax({
-      url: url,
-      dataType: 'json',
-      cache: false,
-      success: function (data) {
-        this.setState({meetup: data});
-      }.bind(this),
-      error: function (xhr, status, err) {
-        // Redirect to homepage
-        console.error(url, status, err.toString());
-        this.transitionTo('/');
-      }.bind(this)
-    });
+    DevConferencesClient.meetupInfo(this.props.id).then(meetup => this.setState({ meetup: meetup.data }));
   },
 
   render: function () {
-    if (this.state.meetup && this.state.meetup.nextEvent) {
-      var nextEvent = this.state.meetup.nextEvent;
-      var date = new Date(nextEvent.time);
-      var formattedDate = moment(date).format("DD/MM/YYYY HH:mm");
-      return (
-        <div>
-          <p className="fa fa-users">
-            <a href={this.state.meetup.url}> {this.state.meetup.url}</a>
-          </p>
-          <p>
-            <Label bsStyle='danger'>Next event:</Label> <a target="_blank" href={nextEvent.url}>{nextEvent.name} ({formattedDate})</a>
-          </p>
-        </div>
-      )
+    if (this.state.meetup) {
+      if(this.state.meetup.nextEvent) {
+        var nextEvent = this.state.meetup.nextEvent;
+        var date = new Date(nextEvent.time);
+        var formattedDate = moment(date).format("DD/MM/YYYY HH:mm");
+        return (
+          <div>
+            <p className="fa fa-users">
+              <a href={this.state.meetup.url}> {this.state.meetup.url}</a>
+            </p>
+            <p>
+              <Label bsStyle='danger'>Next event:</Label> <a target="_blank" href={nextEvent.url}>{nextEvent.name} ({formattedDate})</a>
+            </p>
+          </div>
+        )
+      } else {
+        return (
+          <div>
+            <p className="fa fa-users">
+              <a href={this.state.meetup.url}> {this.state.meetup.url}</a>
+            </p>
+            <p>
+              Aucun événement à venir.
+            </p>
+          </div>
+        )
+      }
     } else {
       // TODO loading icon ?
       return (
