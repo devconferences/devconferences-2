@@ -1,0 +1,29 @@
+{
+  "calendarevents": {
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "url": {
+        "type": "string",
+        "index": "not_analyzed"
+      },
+      "description": {
+        "type": "string"
+      },
+      "date": {
+        "type": "string"
+      },
+      "organizerName": {
+        "type": "string"
+      },
+      "organizerUrl": {
+        "type": "string",
+        "index": "not_analyzed"
+      }
+    }
+  }
+}

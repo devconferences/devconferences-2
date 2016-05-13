@@ -70,6 +70,12 @@ public class EventsEndPoint {
         eventsRepository.deleteEvent(eventId);
     }
 
+    @Get("calendar")
+    @AllowOrigin("*")
+    public List<CalendarEvent> getCalendarEvents () {
+        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEvents());
+    }
+
     private void checkUsersEvent(String eventId, Context context) {
         User user = (User) context.currentUser();
         if (user.isInRole(EVENT_MANAGER)) {

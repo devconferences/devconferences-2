@@ -2,6 +2,7 @@ package org.devconferences.jobs;
 
 import com.google.gson.Gson;
 import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.slf4j.Logger;
@@ -39,6 +40,10 @@ public class ImportEventsJob {
         ElasticUtils.deleteData(EVENTS_TYPE);
 
         importEvents();
+
+        EventsRepository er = new EventsRepository();
+        CalendarEvent ce = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream("/calendar/testEvent.json")), CalendarEvent.class);
+        er.indexOrUpdate(ce);
     }
 
     private static void importEvents() {

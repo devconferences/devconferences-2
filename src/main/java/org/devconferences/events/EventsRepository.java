@@ -25,6 +25,7 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 @Singleton
 public class EventsRepository {
     public static final String EVENTS_TYPE = "events";
+    public static final String CALENDAREVENTS_TYPE = "calendarevents";
 
     public final RuntimeJestClient client;
 
@@ -38,6 +39,10 @@ public class EventsRepository {
 
     public void indexOrUpdate(Event event) {
         client.indexES(EVENTS_TYPE, event, event.id);
+    }
+
+    public void indexOrUpdate(CalendarEvent calendarEvent) {
+        client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
     }
 
     public void createEvent(Event event) {
@@ -197,5 +202,19 @@ public class EventsRepository {
         Preconditions.checkArgument(!eventId.equals(""));
 
         client.deleteES(EVENTS_TYPE, eventId);
+    }
+
+    public List<CalendarEvent> getCalendarEvents() {
+        String query = "" +
+                "{" +
+                "  \"size\" : " + Integer.MAX_VALUE +
+                "}";
+
+        SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, query);
+
+        return (StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(searchResult.getHits(CalendarEvent.class).iterator(), Spliterator.ORDERED),
+                false).map(hitResult -> hitResult.source).collect(Collectors.toList())
+        );
     }
 }
