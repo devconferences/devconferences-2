@@ -37,14 +37,50 @@ public class EventsRepository {
         if (getEvent(event.id) != null) {
             throw new RuntimeException("Event already exists with same id");
         } else {
-            indexOrUpdate(event);
+            indexES(EVENTS_TYPE, event, event.id);
         }
     }
 
-    public void indexOrUpdate(Event event) {
-        Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).id(event.id).build();
+    /** All function with an ES call **/
+
+    public void indexES(String type, Object event, String id) {
+        Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(type).id(id).build();
+
         client.execute(index);
     }
+
+    private SearchResult searchES(String type, String query) {
+        Search search = new Search.Builder(query)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(type)
+                .build();
+
+        return client.execute(search);
+    }
+
+    private CountResult countES(String type, String query) {
+        Count count = new Count.Builder()
+                .query(query)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(type)
+                .build();
+
+        return client.execute(count);
+    }
+
+    private JestResult getES(String type, String id) {
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, id).type(type).build();
+
+        return client.execute(get);
+    }
+
+    private void deleteES(String type, String id) {
+        Delete delete = new Delete.Builder(id).index(DEV_CONFERENCES_INDEX).type(type).build();
+
+        client.execute(delete);
+    }
+
+    /** End of ES call section **/
 
     public List<CityLight> getAllCities() {
         String allCitiesQuery = "" +
@@ -63,20 +99,13 @@ public class EventsRepository {
                 "  }" +
                 "}";
 
-        Search search = new Search.Builder(allCitiesQuery)
-                .addIndex(DEV_CONFERENCES_INDEX)
-                .addType(EVENTS_TYPE)
-                .build();
-
-        SearchResult searchResult = client.execute(search);
+        SearchResult searchResult = searchES(EVENTS_TYPE, allCitiesQuery);
 
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
         return cities.getBuckets().stream()
-                .map(entry -> {
-                    return new CityLight(entry.getKey(), entry.getKey(), entry.getCount());
-                })
+                .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount()))
                 .collect(Collectors.toList());
 
     }
@@ -94,25 +123,17 @@ public class EventsRepository {
                 "  \"size\" : " + Integer.MAX_VALUE +
                 "}";
 
-        Search search = new Search.Builder(query)
-                .addIndex(DEV_CONFERENCES_INDEX)
-                .addType(EVENTS_TYPE).build();
-
         City city = new City();
         city.id = cityId;
         city.name = cityId;
         city.communities = new ArrayList<>();
         city.conferences = new ArrayList<>();
 
-        SearchResult searchResult = client.execute(search);
+        SearchResult searchResult = searchES(EVENTS_TYPE, query);
         searchResult.getHits(Event.class)
                 .stream()
-                .map(hit -> {
-                    return hit.source;
-                })
-                .forEach(event -> {
-                    addEventToCityObject(city, event);
-                });
+                .map(hit -> hit.source)
+                .forEach(event -> addEventToCityObject(city, event));
 
         return city;
 
@@ -130,7 +151,7 @@ public class EventsRepository {
                 .aggregation(AggregationBuilders.geohashGrid("event_locations").field("location").precision(geohashPrecision))
                 .toString();
 
-        SearchResult result = client.execute(new Search.Builder(eventLocations).build());
+        SearchResult result = searchES(EVENTS_TYPE, eventLocations);
         GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
         return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
     }
@@ -149,9 +170,7 @@ public class EventsRepository {
     }
 
     public Event getEvent(String eventId) {
-        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(EVENTS_TYPE).build();
-
-        JestResult result = client.execute(get);
+        JestResult result = getES(EVENTS_TYPE, eventId);
         return result.getSourceAsObject(Event.class);
     }
 
@@ -169,14 +188,9 @@ public class EventsRepository {
         int pageInt = Integer.decode(page);
         int size = 10;
 
-        Count count = new Count.Builder()
-                .query(matchAllQueryPart1 + matchAllQueryPart2)
-                .addIndex(DEV_CONFERENCES_INDEX)
-                .addType(EVENTS_TYPE)
-                .build();
+        CountResult countResult = countES(EVENTS_TYPE, matchAllQueryPart1 + matchAllQueryPart2);
 
-        CountResult countResult = client.execute(count);
-
+        // Prepare search query
         String querySearch;
         if(pageInt == 0) {
             querySearch = matchAllQueryPart1 +
@@ -191,16 +205,10 @@ public class EventsRepository {
             throw new RuntimeException("Can't search events with a negative page");
         }
 
-        Search search = new Search.Builder(querySearch)
-                .addIndex(DEV_CONFERENCES_INDEX)
-                .addType(EVENTS_TYPE)
-                .build();
+        SearchResult searchResult = searchES(EVENTS_TYPE, querySearch);
 
-        SearchResult searchResult = client.execute(search);
-
+        // Create result of search
         EventSearch res = new EventSearch();
-
-
         res.totalHits = String.valueOf(countResult.getCount().intValue());
         res.query = query;
         res.currPage = String.valueOf(page);
@@ -219,16 +227,11 @@ public class EventsRepository {
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList());
 
         return res;
-
-
     }
 
     public void deleteEvent(String eventId) {
         Preconditions.checkArgument(!eventId.equals(""));
 
-        Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
-        client.execute(delete);
+        deleteES(EVENTS_TYPE, eventId);
     }
-
-
 }
