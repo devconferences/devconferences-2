@@ -19,7 +19,7 @@ public class Main {
     public static final String PROD_MODE = "PROD_MODE";
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
     public static final String CREATE_INDEX = "CREATE_INDEX";
-    public static final String REMAPPING_EVENTS = "REMAPPING_EVENTS";
+    public static final String RELOAD_EVENTS = "RELOAD_EVENTS";
     public static final String CHECK_EVENTS = "CHECK_EVENTS";
     public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
 
@@ -65,15 +65,15 @@ public class Main {
 
         boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
         boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
-        boolean remapping = Boolean.parseBoolean(System.getProperty(REMAPPING_EVENTS, "false"));
+        boolean reloadData = Boolean.parseBoolean(System.getProperty(RELOAD_EVENTS, "false"));
         if (!prodMode && !skipDevNode) {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
         } else if(createIndex) {
             ImportEventsJob.createIndex();
-        } else if(prodMode || remapping) {
-            LOGGER.info("Remapping events...");
-            ImportEventsJob.reMappingEvents();
+        } else if(prodMode || reloadData) {
+            LOGGER.info("Reload data from resources...");
+            ImportEventsJob.reloadEvents();
         }
     }
 

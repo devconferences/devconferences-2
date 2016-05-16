@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,8 +35,8 @@ public class ImportEventsJob {
         importEvents();
     }
 
-    public static void reMappingEvents() {
-        ElasticUtils.flushData();
+    public static void reloadEvents() {
+        ElasticUtils.deleteData(EVENTS_TYPE);
 
         importEvents();
     }
@@ -80,24 +79,24 @@ public class ImportEventsJob {
 
     public static void checkEvent(Event event, String path) {
         if(event.id == null) {
-            throw new RuntimeException("Invalid Event : missed 'id' field");
+            throw new RuntimeException("Invalid Event : no 'id' field");
         }
         if(!(event.id + ".json").equals(path.split("/")[3])) {
             throw new RuntimeException("Invalid Event : filename and 'id' field mismatch");
         }
         if(event.type == null) {
-            throw new RuntimeException("Invalid Event : missed 'type' field");
+            throw new RuntimeException("Invalid Event : no 'type' field");
         }
         if(event.name == null) {
-            throw new RuntimeException("Invalid Event : missed 'name' field");
+            throw new RuntimeException("Invalid Event : no 'name' field");
         }
         if(event.description == null) {
-            throw new RuntimeException("Invalid Event : missed 'description' field");
+            throw new RuntimeException("Invalid Event : no 'description' field");
         }
     }
 
     private static List<String> listEvents() {
-        Path rootPath = null;
+        Path rootPath;
         HashMap<String,String> env = new HashMap<>();
         URL events = ImportEventsJob.class.getClassLoader().getResource("events");
 
@@ -107,14 +106,14 @@ public class ImportEventsJob {
                 FileSystem mountedJar = FileSystems.newFileSystem(events.toURI(), env);
                 rootPath = mountedJar.getRootDirectories().iterator().next(); // There is only one...
             } catch (URISyntaxException | IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         } else {
             try {
                 File rootFile = new File(events.toURI());
                 rootPath = rootFile.toPath();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
 
@@ -132,10 +131,8 @@ public class ImportEventsJob {
                     })
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
-        return new ArrayList<>(); // Avoid NullPointerException
     }
 
     private static boolean isEventJSONFile(Path path, BasicFileAttributes attr) {

@@ -22,14 +22,12 @@ import static org.devconferences.env.EnvUtils.fromEnv;
  */
 public final class ElasticUtils {
     private ElasticUtils() {
-    }
 
-    ;
+    }
 
     public static final String ES_URL = "ES_URL";
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences";
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);
-
 
     public static RuntimeJestClient createClient() {
         String esURL = fromEnv(ES_URL, "http://localhost:9200");
@@ -57,22 +55,23 @@ public final class ElasticUtils {
                 if (!jestResult.isSucceeded()) {
                     throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
                 }
-                createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
+                createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
             }
         }
     }
 
-    private static void deleteMapping(String type) {
+    private static void deleteType(String type) {
         try (RuntimeJestClient client = createClient();) {
             DeleteMapping deleteMap = new DeleteMapping.Builder(DEV_CONFERENCES_INDEX, type).build();
             JestResult deleteMapResult = client.execute(deleteMap);
             if(!deleteMapResult.isSucceeded()) {
-                throw new IllegalStateException("Flush data failed : " + deleteMapResult.getJsonString());
+                throw new IllegalStateException("Can't delete data from '" + type +
+                        "' : " + deleteMapResult.getJsonString());
             }
         }
     }
 
-    private static void createMapping(String type, String mappingFilePath) {
+    private static void createType(String type, String mappingFilePath) {
         try (RuntimeJestClient client = createClient();) {
             String mappingFile;
             try {
@@ -86,15 +85,27 @@ public final class ElasticUtils {
         }
     }
 
-    public static void flushData() {
-        LOGGER.info("Flush data...");
-        // Need to delete Mapping then re-create it...
-        try {
-            deleteMapping(EventsRepository.EVENTS_TYPE);
-        } catch(IllegalStateException e) {
-            LOGGER.warn("Mapping '" + EventsRepository.EVENTS_TYPE + "' doesn't exist !");
+    public static void deleteData(String type) {
+        String mappingFile;
+        switch (type) {
+            case EventsRepository.EVENTS_TYPE:
+                mappingFile = "/elastic/events-mapping.json";
+                break;
+            default:
+                throw new RuntimeException("Type " + type + " unknown");
         }
-        createMapping(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
+        deleteDataJob(type, mappingFile);
+    }
+
+    private static void deleteDataJob(String type, String mappingFile) {
+        LOGGER.info("Delete data from '" + type + "' type...");
+        // Need to delete type then re-create it...
+        try {
+            deleteType(type);
+        } catch(IllegalStateException e) {
+            LOGGER.warn("Type '" + EventsRepository.EVENTS_TYPE + "' doesn't exist !");
+        }
+        createType(type, mappingFile);
     }
 
 }

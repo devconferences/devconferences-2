@@ -4,6 +4,7 @@ import com.google.inject.Singleton;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Get;
 import io.searchbox.core.Index;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
@@ -19,7 +20,7 @@ public class UsersRepository {
     private final RuntimeJestClient client;
 
     public UsersRepository() {
-        client = createClient();
+        client = ElasticUtils.createClient();
     }
 
     public void save(User user) {
