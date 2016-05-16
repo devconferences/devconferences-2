@@ -4,9 +4,12 @@ import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
+import io.searchbox.core.*;
 
 import java.io.IOException;
 import java.util.Set;
+
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 
 /**
  * Created by chris on 08/06/15.
@@ -45,5 +48,47 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     @Override
     public void close() {
         shutdownClient();
+    }
+
+    @Override
+    public void indexES(String type, Object event, String id) {
+        Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(type).id(id).build();
+
+        execute(index);
+    }
+
+    @Override
+    public SearchResult searchES(String type, String query) {
+        Search search = new Search.Builder(query)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(type)
+                .build();
+
+        return execute(search);
+    }
+
+    @Override
+    public CountResult countES(String type, String query) {
+        Count count = new Count.Builder()
+                .query(query)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(type)
+                .build();
+
+        return execute(count);
+    }
+
+    @Override
+    public JestResult getES(String type, String id) {
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, id).type(type).build();
+
+        return execute(get);
+    }
+
+    @Override
+    public void deleteES(String type, String id) {
+        Delete delete = new Delete.Builder(id).index(DEV_CONFERENCES_INDEX).type(type).build();
+
+        execute(delete);
     }
 }
