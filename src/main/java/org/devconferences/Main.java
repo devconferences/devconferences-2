@@ -5,6 +5,7 @@ import net.codestory.http.injection.GuiceAdapter;
 import net.codestory.http.templating.ModelAndView;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.events.EventsEndPoint;
+import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
 import org.devconferences.meetup.MeetupEndPoint;
 import org.devconferences.security.Authentication;
@@ -72,8 +73,9 @@ public class Main {
         } else if(createIndex) {
             ImportEventsJob.createIndex();
         } else if(prodMode || reloadData) {
-            LOGGER.info("Reload data from resources...");
+            LOGGER.info("Reload data from resources and services...");
             ImportEventsJob.reloadEvents();
+            ImportCalendarEventsJob.reloadCalendarEvents();
         }
     }
 

@@ -91,6 +91,9 @@ public final class ElasticUtils {
             case EventsRepository.EVENTS_TYPE:
                 mappingFile = "/elastic/events-mapping.json";
                 break;
+            case EventsRepository.CALENDAREVENTS_TYPE:
+                mappingFile = "/elastic/calendarevents-mapping.json";
+                break;
             default:
                 throw new RuntimeException("Type " + type + " unknown");
         }
