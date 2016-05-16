@@ -1,6 +1,7 @@
 package org.devconferences.elastic;
 
 import org.apache.commons.io.FileUtils;
+import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -44,7 +45,8 @@ public class DeveloppementESNode {
                 .build();
         node.start();
 
-        ImportEventsJob.createIndex();
+        (new ImportEventsJob()).createIndex();
+        (new ImportCalendarEventsJob()).reloadData();
     }
 
 }

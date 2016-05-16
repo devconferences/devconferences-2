@@ -16,6 +16,10 @@ import org.slf4j.LoggerFactory;
 public class Main {
 
     public static final int PORT = 8080;
+    public static final ImportCalendarEventsJob importCalendarEventsJob =
+            new ImportCalendarEventsJob();
+    public static final ImportEventsJob importEventsJob =
+            new ImportEventsJob();
     // All options with '-D'
     public static final String PROD_MODE = "PROD_MODE";
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
@@ -34,7 +38,7 @@ public class Main {
         if(prodMode || checkEvents || onlycheckEvents) {
             LOGGER.info("Checking all Events...");
             try {
-                ImportEventsJob.checkAllEvents(); // This might throw an RuntimeException
+                importEventsJob.checkAllData(); // This might throw an RuntimeException
             } catch(RuntimeException e) {
                 LOGGER.error(e.getMessage());
 
@@ -71,11 +75,12 @@ public class Main {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
         } else if(createIndex) {
-            ImportEventsJob.createIndex();
+            importEventsJob.createIndex();
+            importCalendarEventsJob.reloadData();
         } else if(prodMode || reloadData) {
             LOGGER.info("Reload data from resources and services...");
-            ImportEventsJob.reloadEvents();
-            ImportCalendarEventsJob.reloadCalendarEvents();
+            importEventsJob.reloadData();
+            importCalendarEventsJob.reloadData();
         }
     }
 
