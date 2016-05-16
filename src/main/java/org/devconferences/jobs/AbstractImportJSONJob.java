@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,14 +43,15 @@ public abstract class AbstractImportJSONJob {
     public abstract void checkData(String path);
     public abstract void checkAllData();
 
-    protected void importJsonInFolder(String resourceFolderPath) {
+    protected void importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
         EventsRepository eventsRepository = new EventsRepository();
 
         final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import calendar events...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
-            CalendarEvent calendarEvent = new Gson().fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), CalendarEvent.class);
-            eventsRepository.indexOrUpdate(calendarEvent);
+            Object object = new Gson().fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
+            forEachFunc.apply(object, path);
+            eventsRepository.indexOrUpdate(classInfo.cast(object));
             totalEvents[0]++;
         });
         LOGGER.info(totalEvents[0] + " files imported !");

@@ -37,12 +37,16 @@ public class EventsRepository {
         this.client = client;
     }
 
-    public void indexOrUpdate(Event event) {
-        client.indexES(EVENTS_TYPE, event, event.id);
-    }
-
-    public void indexOrUpdate(CalendarEvent calendarEvent) {
-        client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
+    public void indexOrUpdate(Object obj) {
+        if(obj instanceof CalendarEvent) {
+            CalendarEvent calendarEvent = (CalendarEvent) obj;
+            client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
+        } else if(obj instanceof Event) {
+            Event event = (Event) obj;
+            client.indexES(EVENTS_TYPE, event, event.id);
+        } else {
+            throw new RuntimeException("Unknown class : " + obj.getClass().getName());
+        }
     }
 
     public void createEvent(Event event) {

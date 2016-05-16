@@ -1,6 +1,5 @@
 package org.devconferences.jobs;
 
-import io.searchbox.client.JestClient;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.ObjDoubleConsumer;
 
 public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
@@ -36,7 +36,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
 
         askMeetupUpcomingEvents();
-        importJsonInFolder("calendar");
+        importJsonInFolder("calendar", CalendarEvent.class, (obj, path) -> obj);
     }
 
     @Override
@@ -53,14 +53,15 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         final int[] totalMeetupImport = {0};
         try(RuntimeJestClient client = ElasticUtils.createClient();) {
             MeetupApiClient meetupApiClient = new MeetupApiClient();
-            idMeetupList.add("suglyon"); // Test
-            idMeetupList.add("GDG-Nantes"); // Test
 
             idMeetupList.forEach(id -> {
                 try {
                     List<CalendarEvent> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
 
                     listCalendarEvent.forEach(data -> {
+                        if(data.description == null) {
+                            data.description = "Pas de description.";
+                        }
                         client.indexES(CALENDAREVENTS_TYPE, data, data.id);
                         totalMeetupImport[0]++;
                     });
