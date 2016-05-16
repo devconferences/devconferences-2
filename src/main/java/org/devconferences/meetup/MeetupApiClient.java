@@ -3,12 +3,19 @@ package org.devconferences.meetup;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.inject.Singleton;
 import net.codestory.http.constants.Headers;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
+import org.devconferences.events.CalendarEvent;
+import org.jose4j.json.internal.json_simple.JSONArray;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +26,8 @@ public class MeetupApiClient {
     public static final String MEETUP_API_BASE_URL = "https://api.meetup.com";
     public static final String MEETUP_API_GROUP_INFO_URL = MEETUP_API_BASE_URL + "/%s?sign=true&key=%s";
     public static final String MEETUP_API_EVENT_INFO_URL = MEETUP_API_BASE_URL + "/2/event/%s?sign=true&key=%s";
+    public static final String MEETUP_API_EVENTS_BY_GROUP_URL = MEETUP_API_BASE_URL + "/2/events/?group_urlname=%s&" +
+            "status=upcoming&sign=true&key=%s";
 
     private Cache<String, MeetupInfo> cache;
 
@@ -34,6 +43,33 @@ public class MeetupApiClient {
         } catch (ExecutionException e) {
             return null;
         }
+    }
+
+    public List<CalendarEvent> getUpcomingEvents(String id) throws Exception {
+        Content eventsByURLResponse = Request.Get(String.format(MEETUP_API_EVENTS_BY_GROUP_URL, id,
+                System.getenv(MEETUP_API_KEY)))
+                .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
+                .execute()
+                .returnContent();
+
+        EventsSearch eventsSearch = new Gson().fromJson(eventsByURLResponse.asString(), EventsSearch.class);
+
+        List<CalendarEvent> result = new ArrayList<>();
+
+        eventsSearch.results.forEach(data -> {
+            CalendarEvent calendarEvent = new CalendarEvent();
+            calendarEvent.id = "meetup_" + data.id;
+            calendarEvent.name = data.name;
+            calendarEvent.url = data.event_url;
+            calendarEvent.description = data.description;
+            calendarEvent.date = data.time;
+            calendarEvent.organizerName = data.group.name;
+            calendarEvent.organizerUrl = "http://www.meetup.com/" + data.group.urlname;
+
+            result.add(calendarEvent);
+        });
+
+        return result;
     }
 
 

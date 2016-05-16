@@ -1,36 +1,34 @@
 package org.devconferences.jobs;
 
-import com.google.gson.Gson;
+import io.searchbox.client.JestClient;
 import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
-import org.devconferences.events.EventsRepository;
+import org.devconferences.meetup.MeetupApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportCalendarEventsJob.class);
-    // TODO, le temps de ...
     public static final String CALENDAREVENTS_TYPE = "calendarevents";
+
+    private static final HashSet<String> idMeetupList = new HashSet<>();
 
     public static void main(String[] args) {
         ImportCalendarEventsJob importCalendarEventsJob = new ImportCalendarEventsJob();
         importCalendarEventsJob.createIndex();
+    }
+
+    public static boolean addIdMeetup(String idMeetup) {
+        return idMeetupList.add(idMeetup);
+    }
+
+    public static boolean removeIdMeetup(String idMeetup) {
+        return idMeetupList.remove(idMeetup);
     }
 
     @Override
@@ -52,5 +50,27 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     }
 
     private void askMeetupUpcomingEvents() {
+        final int[] totalMeetupImport = {0};
+        try(RuntimeJestClient client = ElasticUtils.createClient();) {
+            MeetupApiClient meetupApiClient = new MeetupApiClient();
+            idMeetupList.add("suglyon"); // Test
+            idMeetupList.add("GDG-Nantes"); // Test
+
+            idMeetupList.forEach(id -> {
+                try {
+                    List<CalendarEvent> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
+
+                    listCalendarEvent.forEach(data -> {
+                        client.indexES(CALENDAREVENTS_TYPE, data, data.id);
+                        totalMeetupImport[0]++;
+                    });
+
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+
+        LOGGER.info(totalMeetupImport[0] + " events imported with Meetup !");
     }
 }
