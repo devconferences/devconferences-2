@@ -47,13 +47,12 @@ var Home = React.createClass({
                 <Grid>
                     <Row>
                         <Col md={8} className="text-center">
-                            <h2>Agenda des Conférences</h2>
+                            <h2>Prochains événements</h2>
 
-                            <p>Les dates des grandes conférences annuelles sont répertoriées ici.</p>
+                            <p>Les prochains événements sont répertoriées ici.</p>
 
-                            <div className="embed-responsive embed-responsive-4by3">
-                                <GoogleCalendar account="devconferences.org@gmail.com"
-                                    customClass="embed-responsive-item" />
+                            <div>
+                                <TimelineEventList />
                             </div>
                         </Col>
                         <Col md={4} className="text-center">
@@ -68,14 +67,6 @@ var Home = React.createClass({
                         </Col>
                     </Row>
                 </Grid>
-
-                <div className="text-center">
-                    <h2>Prochains événements</h2>
-                    <p>
-                        Les prochains événements sont ici.
-                    </p>
-                    <TimelineEventList />
-                </div>
 
             </div>
         )

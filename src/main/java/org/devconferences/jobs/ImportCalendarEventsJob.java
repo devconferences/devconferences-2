@@ -49,7 +49,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             // Replace <p></p> and <br/> with \n (ReactJS will detect it), and remove others HTML tags
             calendarEvent.description = calendarEvent.description.replaceAll("</p>", "\n")
                     .replaceAll("<br/>", "\n").replaceAll("<[^>]*>","")
-                    .replaceAll("([\\n]\\s*)+", "\n"); // Only one newline
+                    .replaceAll("(\\n\\s*)+", "\n"); // Only one newline
         }
 
         return obj;

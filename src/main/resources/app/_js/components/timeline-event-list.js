@@ -20,8 +20,10 @@ var TimelineEventList = React.createClass({
             );
         };
         return (
-            <div className="text-left">
-                {this.state.eventsList.map(calendarEvent)}
+            <div className="text-left container scrollable">
+                <div>
+                    {this.state.eventsList.map(calendarEvent)}
+                </div>
             </div>
         );
     }
