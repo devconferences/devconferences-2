@@ -11,6 +11,7 @@ public class EventsSearch {
         public String description;
         public String event_url;
         public long time;
+        public long duration;
         public Organizer group;
     }
 

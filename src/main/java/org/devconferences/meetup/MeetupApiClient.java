@@ -63,6 +63,7 @@ public class MeetupApiClient {
             calendarEvent.url = data.event_url;
             calendarEvent.description = data.description;
             calendarEvent.date = data.time;
+            calendarEvent.duration = data.duration;
             calendarEvent.organizerName = data.group.name;
             calendarEvent.organizerUrl = "http://www.meetup.com/" + data.group.urlname;
 
