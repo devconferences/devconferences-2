@@ -27,15 +27,17 @@ public class Main {
     public static final String RELOAD_EVENTS = "RELOAD_EVENTS";
     public static final String CHECK_EVENTS = "CHECK_EVENTS";
     public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
+    public static final String ONLY_RELOAD_CALENDAR = "ONLY_RELOAD_CALENDAR";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
         boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
-        boolean onlycheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
+        boolean onlyCheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
+        boolean onlyReloadCalendar = Boolean.parseBoolean(System.getProperty(ONLY_RELOAD_CALENDAR, "false"));
         // Vérification des Events dans le dossier ressource "/events/"
-        if(prodMode || checkEvents || onlycheckEvents) {
+        if(prodMode || checkEvents || onlyCheckEvents) {
             LOGGER.info("Checking all Events...");
             try {
                 importEventsJob.checkAllData(); // This might throw an RuntimeException
@@ -46,9 +48,16 @@ public class Main {
             }
             LOGGER.info("All Events are good !");
 
-            if(onlycheckEvents) {
+            if(onlyCheckEvents) {
                 return;
             }
+        }
+
+        if(onlyReloadCalendar) {
+            ImportCalendarEventsJob.reloadMeetupIds();
+            importCalendarEventsJob.reloadData();
+
+            return;
         }
 
         WebServer webServer = new WebServer();

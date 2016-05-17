@@ -7,6 +7,7 @@ import org.devconferences.meetup.MeetupApiClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.util.HashSet;
 import java.util.List;
 
@@ -29,6 +30,32 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     public static boolean removeIdMeetup(String idMeetup) {
         return idMeetupList.remove(idMeetup);
     }
+
+    public static void reloadMeetupIds() {
+        // Deserialization of Meetup Ids
+        ObjectInputStream objectInputStream = null;
+
+        try {
+            final FileInputStream file = new FileInputStream(".meetupIdList");
+            objectInputStream = new ObjectInputStream(file);
+            HashSet<String> backupMeetupIds = null;
+            backupMeetupIds = (HashSet<String>) objectInputStream.readObject();
+
+            backupMeetupIds.forEach(ImportCalendarEventsJob::addIdMeetup);
+            LOGGER.info("List of Meetup ids loaded !");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (objectInputStream != null) {
+                try {
+                    objectInputStream.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
 
     @Override
     public void reloadData() {
@@ -66,6 +93,8 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         try(RuntimeJestClient client = ElasticUtils.createClient();) {
             MeetupApiClient meetupApiClient = new MeetupApiClient();
 
+            LOGGER.info("Import events from Meetup...");
+
             idMeetupList.forEach(id -> {
                 try {
                     List<CalendarEvent> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
@@ -83,8 +112,27 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                     throw new RuntimeException(e);
                 }
             });
-        }
+            LOGGER.info(totalMeetupImport[0] + " events imported from Meetup !");
 
-        LOGGER.info(totalMeetupImport[0] + " events imported with Meetup !");
+            // Serialization of Meetup ids for cron update
+            ObjectOutputStream objectOutputStream = null;
+            try {
+                final FileOutputStream file = new FileOutputStream(".meetupIdList");
+                objectOutputStream = new ObjectOutputStream(file);
+                objectOutputStream.writeObject(idMeetupList);
+                LOGGER.info("List of Meetup ids saved !");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                if(objectOutputStream != null) {
+                    try {
+                        objectOutputStream.flush();
+                        objectOutputStream.close();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
 }
