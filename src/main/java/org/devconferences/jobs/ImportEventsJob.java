@@ -36,7 +36,6 @@ public class ImportEventsJob extends AbstractImportJSONJob {
         ElasticUtils.deleteData(EVENTS_TYPE);
 
         importJsonInFolder("events", Event.class, (obj, path) -> {
-
             if(obj instanceof Event) {
                 Event event = (Event) obj;
 
@@ -44,12 +43,15 @@ public class ImportEventsJob extends AbstractImportJSONJob {
                 String city = path.split("/")[2]; // <null> / events / <cityname> / <eventId>.json
                 event.city = city;
 
+                // Default avatar
+                if(event.avatar == null) {
+                    event.avatar = "/img/no_logo.png";
+                }
+
                 // Add Meetup Id if it exists for Event
                 if(event.meetup != null) {
                     ImportCalendarEventsJob.addIdMeetup(event.meetup);
                 }
-            } else {
-                System.out.println("Not an Event... Issue ? " + obj.getClass());
             }
 
             return obj;
