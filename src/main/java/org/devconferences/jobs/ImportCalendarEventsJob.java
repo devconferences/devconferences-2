@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.ObjDoubleConsumer;
 
 public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
@@ -36,12 +35,24 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
 
         askMeetupUpcomingEvents();
-        importJsonInFolder("calendar", CalendarEvent.class, (obj, path) -> obj);
+        importJsonInFolder("calendar", CalendarEvent.class, this::removeHTMLTagsAndAddNewlines);
     }
 
     @Override
     public void checkAllData() {
         // Check nothing... Yet.
+    }
+
+    private Object removeHTMLTagsAndAddNewlines(Object obj, String path) {
+        if(obj instanceof CalendarEvent) {
+            CalendarEvent calendarEvent = (CalendarEvent) obj;
+            // Replace <p></p> and <br/> with \n (ReactJS will detect it), and remove others HTML tags
+            calendarEvent.description = calendarEvent.description.replaceAll("</p>", "\n")
+                    .replaceAll("<br/>", "\n").replaceAll("<[^>]*>","")
+                    .replaceAll("([\\n]\\s*)+", "\n"); // Only one newline
+        }
+
+        return obj;
     }
 
     @Override
@@ -62,6 +73,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                         if(data.description == null) {
                             data.description = "Pas de description.";
                         }
+                        removeHTMLTagsAndAddNewlines(data, null);
                         client.indexES(CALENDAREVENTS_TYPE, data, data.id);
                         totalMeetupImport[0]++;
                     });

@@ -79,3 +79,8 @@ div.conflinks a {
     margin-left: 25%;
     margin-right: 25%;
 }
+
+.timeline-event .pre-style {
+    font-family: 'Open Sans', sans-serif;
+    white-space: pre-line;
+}
