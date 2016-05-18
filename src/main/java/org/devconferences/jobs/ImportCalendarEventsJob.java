@@ -18,12 +18,16 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     static final HashSet<String> idMeetupList = new HashSet<>();
 
+    protected MeetupApiClient meetupApiClient;
+
     public ImportCalendarEventsJob() {
         super();
+        meetupApiClient = new MeetupApiClient();
     }
 
-    public ImportCalendarEventsJob(RuntimeJestClient client) {
+    public ImportCalendarEventsJob(RuntimeJestClient client, MeetupApiClient meetupApiClient) {
         super(client);
+        this.meetupApiClient = meetupApiClient;
     }
 
     public static void main(String[] args) {
@@ -72,7 +76,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         int totalCalendarEvents = 0;
 
         if(!noRemoteCall) {
-            askMeetupUpcomingEvents();
+            totalCalendarEvents += askMeetupUpcomingEvents();
         }
         totalCalendarEvents += importJsonInFolder("calendar", CalendarEvent.class, this::removeHTMLTagsAndAddNewlines);
 
@@ -127,9 +131,8 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         }
     }
 
-    private void askMeetupUpcomingEvents() {
+    private int askMeetupUpcomingEvents() {
         final int[] totalMeetupImport = {0};
-        MeetupApiClient meetupApiClient = new MeetupApiClient();
 
         LOGGER.info("Import events from Meetup...");
 
@@ -151,5 +154,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             }
         });
         LOGGER.info(totalMeetupImport[0] + " events imported from Meetup !");
+
+        return totalMeetupImport[0];
     }
 }

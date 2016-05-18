@@ -3,17 +3,14 @@ package org.devconferences.meetup;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.inject.Singleton;
 import net.codestory.http.constants.Headers;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
 import org.devconferences.events.CalendarEvent;
-import org.jose4j.json.internal.json_simple.JSONArray;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -45,12 +42,17 @@ public class MeetupApiClient {
         }
     }
 
-    public List<CalendarEvent> getUpcomingEvents(String id) throws Exception {
-        Content eventsByURLResponse = Request.Get(String.format(MEETUP_API_EVENTS_BY_GROUP_URL, id,
-                System.getenv(MEETUP_API_KEY)))
-                .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                .execute()
-                .returnContent();
+    public List<CalendarEvent> getUpcomingEvents(String id) {
+        Content eventsByURLResponse = null;
+        try {
+            eventsByURLResponse = Request.Get(String.format(MEETUP_API_EVENTS_BY_GROUP_URL, id,
+                    System.getenv(MEETUP_API_KEY)))
+                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
+                    .execute()
+                    .returnContent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         EventsSearch eventsSearch = new Gson().fromJson(eventsByURLResponse.asString(), EventsSearch.class);
 
