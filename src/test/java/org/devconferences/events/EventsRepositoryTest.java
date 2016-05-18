@@ -274,6 +274,43 @@ public class EventsRepositoryTest {
         }
     }
 
+    @Test
+    public void should_find_calendar_events() {
+        String searchHits = "[" +
+                "  {" +
+                "    \"_index\" : \"dev-conferences\"," +
+                "    \"_type\" : \"calendarevents\"," +
+                "    \"_id\" : \"1\"," +
+                "    \"_source\" : {" +
+                "        \"id\" : \"1\"," +
+                "        \"name\" : \"Event 1\"," +
+                "        \"description\" : \"Event 1\"," +
+                "        \"url\" : \"http://www.example.com\"" +
+                "    }" +
+                "  }," +
+                "  {" +
+                "    \"_index\" : \"dev-conferences\"," +
+                "    \"_type\" : \"calendarevents\"," +
+                "    \"_id\" : \"2\"," +
+                "    \"_source\" : {" +
+                "        \"id\" : \"2\"," +
+                "        \"name\" : \"Event 2\"," +
+                "        \"description\" : \"Event 2\"," +
+                "        \"url\" : \"http://www.example2.com\"" +
+                "    }" +
+                "  }" +
+                "]";
+
+        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 2, searchHits, "{}");
+
+        List<CalendarEvent> calendarEventList = eventsEndPoint.getCalendarEvents();
+        Assertions.assertThat(calendarEventList).hasSize(2);
+        Assertions.assertThat(calendarEventList.get(0).id).matches("1");
+        Assertions.assertThat(calendarEventList.get(0).name).matches("Event 1");
+        Assertions.assertThat(calendarEventList.get(0).description).matches("Event 1");
+        Assertions.assertThat(calendarEventList.get(0).url).matches("http://www.example.com");
+    }
+
     @Ignore
     @Test
     public void should_find_event_around() {
