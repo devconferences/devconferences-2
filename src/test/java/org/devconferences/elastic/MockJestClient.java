@@ -5,7 +5,6 @@ import com.google.gson.JsonParser;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.CountResult;
 import io.searchbox.core.SearchResult;
-import org.devconferences.events.EventsRepository;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -43,15 +42,15 @@ public class MockJestClient {
             "    }," +
             "    \"aggregations\" : %s" +
             "}";
-    public static RuntimeJestClientAdapter createMock() {
+    public static RuntimeJestClientAdapter createMock(String typeES) {
         RuntimeJestClientAdapter result = mock(RuntimeJestClientAdapter.class);
 
-        when(result.indexES(eq(EventsRepository.EVENTS_TYPE), anyObject(), anyString())).thenReturn(0);
-        when(result.deleteES(eq(EventsRepository.EVENTS_TYPE), anyString())).thenReturn(0);
+        when(result.indexES(eq(typeES), anyObject(), anyString())).thenReturn(0);
+        when(result.deleteES(eq(typeES), anyString())).thenReturn(0);
         return result;
     }
 
-    public static void configCount(RuntimeJestClientAdapter mock, int count) {
+    public static void configCount(RuntimeJestClientAdapter mock, String typeES, int count) {
         String jsonCount = String.format(countStringTemplate, count);
         CountResult mockCountResult = new CountResult(new Gson());
         mockCountResult.setSucceeded(true);
@@ -59,11 +58,11 @@ public class MockJestClient {
         mockCountResult.setJsonObject(new JsonParser().parse(jsonCount).getAsJsonObject());
         mockCountResult.setPathToResult("count");
 
-        when(mock.countES(eq(EventsRepository.EVENTS_TYPE), anyString())).thenReturn(mockCountResult);
+        when(mock.countES(eq(typeES), anyString())).thenReturn(mockCountResult);
 
     }
 
-    public static void configSearch(RuntimeJestClientAdapter mock, int count, String hits, String aggregations) {
+    public static void configSearch(RuntimeJestClientAdapter mock, String typeES, int count, String hits, String aggregations) {
         String jsonSearch = String.format(searchStringTemplate, count, hits, aggregations);
         SearchResult mockSearchResult = new SearchResult(new Gson());
         mockSearchResult.setJsonString(jsonSearch);
@@ -71,10 +70,10 @@ public class MockJestClient {
         mockSearchResult.setJsonObject(new JsonParser().parse(jsonSearch).getAsJsonObject());
         mockSearchResult.setPathToResult("hits/hits/_source");
 
-        when(mock.searchES(eq(EventsRepository.EVENTS_TYPE), anyString())).thenReturn(mockSearchResult);
+        when(mock.searchES(eq(typeES), anyString())).thenReturn(mockSearchResult);
     }
 
-    public static void configGet(RuntimeJestClientAdapter mock, String content) {
+    public static void configGet(RuntimeJestClientAdapter mock, String typeES, String content) {
         String jsonGet = content;
         JestResult mockGetResult = new JestResult(new Gson());
 
@@ -83,6 +82,6 @@ public class MockJestClient {
         mockGetResult.setJsonObject(new JsonParser().parse(jsonGet).getAsJsonObject());
         mockGetResult.setPathToResult("_source");
 
-        when(mock.getES(eq(EventsRepository.EVENTS_TYPE), anyString())).thenReturn(mockGetResult);
+        when(mock.getES(eq(typeES), anyString())).thenReturn(mockGetResult);
     }
 }
