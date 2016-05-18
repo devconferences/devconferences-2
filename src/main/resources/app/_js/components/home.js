@@ -49,7 +49,7 @@ var Home = React.createClass({
                         <Col md={8} className="text-center">
                             <h2>Prochains événements</h2>
 
-                            <p>Les prochains événements sont répertoriées ici.</p>
+                            <p>Les prochains événements sont répertoriés ici.</p>
 
                             <div>
                                 <TimelineEventList />
