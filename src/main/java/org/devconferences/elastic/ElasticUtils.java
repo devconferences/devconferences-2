@@ -39,6 +39,10 @@ public final class ElasticUtils {
         return new RuntimeJestClientAdapter(factory.getObject());
     }
 
+    public static void createIndex() {
+        createIndexIfNotExists();
+    }
+
     public static void createIndexIfNotExists() {
         try (RuntimeJestClient client = createClient();) {
             IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();

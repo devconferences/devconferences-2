@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 public abstract class AbstractImportJSONJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImportJSONJob.class);
-    private RuntimeJestClient client;
+    protected RuntimeJestClient client;
 
     public AbstractImportJSONJob() {
         client = ElasticUtils.createClient();
@@ -36,22 +36,17 @@ public abstract class AbstractImportJSONJob {
         this.client = client;
     }
 
-    public void createIndex() {
-        ElasticUtils.createIndexIfNotExists();
-
-        reloadData();
-    }
-
-    public abstract void reloadData();
+    public abstract int reloadData(boolean noRemoteCall);
 
     public void checkAllDataInFolder(String resourceFolderPath) {
         listFilesinFolder(resourceFolderPath).forEach(path -> checkData(path));
     }
 
     public abstract void checkData(String path);
+
     public abstract void checkAllData();
 
-    protected void importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
+    protected int importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
         EventsRepository eventsRepository = new EventsRepository(client);
 
         final int[] totalEvents = {0}; // For logging...
@@ -63,6 +58,8 @@ public abstract class AbstractImportJSONJob {
             totalEvents[0]++;
         });
         LOGGER.info(totalEvents[0] + " files imported !");
+
+        return totalEvents[0];
     }
 
     private List<String> listFilesinFolder(String resourceFolderPath) {

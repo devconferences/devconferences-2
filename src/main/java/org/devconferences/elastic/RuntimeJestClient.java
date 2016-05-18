@@ -20,4 +20,5 @@ public interface RuntimeJestClient extends JestClient, AutoCloseable {
     CountResult countES(String type, String query);
     JestResult getES(String type, String id);
     int deleteES(String type, String id);
+    int deleteAllES(String type);
 }

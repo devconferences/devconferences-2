@@ -45,8 +45,9 @@ public class DeveloppementESNode {
                 .build();
         node.start();
 
-        (new ImportEventsJob()).createIndex();
-        (new ImportCalendarEventsJob()).reloadData();
+        ElasticUtils.createIndex();
+        (new ImportEventsJob()).reloadData(false);
+        (new ImportCalendarEventsJob()).reloadData(false);
     }
 
 }

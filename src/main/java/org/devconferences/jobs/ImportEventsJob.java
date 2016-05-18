@@ -14,7 +14,6 @@ public class ImportEventsJob extends AbstractImportJSONJob {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEventsJob.class);
     // TODO, le temps de ...
     public static final String EVENTS_TYPE = "events";
-    private RuntimeJestClient client;
 
     public  ImportEventsJob() {
         super();
@@ -25,15 +24,16 @@ public class ImportEventsJob extends AbstractImportJSONJob {
     }
 
     public static void main(String[] args) {
+        ElasticUtils.createIndex();
         ImportEventsJob importEventsJob = new ImportEventsJob();
-        importEventsJob.createIndex();
+        importEventsJob.reloadData(false);
     }
 
     @Override
-    public void reloadData() {
-        ElasticUtils.deleteData(EVENTS_TYPE);
+    public int reloadData(boolean noRemoteCall) {
+        client.deleteAllES(EVENTS_TYPE);
 
-        importJsonInFolder("events", Event.class, (obj, path) -> {
+        return importJsonInFolder("events", Event.class, (obj, path) -> {
             if(obj instanceof Event) {
                 Event event = (Event) obj;
 

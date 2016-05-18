@@ -4,6 +4,7 @@ import net.codestory.http.WebServer;
 import net.codestory.http.injection.GuiceAdapter;
 import net.codestory.http.templating.ModelAndView;
 import org.devconferences.elastic.DeveloppementESNode;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.EventsEndPoint;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
@@ -55,7 +56,7 @@ public class Main {
 
         if(onlyReloadCalendar) {
             ImportCalendarEventsJob.reloadMeetupIds();
-            importCalendarEventsJob.reloadData();
+            importCalendarEventsJob.reloadData(false);
 
             return;
         }
@@ -83,13 +84,15 @@ public class Main {
         if (!prodMode && !skipDevNode) {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
-        } else if(createIndex) {
-            importEventsJob.createIndex();
-            importCalendarEventsJob.reloadData();
-        } else if(prodMode || reloadData) {
-            LOGGER.info("Reload data from resources and services...");
-            importEventsJob.reloadData();
-            importCalendarEventsJob.reloadData();
+        } else {
+            if(createIndex) {
+                ElasticUtils.createIndex();
+            }
+            if(prodMode || reloadData || createIndex) {
+                LOGGER.info("Reload data from resources and online services...");
+                importEventsJob.reloadData(false);
+                importCalendarEventsJob.reloadData(false);
+            }
         }
     }
 

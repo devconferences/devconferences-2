@@ -1,0 +1,7 @@
+{
+    "id": "testevent1",
+    "name": "Event 1 pour Test qui échoue",
+    "website": "http://www.event-test.com",
+    "description": "Event 2 pour Test qui échoue (id différent nom fichier)",
+    "type": "COMMUNITY"
+}

@@ -95,4 +95,11 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
 
         return 0;
     }
+
+    @Override
+    public int deleteAllES(String type) {
+        ElasticUtils.deleteData(type);
+
+        return 0;
+    }
 }
