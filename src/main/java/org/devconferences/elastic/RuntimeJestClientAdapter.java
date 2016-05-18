@@ -51,10 +51,12 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     }
 
     @Override
-    public void indexES(String type, Object event, String id) {
+    public int indexES(String type, Object event, String id) {
         Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(type).id(id).build();
 
         execute(index);
+
+        return 0;
     }
 
     @Override
@@ -86,9 +88,11 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     }
 
     @Override
-    public void deleteES(String type, String id) {
+    public int deleteES(String type, String id) {
         Delete delete = new Delete.Builder(id).index(DEV_CONFERENCES_INDEX).type(type).build();
 
         execute(delete);
+
+        return 0;
     }
 }

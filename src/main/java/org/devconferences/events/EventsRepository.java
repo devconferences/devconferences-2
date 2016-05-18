@@ -193,6 +193,7 @@ public class EventsRepository {
     }
 
     public void deleteEvent(String eventId) {
+        Preconditions.checkNotNull(eventId, "Should not be null !");
         Preconditions.checkArgument(!eventId.equals(""));
 
         client.deleteES(EVENTS_TYPE, eventId);
