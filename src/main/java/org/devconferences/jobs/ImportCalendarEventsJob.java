@@ -18,6 +18,14 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     private static final HashSet<String> idMeetupList = new HashSet<>();
 
+    public ImportCalendarEventsJob() {
+        super();
+    }
+
+    public ImportCalendarEventsJob(RuntimeJestClient client) {
+        super(client);
+    }
+
     public static void main(String[] args) {
         ImportCalendarEventsJob importCalendarEventsJob = new ImportCalendarEventsJob();
         importCalendarEventsJob.createIndex();

@@ -2,7 +2,7 @@ package org.devconferences.jobs;
 
 import com.google.gson.Gson;
 import org.devconferences.elastic.ElasticUtils;
-import org.devconferences.events.CalendarEvent;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.EventsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,13 +20,21 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractImportJSONJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImportJSONJob.class);
+    private RuntimeJestClient client;
+
+    public AbstractImportJSONJob() {
+        client = ElasticUtils.createClient();
+    }
+
+    public AbstractImportJSONJob(RuntimeJestClient client) {
+        this.client = client;
+    }
 
     public void createIndex() {
         ElasticUtils.createIndexIfNotExists();
@@ -44,7 +52,7 @@ public abstract class AbstractImportJSONJob {
     public abstract void checkAllData();
 
     protected void importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
-        EventsRepository eventsRepository = new EventsRepository();
+        EventsRepository eventsRepository = new EventsRepository(client);
 
         final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import calendar events...");

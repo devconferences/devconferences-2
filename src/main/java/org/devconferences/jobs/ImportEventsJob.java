@@ -2,29 +2,27 @@ package org.devconferences.jobs;
 
 import com.google.gson.Gson;
 import org.devconferences.elastic.ElasticUtils;
-import org.devconferences.events.CalendarEvent;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
-import org.devconferences.events.EventsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ImportEventsJob extends AbstractImportJSONJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportEventsJob.class);
     // TODO, le temps de ...
     public static final String EVENTS_TYPE = "events";
+    private RuntimeJestClient client;
+
+    public  ImportEventsJob() {
+        super();
+    }
+
+    public ImportEventsJob(RuntimeJestClient client) {
+        super(client);
+    }
 
     public static void main(String[] args) {
         ImportEventsJob importEventsJob = new ImportEventsJob();
