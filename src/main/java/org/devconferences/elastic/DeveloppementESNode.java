@@ -20,10 +20,15 @@ import java.util.UUID;
 public class DeveloppementESNode {
 
     public static final String ES_LOCAL_DATA = "tmp/es-local-data";
+    public static String elasticPort = "9200";
     private static final Logger LOGGER = LoggerFactory.getLogger(DeveloppementESNode.class);
 
     public static void createDevNode() {
-        createDevNode("9200");
+        createDevNode(elasticPort);
+
+        ElasticUtils.createIndex();
+        (new ImportEventsJob()).reloadData(false);
+        (new ImportCalendarEventsJob()).reloadData(false);
     }
 
     public static void createDevNode(String port) {
@@ -48,10 +53,6 @@ public class DeveloppementESNode {
                 .settings(settings)
                 .build();
         node.start();
-
-        ElasticUtils.createIndex();
-        (new ImportEventsJob()).reloadData(false);
-        (new ImportCalendarEventsJob()).reloadData(false);
     }
 
 }

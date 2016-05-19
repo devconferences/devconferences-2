@@ -28,9 +28,14 @@ public final class ElasticUtils {
     public static final String ES_URL = "ES_URL";
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences";
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);
+    public static String clientPort = "9200";
 
     public static RuntimeJestClient createClient() {
-        String esURL = fromEnv(ES_URL, "http://localhost:9200");
+        return createClient(clientPort);
+    }
+
+    public static RuntimeJestClient createClient(String port) {
+        String esURL = fromEnv(ES_URL, "http://localhost:" + port);
 
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(esURL)
@@ -60,6 +65,7 @@ public final class ElasticUtils {
                     throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
                 }
                 createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
+                createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
             }
         }
     }
