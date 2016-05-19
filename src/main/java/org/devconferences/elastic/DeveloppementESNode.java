@@ -23,7 +23,11 @@ public class DeveloppementESNode {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeveloppementESNode.class);
 
     public static void createDevNode() {
-        LOGGER.info("Creating dev ES node ...");
+        createDevNode("9200");
+    }
+
+    public static void createDevNode(String port) {
+        LOGGER.info("Creating dev ES node on port " + port + "...");
         Path localDevDataDirectory = Paths.get(ES_LOCAL_DATA);
         try {
             FileUtils.deleteDirectory(localDevDataDirectory.toFile());
@@ -32,7 +36,7 @@ public class DeveloppementESNode {
         }
 
         Settings settings = ImmutableSettings.builder()
-                .put("http.port", "9200")
+                .put("http.port", port)
                 .put("network.host", "localhost")
                 .put("path.data", ES_LOCAL_DATA)
                 .build();
