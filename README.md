@@ -24,6 +24,11 @@ Pour builder la partie ReactJS : `npm run build`
 
 Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé sur le master : [devconferences.cleverapps.io](http://devconferences.cleverapps.io)
 
+## Data
+
+- Ajout / édition de communautés ou de conférences (informations) : [ici](https://github.com/devconferences/devconferences-2/tree/master/src/main/resources/events)
+- Ajout / édition d'événements (agenda) : [ici](https://github.com/devconferences/devconferences-2/tree/master/src/main/resources/calendar)
+
 ## TODO list
 
 - [ ] ajouter des tags (ex : jug, java, php, gdg ...)
