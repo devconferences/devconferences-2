@@ -30,14 +30,42 @@ var TimelineEvent = React.createClass({
                 );
             }
         };
+        var organizer = function(name, url) {
+            if(name) {
+                if(url) {
+                    return (
+                        <span>, par <a href={url}>{name}</a></span>
+                    );
+                } else {
+                    return (
+                        <span>, par {name}</span>
+                    );
+                }
+            } else {
+                return (
+                    <span></span>
+                );
+            }
+        }
+        var nameTitle = function(name, url) {
+            if(url) {
+                return (
+                    <span><a href={url}>{name}</a></span>
+                );
+            } else {
+                return (
+                    <span>{name}</span>
+                );
+            }
+        }
 
         return (
             <div className="timeline-event">
                 <h3>
-                    <Glyphicon glyph="chevron-right"> <a href={event.url}>{event.name}</a> </Glyphicon>
+                    <Glyphicon glyph="chevron-right"> {nameTitle(event.name, event.url)} </Glyphicon>
                 </h3>
                 <p>
-                    {prettyDates(date, event.duration)}, par <a href={event.organizerUrl}>{event.organizerName}</a>
+                    {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
                 </p>
                 <p>
                     <div className="pre-style">{event.description}</div>
