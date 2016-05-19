@@ -7,11 +7,18 @@ var DevConferencesClient = require('../client/client');
 var TimelineEventList = React.createClass({
     getInitialState: function() {
         return {
-            eventsList: []
+            eventsList: [],
+            page: 0
         };
     },
     componentDidMount: function() {
-        DevConferencesClient.calendar().then(calendar => this.setState({ eventsList: calendar.data }));
+        this.reloadCE(null);
+    },
+    reloadCE: function(e) {
+        DevConferencesClient.calendar(this.state.page + 10).then(calendar => this.setState({
+           eventsList: calendar.data,
+            page: calendar.data.length
+        }));
     },
     render: function() {
         var calendarEvent = function(event) {
@@ -23,6 +30,9 @@ var TimelineEventList = React.createClass({
             <div className="text-left container scrollable">
                 <div>
                     {this.state.eventsList.map(calendarEvent)}
+                    <div className="text-center separe blockLink">
+                        <a onClick={this.reloadCE} className="moreLink">Plus d'événements...</a>
+                    </div>
                 </div>
             </div>
         );

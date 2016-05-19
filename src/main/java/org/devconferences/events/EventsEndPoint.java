@@ -70,10 +70,10 @@ public class EventsEndPoint {
         eventsRepository.deleteEvent(eventId);
     }
 
-    @Get("calendar")
+    @Get("calendar?p=:page")
     @AllowOrigin("*")
-    public List<CalendarEvent> getCalendarEvents () {
-        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEvents());
+    public List<CalendarEvent> getCalendarEvents (String page) {
+        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEvents(page));
     }
 
     private void checkUsersEvent(String eventId, Context context) {

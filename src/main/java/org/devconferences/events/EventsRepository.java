@@ -208,10 +208,14 @@ public class EventsRepository {
         client.deleteES(EVENTS_TYPE, eventId);
     }
 
-    public List<CalendarEvent> getCalendarEvents() {
+    public List<CalendarEvent> getCalendarEvents(String page) {
+        int pageInt = Integer.MAX_VALUE;
+        if(page != null && Integer.decode(page) > 0) {
+            pageInt = Integer.decode(page);
+        }
         String query = "" +
                 "{" +
-                "  \"size\" : " + Integer.MAX_VALUE + "," +
+                "  \"size\" : " + pageInt + "," +
                 "  \"sort\" : [" +
                 "    {\"date\" : \"asc\"}" +
                 "  ]," +

@@ -57,8 +57,8 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/meetup/${meetupName}`).catch(errorCallback));
     }
 
-    function calendar() {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/calendar`).catch(errorCallback));
+    function calendar(page) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/calendar?p=${page}`).catch(errorCallback));
     }
 
     return {

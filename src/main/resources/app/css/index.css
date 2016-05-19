@@ -92,6 +92,22 @@ div.conflinks a {
     max-width: 90%;
     margin-top: 1em;
     padding: 0px 1em;
+}
+
+.separe, scrollable {
     border-top: 1px rgba(15, 70, 100, 0.12) solid;
     border-bottom: 1px rgba(15, 70, 100, 0.12) solid;
+}
+
+.blockLink {
+    height: 3em;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 2.5em;
+}
+
+.moreLink {
+    background-color: white;
+    border: 0px;
+    cursor: pointer;
 }
