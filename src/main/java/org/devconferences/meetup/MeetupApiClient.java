@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-@Singleton
-public class MeetupApiClient {
-
+class MeetupCalls {
     public static final String MEETUP_API_KEY = "MEETUP_API_KEY";
     public static final String MEETUP_API_BASE_URL = "https://api.meetup.com";
     public static final String MEETUP_API_GROUP_INFO_URL = MEETUP_API_BASE_URL + "/%s?sign=true&key=%s";
@@ -26,12 +24,49 @@ public class MeetupApiClient {
     public static final String MEETUP_API_EVENTS_BY_GROUP_URL = MEETUP_API_BASE_URL + "/2/events/?group_urlname=%s&" +
             "status=upcoming&sign=true&key=%s";
 
+    public EventsSearch askUpcomingEvents(String id) {
+        return (EventsSearch) getContent(MEETUP_API_EVENTS_BY_GROUP_URL, id, EventsSearch.class);
+    }
+
+    public Group askGroupInfo(String id) {
+        return (Group) getContent(MEETUP_API_GROUP_INFO_URL, id, Group.class);
+    }
+
+    public Event askEventInfo(String id) {
+        return (Event) getContent(MEETUP_API_EVENT_INFO_URL, id, Event.class);
+    }
+
+    private Object getContent(String urlFormat, String id, Class classType) {
+        Content eventsByURLResponse;
+        try {
+            eventsByURLResponse = Request.Get(String.format(urlFormat, id,
+                    System.getenv(MEETUP_API_KEY)))
+                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
+                    .execute()
+                    .returnContent();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new Gson().fromJson(eventsByURLResponse.asString(), classType);
+    }
+}
+
+@Singleton
+public class MeetupApiClient {
     private Cache<String, MeetupInfo> cache;
+    private final MeetupCalls meetupCall;
 
     public MeetupApiClient() {
+        this(new MeetupCalls());
+    }
+
+    public MeetupApiClient(MeetupCalls meetupCall) {
         cache = CacheBuilder.newBuilder()
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .build();
+
+        this.meetupCall = meetupCall;
     }
 
     public MeetupInfo getMeetupInfo(String id) {
@@ -43,18 +78,7 @@ public class MeetupApiClient {
     }
 
     public List<CalendarEvent> getUpcomingEvents(String id) {
-        Content eventsByURLResponse = null;
-        try {
-            eventsByURLResponse = Request.Get(String.format(MEETUP_API_EVENTS_BY_GROUP_URL, id,
-                    System.getenv(MEETUP_API_KEY)))
-                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                    .execute()
-                    .returnContent();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        EventsSearch eventsSearch = new Gson().fromJson(eventsByURLResponse.asString(), EventsSearch.class);
+        EventsSearch eventsSearch = meetupCall.askUpcomingEvents(id);
 
         List<CalendarEvent> result = new ArrayList<>();
 
@@ -81,11 +105,7 @@ public class MeetupApiClient {
         MeetupInfo meetupInfo = new MeetupInfo();
 
         // Step 1 - get group data
-        Content groupInfoResponse = Request.Get(String.format(MEETUP_API_GROUP_INFO_URL, id, System.getenv(MEETUP_API_KEY)))
-                .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                .execute()
-                .returnContent();
-        Group group = new Gson().fromJson(groupInfoResponse.asString(), Group.class);
+        Group group = meetupCall.askGroupInfo(id);
         meetupInfo.name = group.name;
         meetupInfo.url = group.link;
         meetupInfo.members = group.members;
@@ -93,11 +113,7 @@ public class MeetupApiClient {
         // Step 2 - get next event data
         if (group.next_event != null) {
             String nextEventId = group.next_event.id;
-            Content eventInfoResponse = Request.Get(String.format(MEETUP_API_EVENT_INFO_URL, nextEventId, System.getenv(MEETUP_API_KEY)))
-                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                    .execute()
-                    .returnContent();
-            Event nextEvent = new Gson().fromJson(eventInfoResponse.asString(), Event.class);
+            Event nextEvent = meetupCall.askEventInfo(nextEventId);
 
             meetupInfo.nextEvent = new MeetupInfo.NextEventInfo();
             meetupInfo.nextEvent.name = nextEvent.name;
