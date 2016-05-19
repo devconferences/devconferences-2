@@ -23,12 +23,6 @@ public class ImportEventsJob extends AbstractImportJSONJob {
         super(client);
     }
 
-    public static void main(String[] args) {
-        ElasticUtils.createIndex();
-        ImportEventsJob importEventsJob = new ImportEventsJob();
-        importEventsJob.reloadData(false);
-    }
-
     @Override
     public int reloadData(boolean noRemoteCall) {
         client.deleteAllES(EVENTS_TYPE);

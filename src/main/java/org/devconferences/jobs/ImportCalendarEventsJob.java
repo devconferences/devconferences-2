@@ -121,32 +121,36 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         String month = pathSplit[3];
         String file = pathSplit[4];
 
-        int yearInt = Integer.parseInt(year);
-        int monthInt = Integer.parseInt(month);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(event.date);
 
         // Check path
-        if(Integer.decode(year) <= 0) {
+        try {
+            Integer.decode(year);
+        } catch(NumberFormatException e) {
             throw new RuntimeException("Invalid CalendarEvent : year in path is NaN");
         }
-        if(Integer.decode(month) <= 0) {
+        try {
+            Integer.decode(month);
+        } catch(NumberFormatException e) {
             throw new RuntimeException("Invalid CalendarEvent : month in path is NaN");
         }
 
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month);
+
         // Check file content (mandatory fields)
+        if(event.id == null) {
+            throw new RuntimeException("Invalid CalendarEvent : no 'id' field");
+        }
         if(event.name == null) {
-            throw new RuntimeException("Invalid Event : no 'name' field");
+            throw new RuntimeException("Invalid CalendarEvent : no 'name' field");
         }
         if(event.date == 0) {
-            throw new RuntimeException("Invalid Event : no 'date' field");
+            throw new RuntimeException("Invalid CalendarEvent : no 'date' field");
         }
         if(event.description == null) {
-            throw new RuntimeException("Invalid Event : no 'description' field");
-        }
-        if(event.id == null) {
-            throw new RuntimeException("Invalid Event : no 'id' field");
+            throw new RuntimeException("Invalid CalendarEvent : no 'description' field");
         }
 
         // Check path and file content
@@ -157,10 +161,14 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             throw new RuntimeException("Invalid CalendarEvent : 'id' not start with \"file_\"");
         }
         if(calendar.get(Calendar.YEAR) != yearInt) {
-            throw new RuntimeException("Invalid CalendarEvent : year path and 'date' field mismatch");
+            throw new RuntimeException("Invalid CalendarEvent : year path and 'date' field mismatch\n" +
+                    "date year:" + calendar.get(Calendar.YEAR) + "\n" +
+                    "path year:" + yearInt);
         }
         if((calendar.get(Calendar.MONTH) + 1) != monthInt) { // JANUARY = 0
-            throw new RuntimeException("Invalid CalendarEvent : month path and 'date' field mismatch");
+            throw new RuntimeException("Invalid CalendarEvent : month path and 'date' field mismatch\n" +
+                    "date month:" + (calendar.get(Calendar.MONTH) + 1) + "\n" +
+                    "path month:" + monthInt);
         }
     }
 
