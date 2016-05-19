@@ -85,7 +85,7 @@ public abstract class AbstractImportJSONJob {
         }
 
         try {
-            Stream<Path> res = Files.find(rootPath, 3,
+            Stream<Path> res = Files.find(rootPath, 5,
                     (path, attr) -> isJSONFileInFolder(path, attr, resourceFolderPath));
             return res.map(path -> path.toString())
                     .map(path -> {

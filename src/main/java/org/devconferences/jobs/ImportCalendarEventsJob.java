@@ -1,5 +1,6 @@
 package org.devconferences.jobs;
 
+import com.google.gson.Gson;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 
@@ -85,11 +87,6 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         return totalCalendarEvents;
     }
 
-    @Override
-    public void checkAllData() {
-        // Check nothing... Yet.
-    }
-
     private Object removeHTMLTagsAndAddNewlines(Object obj, String path) {
         if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
@@ -104,8 +101,67 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     }
 
     @Override
+    public void checkAllData() {
+        checkAllDataInFolder("calendar");
+    }
+
+    @Override
     public void checkData(String path) {
-        // Check nothing... Yet.
+        CalendarEvent event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), CalendarEvent.class);
+        try {
+            checkCalendarEvent(event, path); // This line might throw an exception
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e.getMessage() + " - file path : " + path);
+        }
+    }
+
+    public static void checkCalendarEvent(CalendarEvent event, String path) {
+        String[] pathSplit = path.split("/");
+        String year = pathSplit[2];
+        String month = pathSplit[3];
+        String file = pathSplit[4];
+
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(event.date);
+
+        // Check path
+        if(Integer.decode(year) <= 0) {
+            throw new RuntimeException("Invalid CalendarEvent : year in path is NaN");
+        }
+        if(Integer.decode(month) <= 0) {
+            throw new RuntimeException("Invalid CalendarEvent : month in path is NaN");
+        }
+
+        // Check file content (mandatory fields)
+        if(event.name == null) {
+            throw new RuntimeException("Invalid Event : no 'name' field");
+        }
+        if(event.date == 0) {
+            throw new RuntimeException("Invalid Event : no 'date' field");
+        }
+        if(event.description == null) {
+            throw new RuntimeException("Invalid Event : no 'description' field");
+        }
+        if(event.id == null) {
+            throw new RuntimeException("Invalid Event : no 'id' field");
+        }
+
+        // Check path and file content
+        if(!(event.id + ".json").equals(file)) {
+            throw new RuntimeException("Invalid CalendarEvent : filename and 'id' field mismatch");
+        }
+        if(!event.id.startsWith("file_")) {
+            throw new RuntimeException("Invalid CalendarEvent : 'id' not start with \"file_\"");
+        }
+        if(calendar.get(Calendar.YEAR) != yearInt) {
+            throw new RuntimeException("Invalid CalendarEvent : year path and 'date' field mismatch");
+        }
+        if((calendar.get(Calendar.MONTH) + 1) != monthInt) { // JANUARY = 0
+            throw new RuntimeException("Invalid CalendarEvent : month path and 'date' field mismatch");
+        }
     }
 
     private static void saveMeetupIdList() {

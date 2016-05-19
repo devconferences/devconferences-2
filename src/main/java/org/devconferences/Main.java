@@ -29,6 +29,8 @@ public class Main {
     public static final String CHECK_EVENTS = "CHECK_EVENTS";
     public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
     public static final String ONLY_RELOAD_CALENDAR = "ONLY_RELOAD_CALENDAR";
+    public static final String CHECK_CALENDAR = "CHECK_CALENDAR";
+    public static final String ONLY_CHECK_CALENDAR = "ONLY_CHECK_CALENDAR";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -36,7 +38,6 @@ public class Main {
         boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
         boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
         boolean onlyCheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
-        boolean onlyReloadCalendar = Boolean.parseBoolean(System.getProperty(ONLY_RELOAD_CALENDAR, "false"));
         // Vérification des Events dans le dossier ressource "/events/"
         if(prodMode || checkEvents || onlyCheckEvents) {
             LOGGER.info("Checking all Events...");
@@ -54,6 +55,25 @@ public class Main {
             }
         }
 
+        boolean checkCalendar = Boolean.parseBoolean(System.getProperty(CHECK_CALENDAR, "false"));
+        boolean onlyCheckCalendar = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_CALENDAR, "false"));
+        if(prodMode || checkCalendar || onlyCheckCalendar) {
+            LOGGER.info("Checking all CalendarEvents...");
+            try {
+                importCalendarEventsJob.checkAllData(); // This might throw an RuntimeException
+            } catch(RuntimeException e) {
+                LOGGER.error(e.getMessage());
+
+                throw e;
+            }
+            LOGGER.info("All CalendarEvents are good !");
+
+            if(onlyCheckCalendar) {
+                return;
+            }
+        }
+
+        boolean onlyReloadCalendar = Boolean.parseBoolean(System.getProperty(ONLY_RELOAD_CALENDAR, "false"));
         if(onlyReloadCalendar) {
             ImportCalendarEventsJob.reloadMeetupIds();
             importCalendarEventsJob.reloadData(false);
