@@ -1,0 +1,14 @@
+/* Tamplate pour la création d'un CalendarEvent.
+ *
+ * Pensez à enlever les commentaires, ainsi les champs qui ne sont pas édités
+ * (mis à null).
+ */{
+    "id": "file_sdfsvfeb", // id commençant par "file_"
+    "name": "Nom de l'événement",
+    "date": 705285300000, // format timestamp, millisecondes
+    "duration": 7200000, // Durée, format timestamp, millisecondes
+    "url": "http://www.event-website.com",
+    "description": "Une petite description.",
+    "organizerName": "Organisateur",
+    "organizerUrl": "http://www.organizer.com"
+}
