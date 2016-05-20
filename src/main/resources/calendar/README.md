@@ -118,3 +118,29 @@ Le nom de l'organisateur du CalendarEvent.
 Le site de l'organisateur du CalendarEvent.
 
 `organizerName` doit être renseigné, sinon le lien ne s'affichera pas.
+
+#### `location`
+
+Le lieu du CalendarEvent.
+
+Si c'est renseigné, TOUS les champs suivant DOIVENT l'être aussi :
+
+##### `city`
+
+La ville où se trouve le CalendarEvent.
+
+##### `address`
+
+L'adresse du CalendarEvent.
+
+Ici, il faut juste mettre la rue, pas besoin de mettre la ville
+
+##### `name`
+
+Le nom du lieu associé à l'adresse.
+
+##### `gps`
+
+La géolocalisation du CalendarEvent.
+
+Cela permet de créer un lien vers Google Maps pour afficher un plan.

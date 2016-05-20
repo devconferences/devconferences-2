@@ -10,5 +10,11 @@
     "url": "http://www.event-website.com",
     "description": "Une petite description.",
     "organizerName": "Organisateur",
-    "organizerUrl": "http://www.organizer.com"
+    "organizerUrl": "http://www.organizer.com",
+    "location": {
+        "city": "La Ville",
+        "name": "Ici",
+        "address": "42, Rue des Pruniers"
+        "gps": "46.6695,0.3635" // "latitude.0000, longitude.0000"
+    }
 }
