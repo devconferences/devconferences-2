@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.jobs.ImportEventsJob;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -19,7 +20,6 @@ public class RuntimeJestClientTest {
     @BeforeClass
     public static void classSetUp() {
         DeveloppementESNode.createDevNode("9250");
-        ElasticUtils.clientPort = "9250";
         jestClient = ElasticUtils.createClient();
         Assertions.assertThat(jestClient).isNotNull();
         // Index should not exists yet
@@ -38,6 +38,16 @@ public class RuntimeJestClientTest {
         }
     }
 
+    @AfterClass
+    public static void tearDownOne() {
+        ElasticUtils.deleteIndex();
+        Assertions.assertThat(jestClient.countES(EventsRepository.EVENTS_TYPE, "{}").getJsonString())
+                .contains("IndexMissingException[[dev-conferences] missing]");
+        DeveloppementESNode.deleteDevNode();
+        Assertions.assertThat(DeveloppementESNode.esNode).isNull();
+        Assertions.assertThat(DeveloppementESNode.portNode).isNull();
+    }
+
     @Before
     public void setUp() {
         (new ImportEventsJob()).reloadData(true);
@@ -45,7 +55,7 @@ public class RuntimeJestClientTest {
         try { // Need waiting few seconds, or loaded data won't be founded...
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -85,7 +95,7 @@ public class RuntimeJestClientTest {
         try { // Need waiting few seconds, or changes won't be applied...
             Thread.sleep(2000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         SearchResult searchResult = jestClient.searchES(EventsRepository.EVENTS_TYPE, "{" +
@@ -105,5 +115,4 @@ public class RuntimeJestClientTest {
 
         (new ImportEventsJob()).reloadData(true);
     }
-
 }
