@@ -27,10 +27,10 @@ var TimelineEventList = React.createClass({
             );
         };
         return (
-            <div className="text-left container scrollable">
+            <div className="text-left separe scrollable">
                 <div>
                     {this.state.eventsList.map(calendarEvent)}
-                    <div className="text-center separe blockLink">
+                    <div className="text-center blockLink">
                         <a onClick={this.reloadCE} className="moreLink">Plus d'événements...</a>
                     </div>
                 </div>

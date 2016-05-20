@@ -72,7 +72,7 @@ var TimelineEvent = React.createClass({
         };
 
         return (
-            <div className="timeline-event">
+            <div className="timeline-event separe-bottom">
                 <h3>
                     <Glyphicon glyph="chevron-right"> {nameTitle(event.name, event.url)} </Glyphicon>
                 </h3>
@@ -81,7 +81,7 @@ var TimelineEvent = React.createClass({
                 </p>
                 {location(event.location)}
                 <p>
-                    <div className="pre-style">{event.description}</div>
+                    <div className="text-justify pre-style">{event.description}</div>
                 </p>
             </div>
         );
