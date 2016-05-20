@@ -303,7 +303,7 @@ public class EventsRepositoryTest {
 
         MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 2, searchHits, "{}");
 
-        List<CalendarEvent> calendarEventList = eventsEndPoint.getCalendarEvents(null);
+        List<CalendarEvent> calendarEventList = eventsEndPoint.getCalendarEvents("10");
         Assertions.assertThat(calendarEventList).hasSize(2);
         Assertions.assertThat(calendarEventList.get(0).id).matches("1");
         Assertions.assertThat(calendarEventList.get(0).name).matches("Event 1");
