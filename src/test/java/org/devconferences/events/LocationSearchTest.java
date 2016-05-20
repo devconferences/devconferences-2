@@ -24,8 +24,8 @@ public class LocationSearchTest {
         // Index should not exists yet
         try { // This might throw randomly a SocketTimeoutException which we can't manage
             ElasticUtils.createIndex(); // Index + type creation
-        } catch(Exception e) {
-            if(e instanceof SocketTimeoutException) {
+        } catch(RuntimeException e) {
+            if(e.getCause() instanceof SocketTimeoutException) {
                 System.out.println();
                 System.out.println("SocketTimeoutException !");
                 System.out.println();

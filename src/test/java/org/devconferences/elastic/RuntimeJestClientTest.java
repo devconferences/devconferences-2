@@ -27,8 +27,8 @@ public class RuntimeJestClientTest {
             Assertions.assertThat(jestClient.countES(EventsRepository.EVENTS_TYPE, "{}").getJsonString())
                     .contains("IndexMissingException[[dev-conferences] missing]");
             ElasticUtils.createIndex(); // Index + type creation
-        } catch(Exception e) {
-            if(e instanceof SocketTimeoutException) {
+        } catch(RuntimeException e) {
+            if(e.getCause() instanceof SocketTimeoutException) {
                 System.out.println();
                 System.out.println("SocketTimeoutException !");
                 System.out.println();
