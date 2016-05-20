@@ -23,6 +23,19 @@
       "organizerUrl": {
         "type": "string",
         "index": "not_analyzed"
+      },
+      "location": {
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "gps": {
+            "type" : "geo_point"
+          }
+        }
       }
     }
   }

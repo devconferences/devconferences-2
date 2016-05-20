@@ -9,6 +9,7 @@ import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
 import org.devconferences.events.CalendarEvent;
+import org.elasticsearch.common.geo.GeoPoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -90,6 +91,13 @@ public class MeetupApiClient {
             calendarEvent.organizerName = data.group.name;
             calendarEvent.organizerUrl = "http://www.meetup.com/" + data.group.urlname;
 
+            if(data.venue != null) {
+                calendarEvent.location = calendarEvent.new Location();
+                calendarEvent.location.address = data.venue.address_1;
+                calendarEvent.location.name = data.venue.name;
+                calendarEvent.location.city = data.venue.city;
+                calendarEvent.location.gps = new GeoPoint(data.venue.lat, data.venue.lon);
+            }
             result.add(calendarEvent);
         });
 

@@ -46,7 +46,7 @@ var TimelineEvent = React.createClass({
                     <span></span>
                 );
             }
-        }
+        };
         var nameTitle = function(name, url) {
             if(url) {
                 return (
@@ -57,7 +57,19 @@ var TimelineEvent = React.createClass({
                     <span>{name}</span>
                 );
             }
-        }
+        };
+        var location = function(location) {
+            if(location) {
+                var mapsUrl = "http://maps.google.com/?q=" + location.gps.lat + ", " + location.gps.lon;
+                return (
+                    <p>
+                        <i className="fa fa-map-marker" aria-hidden="true"></i> : <a href={mapsUrl}>{location.name}</a> ({location.address}, {location.city})
+                    </p>
+                );
+            } else {
+                return (<span></span>);
+            }
+        };
 
         return (
             <div className="timeline-event">
@@ -67,6 +79,7 @@ var TimelineEvent = React.createClass({
                 <p>
                     {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
                 </p>
+                {location(event.location)}
                 <p>
                     <div className="pre-style">{event.description}</div>
                 </p>
