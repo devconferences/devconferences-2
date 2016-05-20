@@ -39,11 +39,8 @@ class MeetupCalls {
     private Object getContent(String urlFormat, String id, Class classType) {
         Content eventsByURLResponse;
         try {
-            eventsByURLResponse = Request.Get(String.format(urlFormat, id,
-                    System.getenv(MEETUP_API_KEY)))
-                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                    .execute()
-                    .returnContent();
+            eventsByURLResponse = Request.Get(String.format(urlFormat, id, System.getenv(MEETUP_API_KEY)))
+                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json")).execute().returnContent();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
