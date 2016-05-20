@@ -310,47 +310,4 @@ public class EventsRepositoryTest {
         Assertions.assertThat(calendarEventList.get(0).description).matches("Event 1");
         Assertions.assertThat(calendarEventList.get(0).url).matches("http://www.example.com");
     }
-
-    @Ignore
-    @Test
-    public void should_find_event_around() {
-        Event event = new Event();
-        event.id = UUID.randomUUID().toString();
-        event.location = new GeoPoint(1.0f, 1.0f);
-
-        EventsRepository eventsRepository = new EventsRepository();
-        eventsRepository.createEvent(event);
-
-        eventsRepository.getEvent(event.id);
-
-        Map<String, Long> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10, 5);
-        Assertions.assertThat(events).hasSize(1);
-        String point = events.keySet().iterator().next();
-        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(1.0d, 1.0d, 5));
-        Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
-    }
-
-    @Ignore
-    @Test
-    public void should_not_find_event_far_away() {
-        Event event = new Event();
-        event.id = UUID.randomUUID().toString();
-        event.location = new GeoPoint(1.0f, 1.0f);
-
-        Event event2 = new Event();
-        event2.id = UUID.randomUUID().toString();
-        event2.location = new GeoPoint(50.0f, 50.0f);
-
-        EventsRepository eventsRepository = new EventsRepository();
-        eventsRepository.createEvent(event);
-        eventsRepository.createEvent(event2);
-
-        eventsRepository.getEvent(event.id);
-
-        Map<String, Long> events = eventsRepository.findEventsAround(50.0f, 50.0f, 10, 5);
-        Assertions.assertThat(events).hasSize(1);
-        String point = events.keySet().iterator().next();
-        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(50.0d, 50.0d, 5));
-        Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
-    }
 }
