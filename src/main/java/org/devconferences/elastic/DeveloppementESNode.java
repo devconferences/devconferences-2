@@ -27,10 +27,6 @@ public class DeveloppementESNode {
 
     public static void createDevNode() {
         createDevNode(elasticPort);
-
-        ElasticUtils.createIndex();
-        (new ImportEventsJob()).reloadData(false);
-        (new ImportCalendarEventsJob()).reloadData(false);
     }
 
     public static void createDevNode(String port) {

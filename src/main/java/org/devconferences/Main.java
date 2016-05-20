@@ -6,6 +6,7 @@ import net.codestory.http.templating.ModelAndView;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.EventsEndPoint;
+import org.devconferences.jobs.AbstractImportJSONJob;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
 import org.devconferences.meetup.MeetupEndPoint;
@@ -15,6 +16,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Main {
+    // Store all boolean properties passed when launch DevCOnferences
+    static class BooleanProperties {
+        final boolean prodMode;
+        final boolean checkEvents;
+        final boolean onlyCheckEvents;
+        final boolean checkCalendar;
+        final boolean onlyCheckCalendar;
+        final boolean onlyReloadCalendar;
+        final boolean skipDevNode;
+        final boolean createIndex;
+        final boolean reloadData;
+
+        BooleanProperties() {
+            prodMode = getBooleanProperty(PROD_MODE);
+            checkEvents = getBooleanProperty(CHECK_EVENTS);
+            onlyCheckEvents = getBooleanProperty(ONLY_CHECK_EVENTS);
+            checkCalendar = getBooleanProperty(CHECK_CALENDAR);
+            onlyCheckCalendar = getBooleanProperty(ONLY_CHECK_CALENDAR);
+            onlyReloadCalendar = getBooleanProperty(ONLY_RELOAD_CALENDAR);
+            skipDevNode = getBooleanProperty(SKIP_CREATE_ES_DEV_NODE);
+            createIndex = getBooleanProperty(CREATE_INDEX);
+            reloadData = getBooleanProperty(RELOAD_EVENTS);
+        }
+
+        private boolean getBooleanProperty(String property) {
+            return Boolean.parseBoolean(System.getProperty(property, "false"));
+        }
+    }
 
     public static final int PORT = 8080;
     public static final ImportCalendarEventsJob importCalendarEventsJob =
@@ -34,53 +63,69 @@ public class Main {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    public static void main(String[] args) {
-        boolean prodMode = Boolean.parseBoolean(System.getProperty(PROD_MODE, "false"));
-        boolean checkEvents = Boolean.parseBoolean(System.getProperty(CHECK_EVENTS, "false"));
-        boolean onlyCheckEvents = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_EVENTS, "false"));
-        // Vérification des Events dans le dossier ressource "/events/"
-        if(prodMode || checkEvents || onlyCheckEvents) {
-            LOGGER.info("Checking all Events...");
+    static void checkData(boolean prodMode, boolean checkData, boolean onlyCheckData, AbstractImportJSONJob job) {
+        if(prodMode || checkData || onlyCheckData) {
+            LOGGER.info(job.getClass().getSimpleName() + " : Checking data...");
             try {
-                importEventsJob.checkAllData(); // This might throw an RuntimeException
+                job.checkAllData(); // This might throw an RuntimeException
             } catch(RuntimeException e) {
-                LOGGER.error(e.getMessage());
-
+                LOGGER.error(job.getClass().getSimpleName() + " : " + e.getMessage());
                 throw e;
             }
-            LOGGER.info("All Events are good !");
+            LOGGER.info(job.getClass().getSimpleName() + " : Data is OK !");
 
-            if(onlyCheckEvents) {
-                return;
+            if(onlyCheckData) {
+                System.exit(0);
             }
         }
+    }
 
-        boolean checkCalendar = Boolean.parseBoolean(System.getProperty(CHECK_CALENDAR, "false"));
-        boolean onlyCheckCalendar = Boolean.parseBoolean(System.getProperty(ONLY_CHECK_CALENDAR, "false"));
-        if(prodMode || checkCalendar || onlyCheckCalendar) {
-            LOGGER.info("Checking all CalendarEvents...");
-            try {
-                importCalendarEventsJob.checkAllData(); // This might throw an RuntimeException
-            } catch(RuntimeException e) {
-                LOGGER.error(e.getMessage());
+    static void ifCheckEvents(BooleanProperties booleans) {
+        boolean prodMode = booleans.prodMode;
+        boolean checkEvents = booleans.checkEvents;
+        boolean onlyCheckEvents = booleans.onlyCheckEvents;
 
-                throw e;
-            }
-            LOGGER.info("All CalendarEvents are good !");
+        checkData(prodMode, checkEvents, onlyCheckEvents, importEventsJob);
+    }
 
-            if(onlyCheckCalendar) {
-                return;
-            }
-        }
+    static void ifCheckCalendarEvents(BooleanProperties booleans) {
+        boolean prodMode = booleans.prodMode;
+        boolean checkCalendar = booleans.checkCalendar;
+        boolean onlyCheckCalendar = booleans.onlyCheckCalendar;
 
-        boolean onlyReloadCalendar = Boolean.parseBoolean(System.getProperty(ONLY_RELOAD_CALENDAR, "false"));
+        checkData(prodMode, checkCalendar, onlyCheckCalendar, importCalendarEventsJob);
+    }
+
+    static void ifOnlyReloadCalendar(boolean onlyReloadCalendar) {
         if(onlyReloadCalendar) {
             ImportCalendarEventsJob.reloadMeetupIds();
             importCalendarEventsJob.reloadData(false);
 
-            return;
+            System.exit(0);
         }
+    }
 
+    static void manageESNode(BooleanProperties booleans) {
+        boolean prodMode = booleans.prodMode;
+        boolean skipDevNode = booleans.skipDevNode;
+        boolean createIndex = booleans.createIndex;
+        boolean reloadData = booleans.reloadData;
+
+        if (!prodMode && !skipDevNode) {
+            LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
+            DeveloppementESNode.createDevNode();
+        }
+        if((!prodMode && !skipDevNode) || createIndex) {
+            ElasticUtils.createIndex();
+        }
+        if((!prodMode && !skipDevNode) || createIndex || prodMode || reloadData) {
+            LOGGER.info("Reload data from resources and online services...");
+            importEventsJob.reloadData(false);
+            importCalendarEventsJob.reloadData(false);
+        }
+    }
+
+    static WebServer configureWebServer() {
         WebServer webServer = new WebServer();
 
         webServer.configure(routes -> {
@@ -96,24 +141,19 @@ public class Main {
                     routes.get("/search/:query/:page", (context, query, page) -> ModelAndView.of("index"));
                 }
         );
-        webServer.start(PORT);
-
-        boolean skipDevNode = Boolean.parseBoolean(System.getProperty(SKIP_CREATE_ES_DEV_NODE, "false"));
-        boolean createIndex = Boolean.parseBoolean(System.getProperty(CREATE_INDEX, "false"));
-        boolean reloadData = Boolean.parseBoolean(System.getProperty(RELOAD_EVENTS, "false"));
-        if (!prodMode && !skipDevNode) {
-            LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
-            DeveloppementESNode.createDevNode();
-        } else {
-            if(createIndex) {
-                ElasticUtils.createIndex();
-            }
-            if(prodMode || reloadData || createIndex) {
-                LOGGER.info("Reload data from resources and online services...");
-                importEventsJob.reloadData(false);
-                importCalendarEventsJob.reloadData(false);
-            }
-        }
+        return webServer;
     }
 
+    public static void main(String[] args) {
+        BooleanProperties booleans = new BooleanProperties();
+
+        ifCheckEvents(booleans);
+        ifCheckCalendarEvents(booleans);
+        ifOnlyReloadCalendar(booleans.onlyReloadCalendar);
+
+        WebServer webServer = configureWebServer();
+        webServer.start(PORT);
+
+        manageESNode(booleans);
+    }
 }
