@@ -2,6 +2,7 @@ package org.devconferences.meetup;
 
 import net.codestory.http.errors.NotFoundException;
 import org.assertj.core.api.Assertions;
+import org.assertj.core.data.Offset;
 import org.devconferences.events.CalendarEvent;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.within;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,6 +39,11 @@ public class MeetupClientTest {
         eventSearch1.group = eventsSearchId1.new Organizer();
         eventSearch1.group.name = "AzErTy";
         eventSearch1.group.urlname = "azerty1";
+        eventSearch1.venue = eventsSearchId1.new Location();
+        eventSearch1.venue.address_1 = "1, Rue Bidon";
+        eventSearch1.venue.city = "Ville Bidon";
+        eventSearch1.venue.lat = 12.3456;
+        eventSearch1.venue.lon = 34.5678;
         EventsSearch.EventSearch eventSearch2 = eventsSearchId1.new EventSearch();
         eventSearch2.id = "qsdfgh";
         eventSearch2.name = "Qsdfgh";
@@ -59,8 +66,13 @@ public class MeetupClientTest {
         Assertions.assertThat(calendarEventList.get(0).name).matches("Azerty");
         Assertions.assertThat(calendarEventList.get(0).description).matches("AZERTY.");
         Assertions.assertThat(calendarEventList.get(0).date).isEqualTo(123456789000L);
-        Assertions.assertThat(calendarEventList.get(0).organizerName).isEqualTo("AzErTy");
-        Assertions.assertThat(calendarEventList.get(0).organizerUrl).isEqualTo("http://www.meetup.com/azerty1");
+        Assertions.assertThat(calendarEventList.get(0).organizerName).matches("AzErTy");
+        Assertions.assertThat(calendarEventList.get(0).organizerUrl).matches("http://www.meetup.com/azerty1");
+        Assertions.assertThat(calendarEventList.get(0).location.address).matches("1, Rue Bidon");
+        Assertions.assertThat(calendarEventList.get(0).location.city).matches("Ville Bidon");
+        Assertions.assertThat(calendarEventList.get(0).location.gps.lat()).isEqualTo(12.3456, within(0.001));
+        Assertions.assertThat(calendarEventList.get(0).location.gps.lon()).isCloseTo(34.5678, within(0.001));
+
         Assertions.assertThat(calendarEventList.get(1).id).matches("meetup_qsdfgh");
         Assertions.assertThat(calendarEventList.get(1).name).matches("Qsdfgh");
         Assertions.assertThat(calendarEventList.get(1).description).matches("QSDFGH.");
