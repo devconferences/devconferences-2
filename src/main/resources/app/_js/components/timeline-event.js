@@ -70,6 +70,29 @@ var TimelineEvent = React.createClass({
                 return (<span></span>);
             }
         };
+        var cfp = function(cfpData) {
+            if(cfpData) {
+                var statusCFP = function() {
+                    if(new Date() < new Date(cfpData.dateSubmission)) {
+                    var prettyDate = moment(new Date(cfpData.dateSubmission)).format("DD/MM/YYYY à HH:mm");
+                        return (
+                            <span><span className="label label-success">Ouvert</span> (Fermeture le {prettyDate})</span>
+                        );
+                    } else {
+                        return (
+                            <span className="label label-danger">Fermé</span>
+                        );
+                    }
+                }.bind(this);
+                return (
+                    <p>
+                        CFP : {statusCFP()} <a href={cfpData.url}>{cfpData.url}</a>
+                    </p>
+                );
+            } else {
+                return (<span></span>);
+            }
+        }
 
         return (
             <div className="timeline-event">
@@ -80,6 +103,7 @@ var TimelineEvent = React.createClass({
                     {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
                 </p>
                 {location(event.location)}
+                {cfp(event.cfp)}
                 <p>
                     <div className="text-justify pre-style">{event.description}</div>
                 </p>
