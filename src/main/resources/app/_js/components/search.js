@@ -13,7 +13,8 @@ var Search = React.createClass({
 
     getInitialState: function(){
         return {
-            lastSearch: null
+            lastSearch: null,
+            searchType: "events"
         }
     },
 
@@ -41,6 +42,14 @@ var Search = React.createClass({
         this.research(searchValue, page);
     },
 
+    changeSearchType: function(e) {
+        this.setState({
+            searchType: e.target.value
+        });
+
+        changeInput(e);
+    },
+
     research: function(query, page) {
         DevConferencesClient.searchEvents(query, page).then(result => {
             this.setState({
@@ -65,7 +74,7 @@ var Search = React.createClass({
                 }.bind(this))
             )
         };
-        var resultsHead = function(lastSearch) {
+        var resultsHead = function(lastSearch, searchType, changeSearchType) {
             var nbrResults = 0;
             var totalPage = 0;
             var currPage = 1;
@@ -94,11 +103,24 @@ var Search = React.createClass({
                     </div>
                 );
             }.bind(this);
+            var searchTypeUI = function() {
+                return (
+                    <ul className="list-inline text-center">
+                        <li><input type="radio" name="searchType" value="events" defaultChecked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</li>
+                        <li><input type="radio" name="searchType" value="calendar" defaultChecked={searchType == "calendar"} onChange={changeSearchType}/>Événements</li>
+                    </ul>
+                );
+            }.bind(this);
 
             return (
-                <div className="container text-center">
-                    {nbrResults} résultat(s)
-                    {pageLinks()}
+                <div>
+                    <div>
+                        {searchTypeUI()}
+                    </div>
+                    <div className="container text-center">
+                        {nbrResults} résultat(s)
+                        {pageLinks()}
+                    </div>
                 </div>
             );
         }.bind(this);
@@ -106,7 +128,7 @@ var Search = React.createClass({
         return (
             <div className="search">
                 <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" defaultValue={query}/>
-                {resultsHead(this.state.lastSearch)}
+                {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
                     <div className="search-result">
                     <ul>
                         {items(this.state.lastSearch)}
