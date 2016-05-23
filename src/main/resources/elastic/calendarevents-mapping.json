@@ -36,6 +36,18 @@
             "type" : "geo_point"
           }
         }
+      },
+      "cfp": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "dateSubmission": {
+            "type": "long",
+            "index": "not_analyzed"
+          }
+        }
       }
     }
   }

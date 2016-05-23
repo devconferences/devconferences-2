@@ -12,11 +12,17 @@ public class CalendarEvent {
     public String organizerName;
     public String organizerUrl;
     public Location location;
+    public CallForPapers cfp;
 
     public class Location {
         public String city;
         public String name;
         public String address;
         public GeoPoint gps;
+    }
+
+    public class CallForPapers {
+        public String url;
+        public Long dateSubmission;
     }
 }
