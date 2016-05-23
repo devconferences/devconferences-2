@@ -146,8 +146,17 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
+
+    public EventSearch searchEvents(String query, String page) {
+        return (EventSearch) search(query, page, EVENTS_TYPE);
+    }
+
+    public CalendarEventSearch searchCalendarEvents(String query, String page) {
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE);
+    }
+
     // If page = "0", return ALL matches events
-    public EventSearch search(String query, String page) {
+    private AbstractSearchResult search(String query, String page, String typeSearch) {
         String matchAllQueryPart1 = "" +
                 "{";
         String matchAllQueryPart2 = "" +
@@ -160,7 +169,7 @@ public class EventsRepository {
         int pageInt = Integer.decode(page);
         int size = 10;
 
-        CountResult countResult = client.countES(EVENTS_TYPE, matchAllQueryPart1 + matchAllQueryPart2);
+        CountResult countResult = client.countES(typeSearch, matchAllQueryPart1 + matchAllQueryPart2);
 
         // Prepare search query
         String querySearch;
@@ -174,13 +183,25 @@ public class EventsRepository {
                     "   \"from\": " + ((pageInt - 1) * 10) + "," +
                     matchAllQueryPart2;
         } else {
-            throw new RuntimeException("Can't search events with a negative page");
+            throw new RuntimeException("Can't search with a negative page");
         }
 
-        SearchResult searchResult = client.searchES(EVENTS_TYPE, querySearch);
+        SearchResult searchResult = client.searchES(typeSearch, querySearch);
 
         // Create result of search
-        EventSearch res = new EventSearch();
+        AbstractSearchResult res;
+
+        switch(typeSearch) {
+            case EVENTS_TYPE:
+                res = new EventSearch();
+            break;
+            case CALENDAREVENTS_TYPE:
+                res = new CalendarEventSearch();
+            break;
+            default:
+                throw new RuntimeException("Unknown search type : " + typeSearch);
+        }
+
         res.totalHits = String.valueOf(countResult.getCount().intValue());
         res.query = query;
         res.currPage = String.valueOf(page);
@@ -194,9 +215,18 @@ public class EventsRepository {
 
         res.totalPage = String.valueOf(totalPages);
         res.hitsAPage = (pageInt > 0 ? "10" : String.valueOf(res.totalHits));
-        res.hits = StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
-                false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+
+        if(res instanceof EventSearch) {
+            EventSearch resCast = (EventSearch) res;
+            resCast.hits = StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
+                    false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+        } else if(res instanceof CalendarEventSearch) {
+            CalendarEventSearch resCast = (CalendarEventSearch) res;
+            resCast.hits = StreamSupport.stream(
+                    Spliterators.spliteratorUnknownSize(searchResult.getHits(CalendarEvent.class).iterator(), Spliterator.ORDERED),
+                    false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+        }
 
         return res;
     }

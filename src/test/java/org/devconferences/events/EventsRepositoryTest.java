@@ -3,14 +3,10 @@ package org.devconferences.events;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
-import org.elasticsearch.common.geo.GeoHashUtils;
-import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public class EventsRepositoryTest {
@@ -62,8 +58,8 @@ public class EventsRepositoryTest {
 
         eventsEndPoint.createEvent(event);
 
-        // Check header content of this search
-        EventSearch eventSearch = eventsEndPoint.eventsSearch("awesome", "1");
+        // Check header content of this searchEvents
+        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1");
         Assertions.assertThat(eventSearch.hitsAPage).matches("10");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");

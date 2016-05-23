@@ -38,8 +38,14 @@ public class EventsEndPoint {
 
     @Get("search/events?q=:query&p=:page")
     @AllowOrigin("*")
-    public EventSearch eventsSearch(String query, String page) {
-        return eventsRepository.search(query, page);
+    public AbstractSearchResult eventsSearch(String query, String page) {
+        return eventsRepository.searchEvents(query, page);
+    }
+
+    @Get("search/calendar?q=:query&p=:page")
+    @AllowOrigin("*")
+    public AbstractSearchResult eventsCalendarSearch(String query, String page) {
+        return eventsRepository.searchCalendarEvents(query, page);
     }
 
     @Get("events/:id")
