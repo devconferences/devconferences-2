@@ -50,7 +50,7 @@ public abstract class AbstractImportJSONJob {
         EventsRepository eventsRepository = new EventsRepository(client);
 
         final int[] totalEvents = {0}; // For logging...
-        LOGGER.info("Import calendar events...");
+        LOGGER.info("Import data (" + classInfo.getSimpleName() + ")...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
             Object object = new Gson().fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
             forEachFunc.apply(object, path);
