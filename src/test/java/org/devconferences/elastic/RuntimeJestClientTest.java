@@ -20,6 +20,13 @@ public class RuntimeJestClientTest {
     @BeforeClass
     public static void classSetUp() {
         DeveloppementESNode.createDevNode("9250");
+        Assertions.assertThat(DeveloppementESNode.portNode).matches("9250");
+        // This should not throw an exception
+        try {
+            DeveloppementESNode.createDevNode("9250");
+        } catch (RuntimeException e) {
+            Assertions.fail("This should not throw an exception !", e);
+        }
         jestClient = ElasticUtils.createClient();
         Assertions.assertThat(jestClient).isNotNull();
         // Index should not exists yet
@@ -46,6 +53,12 @@ public class RuntimeJestClientTest {
         DeveloppementESNode.deleteDevNode();
         Assertions.assertThat(DeveloppementESNode.esNode).isNull();
         Assertions.assertThat(DeveloppementESNode.portNode).isNull();
+        // This should not throw an exception
+        try {
+            DeveloppementESNode.deleteDevNode();
+        } catch(RuntimeException e) {
+            Assertions.fail("This should not throw an exception !", e);
+        }
     }
 
     @Before
