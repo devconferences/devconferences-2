@@ -27,6 +27,10 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&p=${p}`).catch(errorCallback));
     }
 
+    function searchCalendar(q,p) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&p=${p}`).catch(errorCallback));
+    }
+
     function event(id) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/events/${id}`).catch(errorCallback));
     }
@@ -72,6 +76,7 @@ function createClient(u) {
         city,
         event,
         searchEvents,
+        searchCalendar,
         creationEvent,
         updateEvent,
         deleteEvent,

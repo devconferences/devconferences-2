@@ -3,6 +3,7 @@ var Router = require('react-router');
 var $ = require('jquery');
 
 var Event = require('./event');
+var TimelineEvent = require('./timeline-event');
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;
@@ -23,7 +24,7 @@ var Search = React.createClass({
     },
 
     componentWillReceiveProps: function(newProps) {
-        this.research(newProps.params.query, newProps.params.page);
+        this.research(newProps.params.query, newProps.params.page, null);
     },
 
     selectEvent: function (e) {
@@ -31,7 +32,7 @@ var Search = React.createClass({
     },
 
     changeInput: function (e) {
-        var searchValue = this.refs.searchInput.getDOMNode().value;
+        var searchValue = (e ? e.target.value : this.refs.searchInput.getDOMNode().value);
         var query = this.props.params.query || "";
         var page = 1;
 
@@ -39,38 +40,66 @@ var Search = React.createClass({
             page = this.props.params.page || 1;
         }
 
-        this.research(searchValue, page);
+        this.research(searchValue, page, null);
     },
 
     changeSearchType: function(e) {
-        this.setState({
-            searchType: e.target.value
-        });
-
-        changeInput(e);
+        this.research(null, null, e.target.value);
     },
 
-    research: function(query, page) {
-        DevConferencesClient.searchEvents(query, page).then(result => {
-            this.setState({
-                lastSearch: result.data
-            })
-        });
+    research: function(query, page, searchType) {
+        // Prepare data
+        console.log("Before : " + query + "-" + page + "-" + searchType);
+        if(!query && this.state.lastSearch) {
+            query = this.state.lastSearch.query;
+        }
+        if(!page) {
+            page = 1;
+        }
+        if(!searchType) {
+            searchType = this.state.searchType;
+        }
+
+        console.log("After : " + query + "-" + page + "-" + searchType);
+
+        if(searchType == "events") {
+            DevConferencesClient.searchEvents(query, page).then(result => {
+                this.setState({
+                    lastSearch: result.data,
+                    searchType: searchType
+                })
+            });
+        } else if(searchType == "calendar") {
+           DevConferencesClient.searchCalendar(query, page).then(result => {
+               this.setState({
+                   lastSearch: result.data,
+                   searchType: searchType
+               })
+           });
+       }
     },
 
     render: function () {
-        var items = function(lastSearch) {
+        var items = function(lastSearch, searchType) {
             var list = [];
             if(lastSearch) {
                 list = lastSearch.hits;
             }
             return (
-                list.map(function (event) {
-                    return (
-                        <li>
-                            <Event event={event} />
-                        </li>
-                    );
+                list.map(function (event) { // TODO Generify this
+                    if(searchType == "events") {
+                        return (
+                            <li>
+                                <Event event={event} />
+                            </li>
+                        );
+                    } else if(searchType == "calendar") {
+                        return (
+                            <li>
+                                <TimelineEvent event={event} />
+                            </li>
+                        );
+                    }
                 }.bind(this))
             )
         };
@@ -125,13 +154,16 @@ var Search = React.createClass({
             );
         }.bind(this);
         var query = this.props.params.query || "";
+        var test = function(e) {
+            console.log(e.target);
+        }
         return (
             <div className="search">
-                <input type="text" onKeyUp={this.changeInput} ref="searchInput" className="input-text" defaultValue={query}/>
+                <input type="text" className="input-text" ref="searchInput" onChange={this.changeInput} defaultValue={query} />
                 {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
-                    <div className="search-result">
+                <div className="search-result">
                     <ul>
-                        {items(this.state.lastSearch)}
+                        {items(this.state.lastSearch, this.state.searchType)}
                     </ul>
                 </div>
             </div>

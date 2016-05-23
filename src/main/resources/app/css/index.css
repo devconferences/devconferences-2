@@ -80,8 +80,12 @@ div.conflinks a {
     margin-right: 25%;
 }
 
-.timeline-event {
+.timeline-event-list .timeline-event {
     padding: 0px 1em;
+}
+
+.search-result ul {
+    padding: 0px 40px;
 }
 
 .timeline-event .pre-style {
@@ -101,7 +105,7 @@ div.conflinks a {
     border-bottom: 1px rgba(15, 70, 100, 0.12) solid;
 }
 
-.separe-bottom {
+.separe-bottom, .timeline-event-list .timeline-event {
     border-bottom: 1px rgba(15, 70, 100, 0.12) solid;
 }
 
