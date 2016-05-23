@@ -229,14 +229,10 @@ public class EventsRepository {
 
         if(res instanceof EventSearch) {
             EventSearch resCast = (EventSearch) res;
-            resCast.hits = StreamSupport.stream(
-                    Spliterators.spliteratorUnknownSize(searchResult.getHits(Event.class).iterator(), Spliterator.ORDERED),
-                    false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+            resCast.hits = getHitsFromSearch(searchResult, Event.class);
         } else if(res instanceof CalendarEventSearch) {
             CalendarEventSearch resCast = (CalendarEventSearch) res;
-            resCast.hits = StreamSupport.stream(
-                    Spliterators.spliteratorUnknownSize(searchResult.getHits(CalendarEvent.class).iterator(), Spliterator.ORDERED),
-                    false).map(hitResult -> hitResult.source).collect(Collectors.toList());
+            resCast.hits = getHitsFromSearch(searchResult, CalendarEvent.class);
         }
 
         return res;
@@ -273,8 +269,12 @@ public class EventsRepository {
 
         SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, query);
 
+        return getHitsFromSearch(searchResult, CalendarEvent.class);
+    }
+
+    public List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
         return (StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(searchResult.getHits(CalendarEvent.class).iterator(), Spliterator.ORDERED),
+                Spliterators.spliteratorUnknownSize(searchResult.getHits(sourceType).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList())
         );
     }
