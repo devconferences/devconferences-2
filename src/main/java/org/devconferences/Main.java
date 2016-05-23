@@ -128,18 +128,17 @@ public class Main {
     static WebServer configureWebServer() {
         WebServer webServer = new WebServer();
 
-        webServer.configure(routes -> {
-                    routes.setIocAdapter(new GuiceAdapter());
-                    routes.filter(SecurityFilter.class);
-                    routes.add(Authentication.class);
-                    routes.add(EventsEndPoint.class);
-                    routes.add(MeetupEndPoint.class);
-                    routes.get("/ping", (context) -> "pong");
-                    routes.get("/city/:id", (context, id) -> ModelAndView.of("index"));
-                    routes.get("/search", (context) -> ModelAndView.of("index"));
-                    routes.get("/search/:query", (context, query) -> ModelAndView.of("index"));
-                    routes.get("/search/:query/:page", (context, query, page) -> ModelAndView.of("index"));
-                }
+        webServer.configure(routes -> routes
+                .setIocAdapter(new GuiceAdapter())
+                .filter(SecurityFilter.class)
+                .add(Authentication.class)
+                .add(EventsEndPoint.class)
+                .add(MeetupEndPoint.class)
+                .get("/ping", (context) -> "pong")
+                .get("/city/:id", (context, id) -> ModelAndView.of("index"))
+                .get("/search", (context) -> ModelAndView.of("index"))
+                .get("/search/:query", (context, query) -> ModelAndView.of("index"))
+                .get("/search/:query/:page", (context, query, page) -> ModelAndView.of("index"))
         );
         return webServer;
     }
