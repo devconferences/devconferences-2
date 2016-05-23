@@ -162,7 +162,7 @@ public class EventsRepository {
         String matchAllQueryPart2 = "" +
                 "   \"query\": {" +
                 "      \"query_string\": {" +
-                "         \"query\" : \"" + query + "\"" +
+                "         \"query\" : \"" + query.replace("\"", "") + "\"" +
                 "       }" +
                 "   }" +
                 "}";
