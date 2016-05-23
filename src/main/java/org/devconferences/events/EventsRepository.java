@@ -148,15 +148,15 @@ public class EventsRepository {
 
 
     public EventSearch searchEvents(String query, String page) {
-        return (EventSearch) search(query, page, EVENTS_TYPE);
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, false);
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page) {
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc) {
         String matchAllQueryPart1 = "" +
                 "{";
         String matchAllQueryPart2 = "" +
@@ -168,6 +168,15 @@ public class EventsRepository {
                 "}";
         int pageInt = Integer.decode(page);
         int size = 10;
+        String sortByQuery;
+        if(sortBy == null) {
+            sortByQuery = "";
+        } else {
+            sortByQuery = "" +
+                    "  \"sort\" : [" +
+                    "    {\"" + sortBy + "\" : \"" + (isDesc ? "desc" : "asc") + "\"}" +
+                    "  ],";
+        }
 
         CountResult countResult = client.countES(typeSearch, matchAllQueryPart1 + matchAllQueryPart2);
 
@@ -175,10 +184,12 @@ public class EventsRepository {
         String querySearch;
         if(pageInt == 0) {
             querySearch = matchAllQueryPart1 +
+                    sortByQuery +
                     "   \"size\": " + countResult.getCount().intValue() + "," +
                     matchAllQueryPart2;
         } else if (pageInt > 0) {
             querySearch = matchAllQueryPart1 +
+                    sortByQuery +
                     "   \"size\": " + size + "," +
                     "   \"from\": " + ((pageInt - 1) * 10) + "," +
                     matchAllQueryPart2;
