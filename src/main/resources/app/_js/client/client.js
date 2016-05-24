@@ -23,12 +23,12 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities/${id}`).catch(errorCallback));
     }
 
-    function searchEvents(q,p) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&p=${p}`).catch(errorCallback));
+    function searchEvents(q,p,lat,lon,dist) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&p=${p}&lat=${lat}&lon=${lon}&dist=${dist}`).catch(errorCallback));
     }
 
-    function searchCalendar(q,p) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&p=${p}`).catch(errorCallback));
+    function searchCalendar(q,p,lat,lon,dist) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&p=${p}&lat=${lat}&lon=${lon}&dist=${dist}`).catch(errorCallback));
     }
 
     function event(id) {

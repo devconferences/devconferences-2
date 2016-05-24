@@ -36,16 +36,16 @@ public class EventsEndPoint {
         return eventsRepository.getCity(id);
     }
 
-    @Get("search/events?q=:query&p=:page")
+    @Get("search/events?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance")
     @AllowOrigin("*")
-    public AbstractSearchResult eventsSearch(String query, String page) {
-        return eventsRepository.searchEvents(query, page);
+    public AbstractSearchResult eventsSearch(String query, String page, String lat, String lon, String distance) {
+        return eventsRepository.searchEvents(query, page, lat, lon, distance);
     }
 
-    @Get("search/calendar?q=:query&p=:page")
+    @Get("search/calendar?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance")
     @AllowOrigin("*")
-    public AbstractSearchResult eventsCalendarSearch(String query, String page) {
-        return eventsRepository.searchCalendarEvents(query, page);
+    public AbstractSearchResult eventsCalendarSearch(String query, String page, String lat, String lon, String distance) {
+        return eventsRepository.searchCalendarEvents(query, page, lat, lon, distance);
     }
 
     @Get("events/:id")

@@ -59,7 +59,7 @@ public class EventsRepositoryTest {
         eventsEndPoint.createEvent(event);
 
         // Check header content of this searchEvents
-        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1");
+        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null, null, null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("10");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -73,7 +73,7 @@ public class EventsRepositoryTest {
         Assertions.assertThat(matches.get(0).description).matches(event.description);
 
         // With "0", should show all hits
-        eventSearch = eventsEndPoint.eventsSearch("awesome", "0");
+        eventSearch = eventsEndPoint.eventsSearch("awesome", "0", null, null, null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("0");
@@ -82,7 +82,7 @@ public class EventsRepositoryTest {
 
         // With "-1" (and values < 0), should throw an exception
         try {
-            eventSearch = eventsEndPoint.eventsSearch("awesome", "-1");
+            eventSearch = eventsEndPoint.eventsSearch("awesome", "-1", null, null, null);
 
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch (RuntimeException e) {

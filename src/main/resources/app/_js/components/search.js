@@ -49,7 +49,6 @@ var Search = React.createClass({
 
     research: function(query, page, searchType) {
         // Prepare data
-        console.log("Before : " + query + "-" + page + "-" + searchType);
         if(!query && this.state.lastSearch) {
             query = this.state.lastSearch.query;
         }
@@ -59,8 +58,6 @@ var Search = React.createClass({
         if(!searchType) {
             searchType = this.state.searchType;
         }
-
-        console.log("After : " + query + "-" + page + "-" + searchType);
 
         if(searchType == "events") {
             DevConferencesClient.searchEvents(query, page).then(result => {

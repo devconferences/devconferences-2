@@ -148,20 +148,21 @@ public class EventsRepository {
     }
 
 
-    public EventSearch searchEvents(String query, String page) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, false, null);
+    public EventSearch searchEvents(String query, String page, String lat, String lon, String distance) {
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, false, null, lat, lon, distance);
     }
 
-    public CalendarEventSearch searchCalendarEvents(String query, String page) {
+    public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance) {
         String filterOldCE = "" +
                 "        \"range\" : {" +
                 "          \"date\" : { \"gt\" : " + System.currentTimeMillis() + " }" +
                 "        }";
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, filterOldCE);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, filterOldCE, lat, lon, distance);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc, String filter) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc, String filter, String lat, String lon, String distance) {
+        System.out.println(lat + "/" + lon + " <-> " + distance);
         // template for search and count queries
         String sqRootOpen      = "{";
         String sqSizeFormat    = "  \"size\": %s,";
@@ -244,6 +245,9 @@ public class EventsRepository {
         res.totalHits = String.valueOf(countResult.getCount().intValue());
         res.query = query;
         res.currPage = String.valueOf(page);
+        res.lat = lat;
+        res.lon = lon;
+        res.distance = distance;
 
         int totalPages;
         if(pageInt > 0) {
