@@ -1,5 +1,7 @@
 package org.devconferences.events;
 
+import org.elasticsearch.common.geo.GeoPoint;
+
 import java.util.List;
 
 public class City {

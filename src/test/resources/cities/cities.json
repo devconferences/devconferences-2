@@ -1,0 +1,12 @@
+{
+    "all": [
+        {
+            "name": "the_city",
+            "location": "49.900,2.3000"
+        },
+        {
+            "name": "the_city2",
+            "location": "47.4800,-0.5400"
+        }
+    ]
+}

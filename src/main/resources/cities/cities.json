@@ -1,0 +1,108 @@
+{
+    "all": [
+        {
+            "name": "Amiens",
+            "location": "49.9000,2.3000"
+        },
+        {
+            "name": "Angers",
+            "location": "47.4800,-0.5400"
+        },
+        {
+            "name": "Annecy",
+            "location": "45.9100,6.1200"
+        },
+        {
+            "name": "Bordeaux",
+            "location": "44.8400,-0.5800"
+        },
+        {
+            "name": "Brest",
+            "location": "48.3900,-4.5000"
+        },
+        {
+            "name": "Caen",
+            "location": "49.1900,-0.3600"
+        },
+        {
+            "name": "Clermont",
+            "location": "45.7800,3.0800"
+        },
+        {
+            "name": "Dijon",
+            "location": "47.3300,5.0300"
+        },
+        {
+            "name": "Grenoble",
+            "location": "45.1900,5.7200"
+        },
+        {
+            "name": "La Rochelle",
+            "location": "46.1700,-1.1800"
+        },
+        {
+            "name": "Laval",
+            "location": "48.0700,-0.7800"
+        },
+        {
+            "name": "Lille",
+            "location": "50.6400,3.0700"
+        },
+        {
+            "name": "Lyon",
+            "location": "45.7600,4.8300"
+        },
+        {
+            "name": "Marseille",
+            "location": "43.3100,5.3700"
+        },
+        {
+            "name": "Montpellier",
+            "location": "43.6100,3.8700"
+        },
+        {
+            "name": "Nancy",
+            "location": "48.6900,6.1700"
+        },
+        {
+            "name": "Nantes",
+            "location": "47.2300,-1.5700"
+        },
+        {
+            "name": "Nice",
+            "location": "43.7000,7.2700"
+        },
+        {
+            "name": "Niort",
+            "location": "46.3200,-0.4700"
+        },
+        {
+            "name": "Orléans",
+            "location": "47.9000,1.9000"
+        },
+        {
+            "name": "Paris",
+            "location": "48.8600,2.3400"
+        },
+        {
+            "name": "Rennes",
+            "location": "48.1100,-1.6800"
+        },
+        {
+            "name": "Rouen",
+            "location": "49.4400,1.0800"
+        },
+        {
+            "name": "Strasbourg",
+            "location": "48.5800, 7.7500"
+        },
+        {
+            "name": "Toulouse",
+            "location": "43.6200,1.4500"
+        },
+        {
+            "name": "Tours",
+            "location": "47.3800,0.6900"
+        }
+    ]
+}
