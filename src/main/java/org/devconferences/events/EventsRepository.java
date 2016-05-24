@@ -148,56 +148,79 @@ public class EventsRepository {
 
 
     public EventSearch searchEvents(String query, String page) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, false);
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, false, null);
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page) {
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, null);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc) {
-        String matchAllQueryPart1 = "" +
-                "{";
-        String matchAllQueryPart2 = "" +
-                "   \"query\": {" +
-                "      \"query_string\": {" +
-                "         \"query\" : \"" + query.replace("\"", "") + "\"" +
-                "       }" +
-                "   }" +
-                "}";
+    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc, String filter) {
+        // template for search and count queries
+        String sqRootOpen      = "{";
+        String sqSizeFormat    = "  \"size\": %s,";
+        String sqFromFormat    = "  \"from\": %s,";
+        String sqSortOpen      = "  \"sort\": [";
+        String sqSortFormat    = "    {\"%s\": \"%s\"}";
+        String sqSortClose     = "  ],";
+        String sqQueryOpen     = "  \"query\": {";
+        // Query : No filter : only this
+        String sqQueryString   = "    \"query_string\": {" +
+                                 "      \"query\": \"%s\"" +
+                                 "    }";
+        // Query : With filter : add all of this
+        String sqFilteredOpen  = "    \"filtered\": {";
+        String sqFilterOpen    = "      \"filter\": {";
+        // Custom filter here
+        String sqFilterClose   = "      },";
+        String sqFilterQuery   = "      \"query\": {%s}"; // %s = sqQueryString
+        String sqFilteredClose = "    }";
+        // Query : END
+        String sqQueryClose    = "  }";
+        String sqRootClose     = "}";
+        // ...
+        String sqQueryFilter;
+        String sqQuery;
+        String sqSize;
+        String sqFrom;
+        String sqSort;
+        // ...
+        String sqCountString;
+        String sqFullString;
+        // ...
         int pageInt = Integer.decode(page);
-        int size = 10;
-        String sortByQuery;
-        if(sortBy == null) {
-            sortByQuery = "";
+
+        // Count query
+        if (filter == null) {
+            sqQuery = sqQueryOpen + String.format(sqQueryString, query.replace("\"", "")) + sqQueryClose;
         } else {
-            sortByQuery = "" +
-                    "  \"sort\" : [" +
-                    "    {\"" + sortBy + "\" : \"" + (isDesc ? "desc" : "asc") + "\"}" +
-                    "  ],";
+            sqQueryFilter = sqFilteredOpen + sqFilterOpen +
+                    filter +
+                    sqFilterClose +
+                    String.format(sqFilterQuery, String.format(sqQueryString, query.replace("\"", ""))) +
+                    sqFilteredClose;
+            sqQuery = sqQueryOpen + sqQueryFilter + sqQueryClose;
         }
 
-        CountResult countResult = client.countES(typeSearch, matchAllQueryPart1 + matchAllQueryPart2);
+        sqCountString = sqRootOpen + sqQuery + sqRootClose;
+        CountResult countResult = client.countES(typeSearch, sqCountString);
 
-        // Prepare search query
-        String querySearch;
-        if(pageInt == 0) {
-            querySearch = matchAllQueryPart1 +
-                    sortByQuery +
-                    "   \"size\": " + countResult.getCount().intValue() + "," +
-                    matchAllQueryPart2;
-        } else if (pageInt > 0) {
-            querySearch = matchAllQueryPart1 +
-                    sortByQuery +
-                    "   \"size\": " + size + "," +
-                    "   \"from\": " + ((pageInt - 1) * 10) + "," +
-                    matchAllQueryPart2;
-        } else {
+        // Search query
+        if (pageInt < 0) {
             throw new RuntimeException("Can't search with a negative page");
         }
 
-        SearchResult searchResult = client.searchES(typeSearch, querySearch);
+        sqSort = sortBy == null ? "" : sqSortOpen +
+                String.format(sqSortFormat, sortBy, (isDesc ? "desc" : "asc")) +
+                sqSortClose;
+        sqFrom = (page.equals("0") ? "" : String.format(sqFromFormat, 10 * (pageInt - 1)));
+        sqSize = String.format(sqSizeFormat, (page.equals("0") ? countResult.getCount().intValue() : 10));
+        sqFullString = sqRootOpen +
+                sqSize + sqFrom + sqSort + sqQuery +
+                sqRootClose;
+
+        SearchResult searchResult = client.searchES(typeSearch, sqFullString);
 
         // Create result of search
         AbstractSearchResult res;
