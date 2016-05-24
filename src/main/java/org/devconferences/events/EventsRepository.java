@@ -152,7 +152,11 @@ public class EventsRepository {
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page) {
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, null);
+        String filterOldCE = "" +
+                "        \"range\" : {" +
+                "          \"date\" : { \"gt\" : " + System.currentTimeMillis() + " }" +
+                "        }";
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, filterOldCE);
     }
 
     // If page = "0", return ALL matches events
