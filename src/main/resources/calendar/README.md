@@ -119,28 +119,45 @@ Le site de l'organisateur du CalendarEvent.
 
 `organizerName` doit être renseigné, sinon le lien ne s'affichera pas.
 
-#### `location`
+#### `location.*`
 
 Le lieu du CalendarEvent.
 
-Si c'est renseigné, TOUS les champs suivant DOIVENT l'être aussi :
+Soit `location` n'existe pas, soit TOUS les champs suivants sont renseignés :
 
-##### `city`
+##### `location.city`
 
 La ville où se trouve le CalendarEvent.
 
-##### `address`
+##### `location.address`
 
 L'adresse du CalendarEvent.
 
-Ici, il faut juste mettre la rue, pas besoin de mettre la ville
+Ici, il faut juste mettre la rue, pas besoin de mettre la ville.
 
-##### `name`
+##### `location.name`
 
 Le nom du lieu associé à l'adresse.
 
-##### `gps`
+##### `location.gps`
 
 La géolocalisation du CalendarEvent.
 
 Cela permet de créer un lien vers Google Maps pour afficher un plan.
+
+#### `cfp.*`
+
+Les informations concernant le Call For Paper du CalendarEvent.
+
+Soit `cfp` n'existe pas, soit TOUS les champs suivants sont renseignés :
+
+##### `cfp.url`
+
+Lien vers la page permettant d'afficher plus d'informations oude soumettre un sujet.
+
+##### `cfp.dateSubmission`
+
+Date butoir pour soumettre un sujet.
+
+Comme toutes les dates, il s'agit d'un timestamp en millisecondes.
+

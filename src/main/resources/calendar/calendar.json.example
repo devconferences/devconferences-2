@@ -16,5 +16,9 @@
         "name": "Ici",
         "address": "42, Rue des Pruniers"
         "gps": "46.6695,0.3635" // "latitude.0000, longitude.0000"
+    },
+    "cfp": {
+        "url": "http://www.event-website.com/cfp",
+        "dateSubmission": 1466028000000 //// format timestamp, millisecondes
     }
 }
