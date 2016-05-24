@@ -103,6 +103,21 @@ var Search = React.createClass({
                 }.bind(this))
             )
         };
+        var dataSearch = function(searchType, changeSearchType) {
+            var searchTypeUI = function() {
+                return (
+                    <ul className="list-inline text-center">
+                        <li><label><input type="radio" name="searchType" value="events" defaultChecked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</label></li>
+                        <li><label><input type="radio" name="searchType" value="calendar" defaultChecked={searchType == "calendar"} onChange={changeSearchType}/>Événements</label></li>
+                    </ul>
+                );
+            }.bind(this);
+            return (
+                <div>
+                    {searchTypeUI()}
+                </div>
+            );
+        };
         var resultsHead = function(lastSearch, searchType, changeSearchType) {
             var nbrResults = 0;
             var totalPage = 0;
@@ -132,20 +147,8 @@ var Search = React.createClass({
                     </div>
                 );
             }.bind(this);
-            var searchTypeUI = function() {
-                return (
-                    <ul className="list-inline text-center">
-                        <li><input type="radio" name="searchType" value="events" defaultChecked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</li>
-                        <li><input type="radio" name="searchType" value="calendar" defaultChecked={searchType == "calendar"} onChange={changeSearchType}/>Événements</li>
-                    </ul>
-                );
-            }.bind(this);
-
             return (
                 <div>
-                    <div>
-                        {searchTypeUI()}
-                    </div>
                     <div className="container text-center">
                         {nbrResults} résultat(s)
                         {pageLinks()}
@@ -154,14 +157,14 @@ var Search = React.createClass({
             );
         }.bind(this);
         var query = this.props.params.query || "";
-        var test = function(e) {
-            console.log(e.target);
-        }
         return (
             <div className="search">
-                <input type="text" className="input-text" ref="searchInput" onChange={this.changeInput} defaultValue={query} />
-                {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
+                <div className="text-center">
+                    <input type="text" className="input-text" ref="searchInput" onChange={this.changeInput} defaultValue={query} />
+                    {dataSearch(this.state.searchType, this.changeSearchType)}
+                </div>
                 <div className="search-result">
+                    {resultsHead(this.state.lastSearch)}
                     <ul>
                         {items(this.state.lastSearch, this.state.searchType)}
                     </ul>
