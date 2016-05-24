@@ -8,9 +8,17 @@ import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 
 import javax.inject.Singleton;
 import java.util.*;
@@ -20,8 +28,10 @@ import java.util.stream.StreamSupport;
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
+import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 
 @Singleton
 public class EventsRepository {
@@ -59,23 +69,15 @@ public class EventsRepository {
     }
 
     public List<CityLight> getAllCities() {
-        String allCitiesQuery = "" +
-                "{" +
-                "  \"size\": 0," +
-                "  \"aggs\": {" +
-                "    \"cities\": {" +
-                "      \"terms\": {" +
-                "        \"field\": \"city\"," +
-                "        \"size\": 100," +
-                "        \"order\": {" +
-                "          \"_term\": \"asc\"" +
-                "        }" +
-                "      }" +
-                "    }" +
-                "  }" +
-                "}";
+        SearchSourceBuilder searchQuery = new SearchSourceBuilder();
+        searchQuery.size(0).aggregation(
+                AggregationBuilders.terms("cities")
+                        .field("city")
+                        .size(100)
+                        .order(Terms.Order.term(true))
+        );
 
-        SearchResult searchResult = client.searchES(EVENTS_TYPE, allCitiesQuery);
+        SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
 
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
@@ -86,17 +88,9 @@ public class EventsRepository {
     }
 
     public City getCity(String cityId) {
-        String query = "" +
-                "{" +
-                "  \"query\": {" +
-                "    \"term\": {" +
-                "      \"city\": {" +
-                "        \"value\": \"" + cityId + "\"" +
-                "      }" +
-                "    }" +
-                "  }," +
-                "  \"size\" : " + Integer.MAX_VALUE +
-                "}";
+        SearchSourceBuilder searchQuery = new SearchSourceBuilder();
+        searchQuery.size(Integer.MAX_VALUE)
+                .query(QueryBuilders.termQuery("city", cityId));
 
         City city = new City();
         city.id = cityId;
@@ -104,7 +98,7 @@ public class EventsRepository {
         city.communities = new ArrayList<>();
         city.conferences = new ArrayList<>();
 
-        SearchResult searchResult = client.searchES(EVENTS_TYPE, query);
+        SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
         searchResult.getHits(Event.class)
                 .stream()
                 .map(hit -> hit.source)
@@ -149,84 +143,50 @@ public class EventsRepository {
 
 
     public EventSearch searchEvents(String query, String page, String lat, String lon, String distance) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, false, null, lat, lon, distance);
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, lat, lon, distance);
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance) {
-        String filterOldCE = "" +
-                "        \"range\" : {" +
-                "          \"date\" : { \"gt\" : " + System.currentTimeMillis() + " }" +
-                "        }";
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, "date", false, filterOldCE, lat, lon, distance);
+        FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
+        SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, String sortBy, boolean isDesc, String filter, String lat, String lon, String distance) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String lat, String lon, String distance) {
+        SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         System.out.println(lat + "/" + lon + " <-> " + distance);
-        // template for search and count queries
-        String sqRootOpen      = "{";
-        String sqSizeFormat    = "  \"size\": %s,";
-        String sqFromFormat    = "  \"from\": %s,";
-        String sqSortOpen      = "  \"sort\": [";
-        String sqSortFormat    = "    {\"%s\": \"%s\"}";
-        String sqSortClose     = "  ],";
-        String sqQueryOpen     = "  \"query\": {";
-        // Query : No filter : only this
-        String sqQueryString   = "    \"query_string\": {" +
-                                 "      \"query\": \"%s\"" +
-                                 "    }";
-        // Query : With filter : add all of this
-        String sqFilteredOpen  = "    \"filtered\": {";
-        String sqFilterOpen    = "      \"filter\": {";
-        // Custom filter here
-        String sqFilterClose   = "      },";
-        String sqFilterQuery   = "      \"query\": {%s}"; // %s = sqQueryString
-        String sqFilteredClose = "    }";
-        // Query : END
-        String sqQueryClose    = "  }";
-        String sqRootClose     = "}";
-        // ...
-        String sqQueryFilter;
-        String sqQuery;
-        String sqSize;
-        String sqFrom;
-        String sqSort;
-        // ...
-        String sqCountString;
-        String sqFullString;
-        // ...
         int pageInt = Integer.decode(page);
 
         // Count query
         if (filter == null) {
-            sqQuery = sqQueryOpen + String.format(sqQueryString, query.replace("\"", "")) + sqQueryClose;
+            searchQuery.query(queryStringQuery(QueryParser.escape(query)));
         } else {
-            sqQueryFilter = sqFilteredOpen + sqFilterOpen +
-                    filter +
-                    sqFilterClose +
-                    String.format(sqFilterQuery, String.format(sqQueryString, QueryParser.escape(query))) +
-                    sqFilteredClose;
-            sqQuery = sqQueryOpen + sqQueryFilter + sqQueryClose;
+            searchQuery.query(filteredQuery(queryStringQuery(QueryParser.escape(query)),
+                    filter));
         }
+        System.out.println(searchQuery);
 
-        sqCountString = sqRootOpen + sqQuery + sqRootClose;
-        CountResult countResult = client.countES(typeSearch, sqCountString);
+        CountResult countResult = client.countES(typeSearch, searchQuery.toString());
 
         // Search query
         if (pageInt < 0) {
             throw new RuntimeException("Can't search with a negative page");
         }
 
-        sqSort = sortBy == null ? "" : sqSortOpen +
-                String.format(sqSortFormat, sortBy, (isDesc ? "desc" : "asc")) +
-                sqSortClose;
-        sqFrom = (page.equals("0") ? "" : String.format(sqFromFormat, 10 * (pageInt - 1)));
-        sqSize = String.format(sqSizeFormat, (page.equals("0") ? countResult.getCount().intValue() : 10));
-        sqFullString = sqRootOpen +
-                sqSize + sqFrom + sqSort + sqQuery +
-                sqRootClose;
+        if(sortBy != null) {
+            searchQuery.sort(sortBy);
+        }
 
-        SearchResult searchResult = client.searchES(typeSearch, sqFullString);
+        if(!page.equals("0")) {
+            searchQuery.from(10 * (pageInt - 1));
+            searchQuery.size(10);
+        } else {
+            searchQuery.size(countResult.getCount().intValue());
+        }
+
+
+        SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
 
         // Create result of search
         AbstractSearchResult res;
@@ -278,33 +238,26 @@ public class EventsRepository {
     }
 
     public List<CalendarEvent> getCalendarEvents(String page) {
+        SearchSourceBuilder searchQuery = new SearchSourceBuilder();
+
         int pageInt = Integer.MAX_VALUE;
         if(page != null && Integer.decode(page) > 0) {
             pageInt = Integer.decode(page);
         }
-        String query = "" +
-                "{" +
-                "  \"size\" : " + pageInt + "," +
-                "  \"sort\" : [" +
-                "    {\"date\" : \"asc\"}" +
-                "  ]," +
-                "  \"query\" : {" +
-                "    \"filtered\" : {" +
-                "      \"filter\" : {" + // filter old events
-                "        \"range\" : {" +
-                "          \"date\" : { \"gt\" : " + System.currentTimeMillis() + " }" +
-                "        }" +
-                "      }" +
-                "    }" +
-                "  }" +
-                "}";
 
-        SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, query);
+        searchQuery.size(pageInt)
+                .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
+                .query(filteredQuery(
+                        QueryBuilders.matchAllQuery(),
+                        rangeFilter("date").gt(System.currentTimeMillis())
+                ));
+
+        SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, searchQuery.toString());
 
         return getHitsFromSearch(searchResult, CalendarEvent.class);
     }
 
-    public List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
+    private List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
         return (StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(searchResult.getHits(sourceType).iterator(), Spliterator.ORDERED),
                 false).map(hitResult -> hitResult.source).collect(Collectors.toList())
