@@ -7,6 +7,7 @@ import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -202,7 +203,7 @@ public class EventsRepository {
             sqQueryFilter = sqFilteredOpen + sqFilterOpen +
                     filter +
                     sqFilterClose +
-                    String.format(sqFilterQuery, String.format(sqQueryString, query.replace("\"", ""))) +
+                    String.format(sqFilterQuery, String.format(sqQueryString, QueryParser.escape(query))) +
                     sqFilteredClose;
             sqQuery = sqQueryOpen + sqQueryFilter + sqQueryClose;
         }
