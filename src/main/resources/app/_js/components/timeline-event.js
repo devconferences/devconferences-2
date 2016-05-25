@@ -97,7 +97,7 @@ var TimelineEvent = React.createClass({
         return (
             <div className="timeline-event">
                 <h3>
-                    <Glyphicon glyph="chevron-right"> {nameTitle(event.name, event.url)} </Glyphicon>
+                    <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}
                 </h3>
                 <p>
                     {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}

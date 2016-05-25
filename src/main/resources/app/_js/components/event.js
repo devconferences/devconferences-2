@@ -85,7 +85,7 @@ var Event = React.createClass({
             <div>
                 <a name={event.id}></a>
                 <h3>
-                    <Glyphicon glyph='chevron-right'> {event.name}</Glyphicon>
+                    <Glyphicon glyph='chevron-right'></Glyphicon> {event.name}
                 </h3>
 
                 <Grid>

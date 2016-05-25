@@ -1,5 +1,6 @@
 var React = require('react');
-var Router = require('react-router');
+import { Router, Route, IndexRoute, NorFoundRoute, browserHistory} from 'react-router';
+var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 
@@ -9,11 +10,6 @@ var Search = require('./components/search');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 var Authentication = require('./components/authentication');
-
-var Route = Router.Route;
-var RouteHandler = Router.RouteHandler;
-var DefaultRoute = Router.DefaultRoute;
-var NotFoundRoute = Router.NotFoundRoute;
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -43,7 +39,7 @@ var App = React.createClass({
 
                 </header>
 
-                <RouteHandler/>
+                {this.props.children}
 
                 <hr />
 
@@ -79,17 +75,17 @@ var App = React.createClass({
 });
 
 var routes = (
-    <Route handler={App}>
-        <DefaultRoute handler={Home}/>
-        <NotFoundRoute handler={NotFound} />
+    <Route path="/" component={App}>
+        <IndexRoute component={Home}/>
+        <Route path="/city/:id" component={City}/>
+        <Route path="/search" component={Search}/>
+        <Route path="/search/:query" component={Search}/>
+        <Route path="/search/:query/:page" component={Search}/>
 
-        <Route name="city" path="city/:id" handler={City}/>
-        <Route name="search" path="search" handler={Search}/>
-        <Route name="searchQuery" path="search/:query" handler={Search}/>
-        <Route name="searchQueryPage" path="search/:query/:page" handler={Search}/>
+        <Route path="*" component={NotFound}/>
     </Route>
 );
 
-Router.run(routes, Router.HistoryLocation, function (Root) {
-    React.render(<Root/>, document.body);
-});
+ReactDOM.render(<Router history={browserHistory}>
+    {routes}
+</Router>, document.getElementById('app'));

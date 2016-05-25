@@ -1,9 +1,10 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 
 var TwitterTimeline = React.createClass({
 
     componentDidMount: function () {
-        var twitterWidget = this.refs.twitterWidget.getDOMNode();
+        var twitterWidget = ReactDOM.findDOMNode(this.refs.twitterWidget);
         var script = document.createElement('script');
         script.id = 'twitter-wjs';
         script.src = '//platform.twitter.com/widgets.js'
