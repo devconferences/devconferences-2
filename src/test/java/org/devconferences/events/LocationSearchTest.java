@@ -1,10 +1,10 @@
 package org.devconferences.events;
 
+import org.apache.lucene.spatial.util.GeoHashUtils;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -59,7 +59,7 @@ public class LocationSearchTest {
         Map<String, Long> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10, 5);
         Assertions.assertThat(events).hasSize(1);
         String point = events.keySet().iterator().next();
-        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(1.0d, 1.0d, 5));
+        Assertions.assertThat(point).isEqualTo(GeoHashUtils.stringEncode(1.0d, 1.0d, 5));
         Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
 
         eventsRepository.deleteEvent(event.id);
@@ -88,7 +88,7 @@ public class LocationSearchTest {
         Map<String, Long> events = eventsRepository.findEventsAround(50.0f, 50.0f, 10, 5);
         Assertions.assertThat(events).hasSize(1);
         String point = events.keySet().iterator().next();
-        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(50.0d, 50.0d, 5));
+        Assertions.assertThat(point).isEqualTo(GeoHashUtils.stringEncode(50.0d, 50.0d, 5));
         Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
 
         eventsRepository.deleteEvent(event.id);

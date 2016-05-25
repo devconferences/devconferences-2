@@ -1,5 +1,6 @@
 package org.devconferences.elastic;
 
+import com.google.gson.Gson;
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -31,7 +32,7 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     }
 
     @Override
-    public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<T> jestResultHandler) {
+    public <T extends JestResult> void executeAsync(Action<T> clientRequest, JestResultHandler<? super T> jestResultHandler) {
         jestClient.executeAsync(clientRequest, jestResultHandler);
     }
 

@@ -1,6 +1,5 @@
 package org.devconferences.events;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractSearchResult<T> {

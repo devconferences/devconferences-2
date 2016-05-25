@@ -1,15 +1,13 @@
 package org.devconferences.security;
 
-import junit.framework.Assert;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 import org.junit.Test;
 
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by chris on 10/06/15.

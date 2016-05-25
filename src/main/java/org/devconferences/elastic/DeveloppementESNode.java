@@ -3,7 +3,6 @@ package org.devconferences.elastic;
 import org.apache.commons.io.FileUtils;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -39,17 +38,22 @@ public class DeveloppementESNode {
                 throw new RuntimeException(e);
             }
 
-            Settings settings = ImmutableSettings.builder()
+
+            Settings.Builder settings = Settings.builder()
                     .put("http.port", port)
                     .put("network.host", "localhost")
-                    .put("path.data", ES_LOCAL_DATA)
-                    .build();
+                    .put("path.data", ES_LOCAL_DATA);
+
+            // Fix possible broken "path.home"
+            if(settings.get("path.home") == null) {
+                settings.put("path.home", System.getenv("ES_PATH_HOME"));
+            }
 
             esNode = NodeBuilder.nodeBuilder()
                     .local(true)
                     .data(true)
                     .clusterName("elasticSearch" + UUID.randomUUID())
-                    .settings(settings)
+                    .settings(settings.build())
                     .build();
             esNode.start();
             portNode = port;

@@ -8,10 +8,8 @@ import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -27,11 +25,7 @@ import java.util.stream.StreamSupport;
 
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
-import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
-import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Singleton
 public class EventsRepository {
@@ -109,11 +103,10 @@ public class EventsRepository {
 
     public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
         String eventLocations = new SearchSourceBuilder()
-                .query(filteredQuery(matchAllQuery(),
-                        geoDistanceFilter("location")
-                                .distance(distance, KILOMETERS)
-                                .lat(lat).lon(lon)
-                ))
+                .query(QueryBuilders.geoDistanceQuery("location")
+                        .distance(distance, KILOMETERS)
+                        .lat(lat).lon(lon)
+                )
                 .size(0)
                 .aggregation(AggregationBuilders.geohashGrid("event_locations").field("location").precision(geohashPrecision))
                 .toString();
@@ -147,25 +140,22 @@ public class EventsRepository {
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance) {
-        FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
+        QueryBuilder filterOldCE = QueryBuilders.rangeQuery("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
         return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String lat, String lon, String distance) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, QueryBuilder filter, String lat, String lon, String distance) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
-        System.out.println(lat + "/" + lon + " <-> " + distance);
         int pageInt = Integer.decode(page);
 
         // Count query
         if (filter == null) {
             searchQuery.query(queryStringQuery(QueryParser.escape(query)));
         } else {
-            searchQuery.query(filteredQuery(queryStringQuery(QueryParser.escape(query)),
-                    filter));
+            searchQuery.query(filter);
         }
-        System.out.println(searchQuery);
 
         CountResult countResult = client.countES(typeSearch, searchQuery.toString());
 
@@ -247,9 +237,7 @@ public class EventsRepository {
 
         searchQuery.size(pageInt)
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
-                .query(filteredQuery(
-                        QueryBuilders.matchAllQuery(),
-                        rangeFilter("date").gt(System.currentTimeMillis())
+                .query(QueryBuilders.rangeQuery("date").gt(System.currentTimeMillis()
                 ));
 
         SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, searchQuery.toString());

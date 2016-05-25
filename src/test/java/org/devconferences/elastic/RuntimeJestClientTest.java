@@ -7,6 +7,9 @@ import org.assertj.core.api.Assertions;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.jobs.ImportEventsJob;
+import org.elasticsearch.action.support.QuerySourceBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -31,8 +34,9 @@ public class RuntimeJestClientTest {
         Assertions.assertThat(jestClient).isNotNull();
         // Index should not exists yet
         try { // This might throw randomly a SocketTimeoutException which we can't manage
-            Assertions.assertThat(jestClient.countES(EventsRepository.EVENTS_TYPE, "{}").getJsonString())
-                    .contains("IndexMissingException[[dev-conferences] missing]");
+            Assertions.assertThat(ElasticUtils.indiceExists(
+                    jestClient,ElasticUtils.DEV_CONFERENCES_INDEX
+            ).isSucceeded()).isFalse();
             ElasticUtils.createIndex(); // Index + type creation
         } catch(RuntimeException e) {
             if(e.getCause() instanceof SocketTimeoutException) {
@@ -48,8 +52,14 @@ public class RuntimeJestClientTest {
     @AfterClass
     public static void tearDownOne() {
         ElasticUtils.deleteIndex();
-        Assertions.assertThat(jestClient.countES(EventsRepository.EVENTS_TYPE, "{}").getJsonString())
-                .contains("IndexMissingException[[dev-conferences] missing]");
+        try { // Need waiting few seconds, or loaded data won't be founded...
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        Assertions.assertThat(ElasticUtils.indiceExists(
+                jestClient,ElasticUtils.DEV_CONFERENCES_INDEX
+        ).isSucceeded()).isFalse();
         DeveloppementESNode.deleteDevNode();
         Assertions.assertThat(DeveloppementESNode.esNode).isNull();
         Assertions.assertThat(DeveloppementESNode.portNode).isNull();

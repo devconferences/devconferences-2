@@ -10,7 +10,7 @@ import io.searchbox.indices.mapping.DeleteMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,15 +54,14 @@ public final class ElasticUtils {
 
     public static void createIndexIfNotExists() {
         try (RuntimeJestClient client = createClient();) {
-            IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
-            JestResult indexExistsResult = client.execute(indicesExists);
-            boolean found = indexExistsResult.getJsonObject().getAsJsonPrimitive("found").getAsBoolean();
+            JestResult indexExistsResult = indiceExists(client, DEV_CONFERENCES_INDEX);
+            boolean found = indexExistsResult.isSucceeded();
 
             if (!found) {
                 LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
                 CreateIndex createIndex =
                         new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
-                                .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
+                                .settings(Settings.settingsBuilder().build().getAsMap())
                                 .build();
                 JestResult jestResult = client.execute(createIndex);
                 if (!jestResult.isSucceeded()) {
@@ -72,6 +71,11 @@ public final class ElasticUtils {
                 createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
             }
         }
+    }
+
+    static JestResult indiceExists(RuntimeJestClient client, String type) {
+        IndicesExists indicesExists = new IndicesExists.Builder(type).build();
+        return client.execute(indicesExists);
     }
 
     private static void deleteType(String type) {
@@ -127,9 +131,8 @@ public final class ElasticUtils {
 
     public static void deleteIndex() {
         try (RuntimeJestClient client = createClient();) {
-            IndicesExists indicesExists = new IndicesExists.Builder(DEV_CONFERENCES_INDEX).build();
-            JestResult indexExistsResult = client.execute(indicesExists);
-            boolean found = indexExistsResult.getJsonObject().getAsJsonPrimitive("found").getAsBoolean();
+            JestResult indexExistsResult = indiceExists(client, DEV_CONFERENCES_INDEX);
+            boolean found = indexExistsResult.isSucceeded();
 
             if (found) {
                 LOGGER.info("Deleting index : " + DEV_CONFERENCES_INDEX);
