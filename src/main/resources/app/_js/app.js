@@ -47,22 +47,22 @@ var App = React.createClass({
                     <Grid>
                         <Row className="text-center">
                             <Col md={4}>
-                                <Glyphicon glyph="cloud-upload">
+                                <Glyphicon glyph="cloud-upload"></Glyphicon>
                                 &nbsp;Hébergé chez&nbsp;
                                     <a href="//www.clever-cloud.com">Clever Cloud</a>
-                                </Glyphicon>
+
                             </Col>
                             <Col md={4}>
-                                <i className="fa fa-twitter">
+                                <i className="fa fa-twitter"></i>
                                 &nbsp;Suivez-nous sur&nbsp;
                                     <a href="//twitter.com/DevConferences">Twitter</a>
-                                </i>
+
                             </Col>
                             <Col md={4}>
-                                <i className="fa fa-bug">
+                                <i className="fa fa-bug"></i>
                                 &nbsp;Remontez les bugs via&nbsp;
                                     <a href="//github.com/devconferences/devconferences-2/issues">&nbsp;Github</a>
-                                </i>
+
 
                             </Col>
                         </Row>
