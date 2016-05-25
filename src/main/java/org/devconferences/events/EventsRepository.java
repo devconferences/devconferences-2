@@ -77,7 +77,8 @@ public class EventsRepository {
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
         return cities.getBuckets().stream()
-                .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount()))
+                .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount(),
+                        GeopointCities.getInstance().getLocation(entry.getKey())))
                 .collect(Collectors.toList());
     }
 
