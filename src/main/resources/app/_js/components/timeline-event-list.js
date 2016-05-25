@@ -23,7 +23,7 @@ var TimelineEventList = React.createClass({
     render: function() {
         var calendarEvent = function(event) {
             return (
-                <TimelineEvent event={event} />
+                <TimelineEvent key={event.id} event={event} />
             );
         };
         return (

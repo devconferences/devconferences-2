@@ -8,7 +8,7 @@ var CityLinkList = React.createClass({
     render: function () {
         var renderCity = function (city) {
             return (
-                <CityLink city={city} />
+                <CityLink key={city.id} city={city} />
             );
         };
         return (

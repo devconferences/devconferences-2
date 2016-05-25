@@ -104,9 +104,9 @@ var TimelineEvent = React.createClass({
                 </p>
                 {location(event.location)}
                 {cfp(event.cfp)}
-                <p>
-                    <div className="text-justify pre-style">{event.description}</div>
-                </p>
+                <div className="text-justify pre-style">
+                    {event.description}
+                </div>
             </div>
         );
     }
