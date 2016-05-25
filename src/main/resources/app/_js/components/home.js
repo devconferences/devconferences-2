@@ -5,6 +5,7 @@ var $ = require('jquery');
 
 var CityLinkList = require('./city-link-list');
 var TimelineEventList = require('./timeline-event-list');
+var Minimap = require('./minimap');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
 var DevConferencesClient = require('../client/client');
@@ -43,6 +44,8 @@ var Home = React.createClass({
                 </Link>
 
                 <CityLinkList cities={this.state.cities}/>
+
+                <Minimap cities={this.state.cities} />
 
                 <Grid>
                     <Row>
