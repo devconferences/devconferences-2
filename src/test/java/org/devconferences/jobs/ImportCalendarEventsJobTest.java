@@ -32,7 +32,7 @@ public class ImportCalendarEventsJobTest {
     @Test
     public void testReloadData() {
         int totalImportedFiles = importCalendarEventsJob.reloadData(true);
-        Assertions.assertThat(totalImportedFiles).isEqualTo(1);
+        Assertions.assertThat(totalImportedFiles).isEqualTo(0); // 1 file ignored
     }
 
     @Test
@@ -73,7 +73,7 @@ public class ImportCalendarEventsJobTest {
         ImportCalendarEventsJob.addIdMeetup("bbbb");
 
         int totalImportedEvents = importCalendarEventsJob.reloadData(false);
-        Assertions.assertThat(totalImportedEvents).isEqualTo(4); // 1 from file, 3 from Meetup mock
+        Assertions.assertThat(totalImportedEvents).isEqualTo(3); // 0 from files (1 ignored), 3 from Meetup mock
     }
 
     @Test

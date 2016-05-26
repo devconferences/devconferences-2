@@ -32,12 +32,6 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         this.meetupApiClient = meetupApiClient;
     }
 
-    public static void main(String[] args) {
-        ElasticUtils.createIndex();
-        ImportCalendarEventsJob importCalendarEventsJob = new ImportCalendarEventsJob();
-        importCalendarEventsJob.reloadData(false);
-    }
-
     public static boolean addIdMeetup(String idMeetup) {
         return idMeetupList.add(idMeetup);
     }

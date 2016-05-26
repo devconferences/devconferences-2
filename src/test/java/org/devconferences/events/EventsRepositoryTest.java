@@ -91,6 +91,61 @@ public class EventsRepositoryTest {
     }
 
     @Test
+    public void should_find_calendar_event() {
+        CalendarEvent event = new CalendarEvent();
+        event.id = UUID.randomUUID().toString();
+        event.date = 123456789000L;
+        event.name = "a  conf";
+        event.description = "an awesome conf";
+
+        int countCount = 1;
+        MockJestClient.configCount(mockClient, EventsRepository.CALENDAREVENTS_TYPE, countCount);
+
+        int countSearch = 1;
+        String searchHits = "[" +
+                "  {" +
+                "    \"_index\" : \"dev-conferences\"," +
+                "    \"_type\" : \"events\"," +
+                "    \"_id\" : \"" + event.id + "\"," +
+                "    \"_source\" : {" +
+                "      \"id\" : \"" + event.id + "\"," +
+                "      \"date\" : \"" + event.date + "\"," +
+                "      \"name\" : \"" + event.name + "\"," +
+                "      \"description\" : \"" + event.description + "\"" +
+                "    }" +
+                "  }" +
+                "]";
+        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, countSearch, searchHits, "{}");
+
+        String jsonGet = "{" +
+                "  \"_index\": \"dev-conferences\" ," +
+                "  \"_type\": \"events\" ," +
+                "  \"_id\": \"1\" ," +
+                "  \"_version\": 1 ," +
+                "  \"found\": false ," +
+                "  \"_source\": null" +
+                "}";
+        MockJestClient.configGet(mockClient, EventsRepository.CALENDAREVENTS_TYPE, jsonGet);
+
+        eventsRepository.indexOrUpdate(event);
+
+        // Check header content of this searchEvents
+        AbstractSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null, null, null);
+        Assertions.assertThat(eventSearch.hitsAPage).matches("10");
+        Assertions.assertThat(eventSearch.totalHits).matches("1");
+        Assertions.assertThat(eventSearch.totalPage).matches("1");
+        Assertions.assertThat(eventSearch.currPage).matches("1");
+
+        // Should return event passed when created
+        List<CalendarEvent> matches = eventSearch.hits;
+        Assertions.assertThat(matches).hasSize(1);
+        Assertions.assertThat(matches.get(0).id).matches(event.id);
+        Assertions.assertThat(matches.get(0).date).isEqualTo(event.date);
+        Assertions.assertThat(matches.get(0).name).matches(event.name);
+        Assertions.assertThat(matches.get(0).description).matches(event.description);
+    }
+
+    @Test
     public void should_throw_exception_when_create_event_with_existing_id() {
         // Create mock
         String jsonGet = "{" +
