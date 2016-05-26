@@ -71,6 +71,7 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     }
 
     @Override
+    @Deprecated
     public CountResult countES(String type, String query) {
         Count count = new Count.Builder()
                 .query(query)

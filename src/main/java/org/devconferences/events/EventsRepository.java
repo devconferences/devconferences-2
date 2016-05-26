@@ -152,13 +152,14 @@ public class EventsRepository {
         int pageInt = Integer.decode(page);
 
         // Count query
+        searchQuery.size(0);
         if (filter == null) {
             searchQuery.query(queryStringQuery(QueryParser.escape(query)));
         } else {
-            searchQuery.query(filter);
+            searchQuery.query(queryStringQuery(QueryParser.escape(query))).postFilter(filter);
         }
 
-        CountResult countResult = client.countES(typeSearch, searchQuery.toString());
+        SearchResult countResult = client.searchES(typeSearch, searchQuery.toString());
 
         // Search query
         if (pageInt < 0) {
@@ -173,7 +174,7 @@ public class EventsRepository {
             searchQuery.from(10 * (pageInt - 1));
             searchQuery.size(10);
         } else {
-            searchQuery.size(countResult.getCount().intValue());
+            searchQuery.size(countResult.getTotal());
         }
 
 
@@ -193,7 +194,7 @@ public class EventsRepository {
                 throw new RuntimeException("Unknown search type : " + typeSearch);
         }
 
-        res.totalHits = String.valueOf(countResult.getCount().intValue());
+        res.totalHits = String.valueOf(countResult.getTotal());
         res.query = query;
         res.currPage = String.valueOf(page);
         res.lat = lat;
