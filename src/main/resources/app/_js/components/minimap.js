@@ -60,8 +60,8 @@ var Minimap = React.createClass({
             }
         }
         return (
-            <div className="text-center">
-                <p>
+            <div className="minimap text-center">
+                <p className="city">
                     {minimapTextRender(this.state.minimapText, this.state.linkHovered)}
                 </p>
                 <svg width="600" height="577">
