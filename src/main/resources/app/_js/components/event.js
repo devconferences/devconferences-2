@@ -47,9 +47,9 @@ var Event = React.createClass({
         var renderMeetup = function (event) {
           if (event.meetup) {
               return (
-                <p>
+                <div>
                     <MeetupLink id={event.meetup}/>
-                </p>
+                </div>
               );
           }
         };

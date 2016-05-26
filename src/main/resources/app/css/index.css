@@ -84,7 +84,7 @@ div.conflinks a {
     padding: 1em;
 }
 
-.search-result ul {
+.search-result div.results {
     padding: 0px 40px;
 }
 

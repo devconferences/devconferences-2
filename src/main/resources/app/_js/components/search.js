@@ -1,5 +1,6 @@
 var React = require('react');
 var Router = require('react-router');
+var ReactDOM = require('react-dom');
 var $ = require('jquery');
 
 var Event = require('./event');
@@ -32,7 +33,7 @@ var Search = React.createClass({
     },
 
     changeInput: function (e) {
-        var searchValue = (e ? e.target.value : this.refs.searchInput.getDOMNode().value);
+        var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
         var query = this.props.params.query || "";
         var page = 1;
 
@@ -83,18 +84,18 @@ var Search = React.createClass({
                 list = lastSearch.hits;
             }
             return (
-                list.map(function (event) { // TODO Generify this
+                list.map(function (event) {
                     if(searchType == "events") {
                         return (
-                            <li>
+                            <div>
                                 <Event event={event} />
-                            </li>
+                            </div>
                         );
                     } else if(searchType == "calendar") {
                         return (
-                            <li>
+                            <div>
                                 <TimelineEvent event={event} />
-                            </li>
+                            </div>
                         );
                     }
                 }.bind(this))
@@ -104,8 +105,8 @@ var Search = React.createClass({
             var searchTypeUI = function() {
                 return (
                     <ul className="list-inline text-center">
-                        <li><label><input type="radio" name="searchType" value="events" defaultChecked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</label></li>
-                        <li><label><input type="radio" name="searchType" value="calendar" defaultChecked={searchType == "calendar"} onChange={changeSearchType}/>Événements</label></li>
+                        <li><label><input type="radio" name="searchType" value="events" checked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</label></li>
+                        <li><label><input type="radio" name="searchType" value="calendar" checked={searchType == "calendar"} onChange={changeSearchType}/>Événements</label></li>
                     </ul>
                 );
             }.bind(this);
@@ -162,9 +163,9 @@ var Search = React.createClass({
                 </div>
                 <div className="search-result">
                     {resultsHead(this.state.lastSearch)}
-                    <ul>
+                    <div className="results">
                         {items(this.state.lastSearch, this.state.searchType)}
-                    </ul>
+                    </div>
                 </div>
             </div>
         );
