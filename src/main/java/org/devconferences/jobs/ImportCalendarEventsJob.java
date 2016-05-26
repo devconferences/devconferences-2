@@ -95,8 +95,11 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                     .replaceAll("<br/>", "\n").replaceAll("<[^>]*>","")
                     .replaceAll("&amp;", "&") // Fix missed &
                     .replaceAll("(\\n\\s*)+", "\n"); // Only one newline
-        }
 
+            if(calendarEvent.date < System.currentTimeMillis()) {
+                return null;
+            }
+        }
         return obj;
     }
 

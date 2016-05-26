@@ -53,9 +53,11 @@ public abstract class AbstractImportJSONJob {
         LOGGER.info("Import data (" + classInfo.getSimpleName() + ")...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
             Object object = new Gson().fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
-            forEachFunc.apply(object, path);
-            eventsRepository.indexOrUpdate(classInfo.cast(object));
-            totalEvents[0]++;
+            Object object2 = forEachFunc.apply(object, path);
+            if(object2 != null) {
+                eventsRepository.indexOrUpdate(classInfo.cast(object));
+                totalEvents[0]++;
+            }
         });
         LOGGER.info(totalEvents[0] + " files imported !");
 
