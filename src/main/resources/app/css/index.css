@@ -121,3 +121,7 @@ div.conflinks a {
     border: 0px;
     cursor: pointer;
 }
+
+svg a:hover ellipse {
+    fill: #23527C;
+}

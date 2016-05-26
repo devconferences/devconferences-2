@@ -21,7 +21,7 @@ var Minimap = React.createClass({
                 var cx = parseInt((5.8125 + city.location.lon) / (0.007890 / zoom));
                 return (
                     <a key={city.id} xlinkHref={"city/" + city.name} title={city.name + "(" + city.count + ")"}>
-                        <ellipse cx={cx + ""} cy={cy + ""} rx="5" ry="5"/>
+                        <ellipse fill="#337AB7" cx={cx + ""} cy={cy + ""} rx="5" ry="5"/>
                     </a>
                 );
             } else {
