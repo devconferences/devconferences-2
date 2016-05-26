@@ -44,6 +44,7 @@ public final class ElasticUtils {
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(esURL)
                 .multiThreaded(true)
+                .readTimeout(10000) // Default is 3000, but sometimes a SockettimeoutException might threw
                 .build());
         return new RuntimeJestClientAdapter(factory.getObject());
     }
