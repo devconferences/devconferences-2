@@ -1,10 +1,11 @@
 package org.devconferences.jobs;
 
-import com.google.gson.Gson;
-import org.devconferences.elastic.ElasticUtils;
+import com.google.gson.*;
+import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.meetup.MeetupApiClient;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +105,8 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     @Override
     public void checkData(String path) {
-        CalendarEvent event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), CalendarEvent.class);
+        CalendarEvent event = new GsonBuilder().registerTypeAdapter(GeoPoint.class, new GeoPointAdapter()).create()
+                .fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), CalendarEvent.class);
         try {
             checkCalendarEvent(event, path); // This line might throw an exception
         } catch (RuntimeException e) {

@@ -8,5 +8,11 @@
     "cfp": {
         "url": "http://www.blendwebmix.com/appel-a-conferenciers-2016.html",
         "dateSubmission": 1466028000000
+    },
+    "location": {
+        "city": "Lyon",
+        "name": "Centre de Congrès de Lyon",
+        "address": "50 Quai Charles de Gaulle",
+        "gps": "45.7850,4.8547"
     }
 }

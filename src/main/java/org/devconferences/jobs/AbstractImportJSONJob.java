@@ -1,9 +1,11 @@
 package org.devconferences.jobs;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.EventsRepository;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +54,8 @@ public abstract class AbstractImportJSONJob {
         final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import data (" + classInfo.getSimpleName() + ")...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
-            Object object = new Gson().fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
+            Object object = new GsonBuilder().registerTypeAdapter(GeoPoint.class,new GeoPointAdapter()).create()
+                    .fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
             Object object2 = forEachFunc.apply(object, path);
             if(object2 != null) {
                 eventsRepository.indexOrUpdate(classInfo.cast(object));
