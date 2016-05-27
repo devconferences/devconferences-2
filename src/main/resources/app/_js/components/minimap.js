@@ -1,10 +1,11 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var CityLink = require('./city-link');
 
 var Minimap = React.createClass({
     getInitialState: function() {
         return {
-            minimapText: "Choisissez une ville.",
+            minimapText: "Choisissez une ville sur la carte.",
             linkHovered: false
         }
     },
@@ -16,7 +17,7 @@ var Minimap = React.createClass({
     },
     resetMinimapText: function(e) {
         this.setState({
-            minimapText: "Choisissez une ville.",
+            minimapText: "Choisissez une ville sur la carte.",
             linkHovered: false
         });
     },
@@ -58,6 +59,15 @@ var Minimap = React.createClass({
                     <span className="label label-default">{text}</span>
                 );
             }
+        };
+        var linkNotLocatedCity = function(city) {
+            if(city.location != null) {
+                return null;
+            } else {
+                return (
+                    <CityLink key={city.id} city={city}/>
+                );
+            }
         }
         return (
             <div className="minimap text-center">
@@ -68,6 +78,14 @@ var Minimap = React.createClass({
                     <image xlinkHref="/img/france_map.svg" width="600" height="577"/>
                     {this.props.cities.map(linkToCity)}
                 </svg>
+                <div>
+                    <p className="city">
+                        <span className="label label-default">Ville(s) non affichée(s) :</span>
+                    </p>
+                    <p>
+                        {this.props.cities.map(linkNotLocatedCity)}
+                    </p>
+                </div>
             </div>
         );
     }
