@@ -264,6 +264,7 @@ public class EventsRepositoryTest {
                 "  }" +
                 "]";
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 3, searchHits, "{}");
+        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 0, "[]", "{}");
 
         City city = eventsEndPoint.city("the_city");
         Assertions.assertThat(city.id).matches("the_city");

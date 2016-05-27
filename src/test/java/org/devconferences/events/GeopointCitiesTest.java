@@ -1,6 +1,7 @@
 package org.devconferences.events;
 
 import org.assertj.core.api.Assertions;
+import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.Test;
 
@@ -10,6 +11,8 @@ import org.junit.Test;
 public class GeopointCitiesTest {
     @Test
     public void test() {
+        new ImportEventsJob().reloadData(true);
+
         GeopointCities geopointCities = GeopointCities.getInstance();
         Assertions.assertThat(geopointCities).isNotNull();
 

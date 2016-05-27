@@ -5,5 +5,8 @@
     "url": "http://www.exemple.com/",
     "description": "No description.",
     "organizerName": "Example Comm'",
-    "organizerUrl": "http://www.example.com/"
+    "organizerUrl": "http://www.example.com/",
+    "location": {
+        "gps": "-15.2154,44.1424"
+    }
 }
