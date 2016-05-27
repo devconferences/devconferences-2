@@ -2,6 +2,7 @@ package org.devconferences;
 
 import net.codestory.http.WebServer;
 import org.assertj.core.api.Assertions;
+import org.devconferences.elastic.DeveloppementESNode;
 import org.junit.Test;
 
 public class MainMethodsTest {
@@ -39,6 +40,9 @@ public class MainMethodsTest {
 
     @Test
     public void testWebServer() {
+        if(DeveloppementESNode.getPortNode() == null) {
+            DeveloppementESNode.setPortNode("9250");
+        }
         WebServer webServer = Main.configureWebServer();
 
         Assertions.assertThat(webServer).isNotNull();

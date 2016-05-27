@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -93,5 +94,19 @@ public class LocationSearchTest {
 
         eventsRepository.deleteEvent(event.id);
         eventsRepository.deleteEvent(event2.id);
+    }
+
+    @Test
+    public void test_geopoint_cities() {
+        new ImportEventsJob().reloadData(true);
+
+        GeopointCities geopointCities = GeopointCities.getInstance();
+        Assertions.assertThat(geopointCities).isNotNull();
+
+        Assertions.assertThat(geopointCities.getLocation("the_city"))
+                .isEqualToComparingFieldByField(new GeoPoint("49.900,2.3000"));
+        Assertions.assertThat(geopointCities.getLocation("the_city2"))
+                .isEqualToComparingFieldByField(new GeoPoint("47.4800,-0.5400"));
+        Assertions.assertThat(geopointCities.getLocation("the_city3")).isNull();
     }
 }

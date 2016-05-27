@@ -24,6 +24,18 @@ public class DeveloppementESNode {
     static Node esNode = null;
     static String portNode = null;
 
+    public static String getPortNode() {
+        return DeveloppementESNode.portNode;
+    }
+
+    public static void setPortNode(String portNode) {
+        if(DeveloppementESNode.esNode == null) {
+            DeveloppementESNode.portNode = portNode;
+        } else {
+            throw new RuntimeException("You try to edit port of an launched ES node !");
+        }
+    }
+
     public static void createDevNode() {
         createDevNode(elasticPort);
     }
