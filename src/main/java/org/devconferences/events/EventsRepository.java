@@ -100,9 +100,9 @@ public class EventsRepository {
                 .map(hit -> hit.source)
                 .forEach(event -> addEventToCityObject(city, event));
 
-        GeoPoint loc = GeopointCities.getInstance().getLocation(city.name);
-        if(loc != null) {
-            city.upcoming_events = findCalendarEventsAround(loc.lat(), loc.lon(), 20d);
+        city.location = GeopointCities.getInstance().getLocation(city.name);
+        if(city.location != null) {
+            city.upcoming_events = findCalendarEventsAround(city.location.lat(), city.location.lon(), 20d);
         } else {
             city.upcoming_events = new ArrayList<>();
         }
