@@ -25,3 +25,6 @@ src/main/resources/app/js/*.map
 
 # elasticsearch data
 data
+
+# DC generated files
+.meetupIdList
