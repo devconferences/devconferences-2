@@ -1,0 +1,3 @@
+[
+  "0 2 * * * cd $ROOT && /usr/bin/mvn exec:java -DONLY_RELOAD_CALENDAR=true"
+]

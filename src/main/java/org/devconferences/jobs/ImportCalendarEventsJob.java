@@ -52,7 +52,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             backupMeetupIds = (HashSet<String>) objectInputStream.readObject();
 
             backupMeetupIds.forEach(ImportCalendarEventsJob::addIdMeetup);
-            LOGGER.info("List of Meetup ids loaded !");
+            LOGGER.info("List of Meetup ids loaded ! Size : " + idMeetupList.size());
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
@@ -195,7 +195,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     }
 
     private int askMeetupUpcomingEvents() {
-        final int[] totalMeetupImport = {0};
+        final int[] totalMeetupImport = {0, 0};
 
         LOGGER.info("Import events from Meetup...");
 
@@ -211,6 +211,10 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                     client.indexES(CALENDAREVENTS_TYPE, data, data.id);
                     totalMeetupImport[0]++;
                 });
+
+                totalMeetupImport[1]++;
+                LOGGER.info("Total Meetup requests : " + totalMeetupImport[1] + "/" + idMeetupList.size());
+
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
