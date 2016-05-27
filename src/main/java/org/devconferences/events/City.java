@@ -10,5 +10,6 @@ public class City {
     public String name;
     public List<Event> conferences;
     public List<Event> communities;
+    public List<CalendarEvent> upcoming_events;
 
 }

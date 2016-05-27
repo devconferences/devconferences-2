@@ -9,6 +9,7 @@ import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -99,15 +100,22 @@ public class EventsRepository {
                 .map(hit -> hit.source)
                 .forEach(event -> addEventToCityObject(city, event));
 
+        GeoPoint loc = GeopointCities.getInstance().getLocation(city.name);
+        if(loc != null) {
+            city.upcoming_events = findCalendarEventsAround(loc.lat(), loc.lon(), 20d);
+        } else {
+            city.upcoming_events = new ArrayList<>();
+        }
+
         return city;
     }
 
     public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
         String eventLocations = new SearchSourceBuilder()
-                .query(QueryBuilders.geoDistanceQuery("location")
+                .query(matchAllQuery())
+                .postFilter(QueryBuilders.geoDistanceQuery("location")
                         .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon)
-                )
+                        .lat(lat).lon(lon))
                 .size(0)
                 .aggregation(AggregationBuilders.geohashGrid("event_locations").field("location").precision(geohashPrecision))
                 .toString();
@@ -115,6 +123,19 @@ public class EventsRepository {
         SearchResult result = client.searchES(EVENTS_TYPE, eventLocations);
         GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
         return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
+    }
+
+    public List<CalendarEvent> findCalendarEventsAround(double lat, double lon, double distance) {
+        SearchSourceBuilder eventLocations = new SearchSourceBuilder()
+                .query(matchAllQuery())
+                .postFilter(QueryBuilders.geoDistanceQuery("location.gps")
+                        .distance(distance, KILOMETERS)
+                        .lat(lat).lon(lon))
+                .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
+                .size(Integer.MAX_VALUE);
+
+        SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
+        return getHitsFromSearch(result, CalendarEvent.class);
     }
 
     private void addEventToCityObject(City city, Event event) {
