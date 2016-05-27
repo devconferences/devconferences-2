@@ -4,6 +4,7 @@ var $ = require('jquery');
 
 var EventAnchorList = require('./event-anchor-list');
 var EventList = require('./event-list');
+var UpcomingEventsList = require('./upcoming-events-list');
 var DevConferencesClient = require('../client/client');
 
 var City = React.createClass({
@@ -43,6 +44,8 @@ var City = React.createClass({
 
                     <EventList events={this.state.city.conferences} />
                     <EventList events={this.state.city.communities} />
+
+                    <UpcomingEventsList events={this.state.city.upcoming_events} cityName={this.state.city.name}/>
                 </div>
             )
         }
