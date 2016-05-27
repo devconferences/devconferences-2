@@ -30,7 +30,6 @@ var City = React.createClass({
             }
         };
         if (this.state.city) {
-            console.log(this.state.city.upcoming_events);
             return (
                 <div className="container">
                     <div className="text-center">

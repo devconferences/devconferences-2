@@ -82,7 +82,7 @@ var Event = React.createClass({
         };
         var event = this.props.event;
         return (
-            <div>
+            <div className="event">
                 <a name={event.id}></a>
                 <h3>
                     <Glyphicon glyph='chevron-right'></Glyphicon> {event.name}
@@ -91,7 +91,7 @@ var Event = React.createClass({
                 <Grid>
                     <Row>
                         <Col md={2}>
-                            <img src={event.avatar} className="img-responsive"/>
+                            <img src={event.avatar} className="avatar img-responsive"/>
                         </Col>
                         <Col md={10} className="text-justify">
                             <p>
