@@ -31,16 +31,16 @@ Le déploiement se fait automatique sur Clever Cloud lorsque du code est pushé 
 
 ## TODO list
 
-- [ ] ajouter des tags (ex : jug, java, php, gdg ...)
-- [ ] ajouter la possibilité d'effectuer des recherches
-- [ ] ajouter des liens vers les chaînes vidéo (youtube, parleys ...) des conférences
+- [X] ajouter des tags (ex : jug, java, php, gdg ...)
+- [X] ajouter la possibilité d'effectuer des recherches
+- [X] ajouter des liens vers les chaînes vidéo (youtube, parleys ...) des conférences
 - [ ] gérér des agendas pour chacune des villes
-- [ ] automatiser l'import d'événements depuis meetup.com
-- [ ] automatiser l'import d'événements depuis lanyrd.com
+- [X] automatiser l'import d'événements depuis meetup.com
+- [ ] _automatiser l'import d'événements depuis lanyrd.com_ **(pas d'API)**
 - [ ] automatiser l'envoi de tweets pour annoncer les prochaines sessions (via @devconferences)
-- [ ] faciliter la contribution de nouvelles conférences/communautés (formulaire + authentification github par exemple)
+- [X] faciliter la contribution de nouvelles conférences/communautés (formulaire + authentification github par exemple)
 - [ ] permettre la souscription à une news-letter
 - [ ] permettre l'envoi de notifications (par ville, par thème / catégorie)
 - [ ] fournir des statistiques sur les conférences
-- [ ] ajouter une carte type google-map
-- [ ] lister les CFP / s'abonner aux CFP
+- [X] ajouter une carte type google-map
+- [X] lister les CFP / s'abonner aux CFP
