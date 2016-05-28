@@ -13,6 +13,7 @@
     "moment": "2.13.0",
     "react": "15.1.0",
     "react-bootstrap": "0.29.4",
+    "react-dom": "15.1.0",
     "react-router": "2.4.1",
     "react-tap-event-plugin": "1.0.0",
     "request": "2.72.0",
