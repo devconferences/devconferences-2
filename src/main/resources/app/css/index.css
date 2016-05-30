@@ -133,3 +133,8 @@ svg a:hover ellipse {
 div.event img.avatar {
     max-height: 256px;
 }
+
+#map {
+    width: 600px;
+    height: 600px;
+}

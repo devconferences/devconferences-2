@@ -2,6 +2,7 @@ var React = require('react');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
+var Ol = require('openlayers');
 
 var CityLinkList = require('./city-link-list');
 var TimelineEventList = require('./timeline-event-list');
@@ -37,6 +38,16 @@ var Home = React.createClass({
     },
 
     render: function () {
+        var map = new Ol.Map({
+            target: "map",
+            layers: [
+                new Ol.layer.Tile({source: new Ol.source.OSM()})
+            ],
+            view: new Ol.View({
+                center: Ol.proj.fromLonLat([2.367, 46.500]),
+                zoom: 5.8
+            })
+        });
         return (
             <div className="container">
                 <div className="text-center">
@@ -48,6 +59,8 @@ var Home = React.createClass({
                 </div>
 
                 <SearchBar onUpdate={this.searchBarUpdated} all={true}/>
+
+                <div id="map" className="center-block"></div>
 
                 <CityLinkList cities={this.state.cities}/>
 
