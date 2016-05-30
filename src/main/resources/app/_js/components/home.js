@@ -5,6 +5,7 @@ var $ = require('jquery');
 
 var CityLinkList = require('./city-link-list');
 var TimelineEventList = require('./timeline-event-list');
+var SearchBar = require('./search-bar');
 var Minimap = require('./minimap');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
@@ -28,6 +29,11 @@ var Home = React.createClass({
         DevConferencesClient.cities().then(cities => this.setState({ cities: cities.data }));
     },
 
+    searchBarUpdated: function(data) {
+        console.log(data);
+        console.log(new SearchBar().ALL);
+    },
+
     render: function () {
         return (
             <div className="container">
@@ -39,9 +45,7 @@ var Home = React.createClass({
                     de développeurs en France.
                 </div>
 
-                <Link to="search" className='btn btn-primary btn-block btn-city'>
-                    Recherche
-                </Link>
+                <SearchBar onUpdate={this.searchBarUpdated}/>
 
                 <CityLinkList cities={this.state.cities}/>
 
