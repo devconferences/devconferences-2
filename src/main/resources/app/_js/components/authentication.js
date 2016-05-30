@@ -38,7 +38,7 @@ var Authentication = React.createClass({
                     console.error(connectedUserURL, status, err.toString());
                 }
             }.bind(this)
-        })
+        });
     },
     render: function () {
         if(!this.state.clientId){
@@ -47,13 +47,13 @@ var Authentication = React.createClass({
         //// TODO : il y a probablement mieux à faire...
         var user = this.state.user;
         var href = user ? "/auth/disconnect" : "https://github.com/login/oauth/authorize?client_id="+this.state.clientId;
-        var imageUrl = user ? user.avatarURL : "https://www.clever-cloud.com/assets/img/github-icon.svg";
+        var imageUrl = user ? user.avatarURL : "/img/github.png";
         var title = user ? user.login : "Connectez-vous avez Github";
 
         return (
             <div className="authentication">
                 <a href={href}>
-                    <image src={imageUrl}
+                    <img src={imageUrl}
                            title={title}
                            alt={title}
                            className="img-circle"
