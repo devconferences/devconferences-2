@@ -1,5 +1,5 @@
 {
   "deploy": {
-    "goal": "package exec:java -DPROD_MODE=true"
+    "goal": "clean package exec:java -DPROD_MODE=true"
   }
 }
