@@ -70,7 +70,7 @@ var Minimap = React.createClass({
             }
         }
         return (
-            <div className="minimap text-center">
+            <div className="minimap text-center hidden-xs">
                 <p className="city">
                     {minimapTextRender(this.state.minimapText, this.state.linkHovered)}
                 </p>

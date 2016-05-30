@@ -12,7 +12,7 @@ var CityLinkList = React.createClass({
             );
         };
         return (
-            <div className="text-center">
+            <div className="text-center visible-xs-block">
                     { this.props.cities.map(renderCity) }
             </div>
         );
