@@ -13,16 +13,15 @@ Chaque CalendarEvent est dans une arborescence de type "year/month/file_azerty.j
 Un CalendarEvent est représenté par un fichier JSON.
 
 Par exemple, la Devoxx FR 2016, qui s'est déroulé en avril 2016, est représenté par le fichier
-`2016/04/file_devoxxfr2016.json`
+`2016/04/devoxxfr2016.json`
 
 ## Convention
 
 Par souci d'uniformisation des CalendarEvents, merci de respecter les conventions suivantes :
 
 - Les dossiers de mois SONT avec 2 chiffres, donc janvier correspond à `01`.
-- Les noms des fichiers sont en minuscule. Seul les lettres non accentuées, l'underscore
-et les chiffres sont autorisées. Le fichier DOIT commencer par `file_` et DOIT correspondre
-à l'`id` de l'Event.
+- Les noms des fichiers sont en minuscule. Seul les lettres non accentuées
+et les chiffres sont autorisées. Le fichier DOIT correspondre à l'`id` de l'Event.
 - L'`id` DOIT être unique parmi tous les Events.
 - Merci de respecter la mise en forme des fichiers (notamment l'indentation avec 4 espaces,
 et un seul attribut par ligne), par souci de lisibilité pour tous.
@@ -76,10 +75,9 @@ L'identifiant du CalendarEvent.
 L'identifiant DOIT être :
 
 - unique parmi tous les CalendarEvents
-- tout en minuscule, avec éventuellement des chiffres et des underscores
+- tout en minuscule, avec éventuellement des chiffres
 
-Le nom du fichier DOIT commencer par `file_` (distinction avec les CalendarEvents importés
-depuis Meetup, qui commencent par `meetup_`), et DOIT être le même que l'identifiant.
+Le nom du fichier DOIT être le même que l'identifiant.
 
 #### `name`
 

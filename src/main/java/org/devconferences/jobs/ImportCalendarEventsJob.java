@@ -85,6 +85,10 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     private Object removeHTMLTagsAndAddNewlines(Object obj, String path) {
         if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
+            // Prefix JSON file id with 'file_' (distinction with Meetup imports)
+            if(path != null) {
+                calendarEvent.id = "file_" + calendarEvent.id;
+            }
             // Replace <p></p> and <br/> with \n (ReactJS will detect it), and remove others HTML tags
             calendarEvent.description = calendarEvent.description.replaceAll("</p>", "\n")
                     .replaceAll("<br/>", "\n").replaceAll("<[^>]*>","")
@@ -155,9 +159,6 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         // Check path and file content
         if(!(event.id + ".json").equals(file)) {
             throw new RuntimeException("Invalid CalendarEvent : filename and 'id' field mismatch");
-        }
-        if(!event.id.startsWith("file_")) {
-            throw new RuntimeException("Invalid CalendarEvent : 'id' not start with \"file_\"");
         }
         if(calendar.get(Calendar.YEAR) != yearInt) {
             throw new RuntimeException("Invalid CalendarEvent : year path and 'date' field mismatch\n" +

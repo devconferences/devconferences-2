@@ -3,7 +3,7 @@
  * Pensez à enlever les commentaires, ainsi les champs qui ne sont pas édités
  * (mis à null).
  */{
-    "id": "file_sdfsvfeb", // id commençant par "file_"
+    "id": "sdfsvfeb",
     "name": "Nom de l'événement",
     "date": 705285300000, // format timestamp, millisecondes
     "duration": 7200000, // Durée, format timestamp, millisecondes
