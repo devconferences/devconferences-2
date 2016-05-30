@@ -93,14 +93,14 @@ public class ImportCalendarEventsJobTest {
         }
 
         try {
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : no 'id' field");
         }
         try {
-            calendarEvent.id = "test";
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            calendarEvent.id = "TEST";
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : no 'name' field");
@@ -108,35 +108,28 @@ public class ImportCalendarEventsJobTest {
 
         try {
             calendarEvent.name = "Test";
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : no 'date' field");
         }
         try {
             calendarEvent.date = 123456789000L;
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : no 'description' field");
         }
         try {
             calendarEvent.description = "Test sur ImportCalendarEventsJobTest";
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : filename and 'id' field mismatch");
         }
         try {
-            calendarEvent.id = "filetest";
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/filetest.json");
-            Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
-        } catch(RuntimeException e) {
-            Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : 'id' not start with \"file_\"");
-        }
-        try {
-            calendarEvent.id = "file_test";
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            calendarEvent.id = "test";
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : year path and 'date' field mismatch\n" +
@@ -145,7 +138,7 @@ public class ImportCalendarEventsJobTest {
         }
         try {
             calendarEvent.date = 1474567890000L;
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : month path and 'date' field mismatch\n" +
@@ -154,7 +147,7 @@ public class ImportCalendarEventsJobTest {
         }
         try {
             calendarEvent.date = 1462567890000L;
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/2016/05/test.json");
         } catch(RuntimeException e) {
             Assertions.fail("Should not throw an exception !");
         }

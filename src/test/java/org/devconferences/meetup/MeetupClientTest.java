@@ -66,8 +66,8 @@ public class MeetupClientTest {
         Assertions.assertThat(calendarEventList.get(0).name).matches("Azerty");
         Assertions.assertThat(calendarEventList.get(0).description).matches("AZERTY.");
         Assertions.assertThat(calendarEventList.get(0).date).isEqualTo(123456789000L);
-        Assertions.assertThat(calendarEventList.get(0).organizerName).matches("AzErTy");
-        Assertions.assertThat(calendarEventList.get(0).organizerUrl).matches("http://www.meetup.com/azerty1");
+        Assertions.assertThat(calendarEventList.get(0).organizer.name).matches("AzErTy");
+        Assertions.assertThat(calendarEventList.get(0).organizer.url).matches("http://www.meetup.com/azerty1");
         Assertions.assertThat(calendarEventList.get(0).location.address).matches("1, Rue Bidon");
         Assertions.assertThat(calendarEventList.get(0).location.city).matches("Ville Bidon");
         Assertions.assertThat(calendarEventList.get(0).location.gps.lat()).isEqualTo(12.3456, within(0.001));
@@ -77,8 +77,8 @@ public class MeetupClientTest {
         Assertions.assertThat(calendarEventList.get(1).name).matches("Qsdfgh");
         Assertions.assertThat(calendarEventList.get(1).description).matches("QSDFGH.");
         Assertions.assertThat(calendarEventList.get(1).date).isEqualTo(123456987000L);
-        Assertions.assertThat(calendarEventList.get(1).organizerName).isEqualTo("QsDfGh");
-        Assertions.assertThat(calendarEventList.get(1).organizerUrl).isEqualTo("http://www.meetup.com/qsdfgh1");
+        Assertions.assertThat(calendarEventList.get(1).organizer.name).isEqualTo("QsDfGh");
+        Assertions.assertThat(calendarEventList.get(1).organizer.url).isEqualTo("http://www.meetup.com/qsdfgh1");
     }
 
     @Test

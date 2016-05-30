@@ -107,15 +107,21 @@ La durée du CalendarEvent.
 
 Comme pour `date`, il s'agit d'un timestamp en millisecondes.
 
-#### `organizerName`
+#### `organizer.*`
+
+Les informations concernant l'organisateur.
+
+Il contient les sous-champs suivants :
+
+##### `organizer.name`
 
 Le nom de l'organisateur du CalendarEvent.
 
-#### `organizerUrl`
+##### `organizer.url`
 
 Le site de l'organisateur du CalendarEvent.
 
-`organizerName` doit être renseigné, sinon le lien ne s'affichera pas.
+`organizer.name` doit être renseigné, sinon le lien ne s'affichera pas.
 
 #### `location.*`
 

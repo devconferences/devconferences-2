@@ -9,10 +9,14 @@ public class CalendarEvent {
     public long duration;
     public String url;
     public String description;
-    public String organizerName;
-    public String organizerUrl;
+    public Group organizer;
     public Location location;
     public CallForPapers cfp;
+
+    public class Group {
+        public String name;
+        public String url;
+    }
 
     public class Location {
         public String city;

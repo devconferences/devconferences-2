@@ -17,12 +17,16 @@
       "date": {
         "type": "long"
       },
-      "organizerName": {
-        "type": "string"
-      },
-      "organizerUrl": {
-        "type": "string",
-        "index": "not_analyzed"
+      "organizer": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "index": "not_analyzed"
+          }
+        }
       },
       "location": {
         "properties": {

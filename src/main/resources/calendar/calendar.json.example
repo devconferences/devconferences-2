@@ -9,8 +9,10 @@
     "duration": 7200000, // Durée, format timestamp, millisecondes
     "url": "http://www.event-website.com",
     "description": "Une petite description.",
-    "organizerName": "Organisateur",
-    "organizerUrl": "http://www.organizer.com",
+    "organizer": {
+        "name": "Organisateur",
+        "url": "http://www.organizer.com"
+    },
     "location": {
         "city": "La Ville",
         "name": "Ici",

@@ -88,8 +88,11 @@ public class MeetupApiClient {
             calendarEvent.description = data.description;
             calendarEvent.date = data.time;
             calendarEvent.duration = data.duration;
-            calendarEvent.organizerName = data.group.name;
-            calendarEvent.organizerUrl = "http://www.meetup.com/" + data.group.urlname;
+            if(data.group != null) {
+                calendarEvent.organizer = calendarEvent.new Group();
+                calendarEvent.organizer.name = data.group.name;
+                calendarEvent.organizer.url = "http://www.meetup.com/" + data.group.urlname;
+            }
 
             if(data.venue != null) {
                 calendarEvent.location = calendarEvent.new Location();
