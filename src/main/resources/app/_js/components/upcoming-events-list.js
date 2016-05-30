@@ -15,6 +15,7 @@ var UpcomingEventsList = React.createClass({
                 <div>
                     <hr />
 
+                    <a name="upcomingevents"></a>
                     <div className="text-center">
                         <h3>Prochains événements @ {this.props.cityName}</h3>
                     </div>

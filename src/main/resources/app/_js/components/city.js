@@ -29,6 +29,15 @@ var City = React.createClass({
                 )
             }
         };
+        var renderUpcomingEvents = function(items) {
+            if(items.length > 0) {
+                return (
+                    <div className="text-center">
+                        <h3><a href="#upcomingevents">{items.length} événements à venir</a></h3>
+                    </div>
+                );
+            }
+        }
         if (this.state.city) {
             return (
                 <div className="container">
@@ -38,6 +47,8 @@ var City = React.createClass({
 
                     {renderAnchorList(this.state.city.conferences, 'Conférences')}
                     {renderAnchorList(this.state.city.communities, 'Communautés')}
+
+                    {renderUpcomingEvents(this.state.city.upcoming_events)}
 
                     <hr />
 
