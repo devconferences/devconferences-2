@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Router = require('react-router');
 
 var DevConferencesClient = require('../client/client');
@@ -25,9 +26,6 @@ var SearchBar = React.createClass({
 
     research: function(query, page, searchType) {
         // Prepare data
-        if(!query && this.state.lastSearch) {
-            query = this.state.lastSearch.query;
-        }
         if(!page) {
             page = 0;
         }
@@ -35,24 +33,29 @@ var SearchBar = React.createClass({
             searchType = this.props.searchType || this.ALL;
         }
 
-        var data = {};
-        data.query = query;
-        data.page = page;
-        data.events = null;
-        data.calendar = null;
+        setTimeout(function() {
+            if(ReactDOM.findDOMNode(this.refs.searchInput).value == query) {
+                var data = {};
+                data.query = query;
+                data.page = page;
+                data.events = null;
+                data.calendar = null;
 
-        if(searchType & this.EVENTS) {
-            DevConferencesClient.searchEvents(query, page).then(result => {
-                data.events = result.data;
-                this.props.onUpdate(data);
-            });
-        }
-        if(searchType & this.CALENDAR) {
-           DevConferencesClient.searchCalendar(query, page).then(result => {
-               data.calendar = result.data;
-               this.props.onUpdate(data);
-           });
-       }
+                if(searchType & this.EVENTS) {
+                    DevConferencesClient.searchEvents(query, page).then(result => {
+                        data.events = result.data;
+                        this.props.onUpdate(data);
+                    });
+                }
+                if(searchType & this.CALENDAR) {
+                   DevConferencesClient.searchCalendar(query, page).then(result => {
+                       data.calendar = result.data;
+                       this.props.onUpdate(data);
+                   });
+                }
+            }
+        }.bind(this), 300);
+
     },
 
     render: function() {
