@@ -20,7 +20,7 @@ var SearchBar = React.createClass({
                     page = this.props.page || 0;
                 }
 
-        this.research(searchValue, page, this.ALL);
+        this.research(searchValue, page, null);
     },
 
     research: function(query, page, searchType) {
@@ -32,7 +32,7 @@ var SearchBar = React.createClass({
             page = 0;
         }
         if(!searchType) {
-            searchType = this.ALL;
+            searchType = this.props.searchType || this.ALL;
         }
 
         var data = {};
