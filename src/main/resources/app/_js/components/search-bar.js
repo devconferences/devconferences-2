@@ -8,7 +8,7 @@ var SearchBar = React.createClass({
     // All kind of research
     EVENTS: 0x01,
     CALENDAR: 0x02,
-    ALL: 0xFF,
+    ALL: 0x03,
 
     getInitialState: function() {
         return {
@@ -28,27 +28,36 @@ var SearchBar = React.createClass({
         this.research(newProps.query, newProps.page, newProps.searchType);
     },
 
+    changeSearchType: function(searchType) {
+        this.research(null, (this.props.all ? 0 : 1), searchType);
+    },
+
     queryChanged: function(e) {
         var value = this.refs.searchInput.value;
 
         var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
-                var query = this.props.query || "";
-                var page = (this.props.all ? 0 : 1);
+        var query = this.props.query || "";
+        var page = (this.props.all ? 0 : 1);
 
-                if(query != "" && searchValue == query) {
-                    page = this.props.page || (this.props.all ? 0 : 1);
-                }
+        if(query != "" && searchValue == query) {
+            page = this.props.page || (this.props.all ? 0 : 1);
+        }
 
         this.research(searchValue, page, null);
     },
 
     research: function(query, page, searchType) {
         // Prepare data
+        if(query == null) {
+            query = this.state.query;
+        }
         if(!page) {
             page = (this.props.all ? 0 : 1);
+        } else if(page == -1) {
+            page = this.state.page;
         }
         if(!searchType) {
-            searchType = this.props.searchType || this.ALL;
+            searchType = this.props.searchType || this.state.searchType || this.ALL;
         }
 
         if(query == this.state.query && page == this.state.page && searchType == this.state.searchType) {
@@ -62,8 +71,12 @@ var SearchBar = React.createClass({
         }
 
         setTimeout(function() {
-            if(ReactDOM.findDOMNode(this.refs.searchInput).value == query) {
+            var inputVal = ReactDOM.findDOMNode(this.refs.searchInput).value;
+            if(inputVal == query || (
+                inputVal == "" && query == null // Case of "" (e.target.value == null , #searchInput.value == "") ...
+            )) {
                 var data = {};
+                var searchDone = 0x00; // Avoid multiple calls of onUpdate when searchType == ALL
                 data.query = query;
                 data.page = page;
                 data.events = null;
@@ -72,13 +85,19 @@ var SearchBar = React.createClass({
                 if(searchType & this.EVENTS) {
                     DevConferencesClient.searchEvents(query, page).then(result => {
                         data.events = result.data;
-                        this.props.onUpdate(data);
+                        searchDone += this.EVENTS;
+                        if(searchDone == searchType) {
+                            this.props.onUpdate(data);
+                        }
                     });
                 }
                 if(searchType & this.CALENDAR) {
                    DevConferencesClient.searchCalendar(query, page).then(result => {
                        data.calendar = result.data;
-                       this.props.onUpdate(data);
+                       searchDone += this.CALENDAR;
+                       if(searchDone == searchType) {
+                           this.props.onUpdate(data);
+                       }
                    });
                 }
             }

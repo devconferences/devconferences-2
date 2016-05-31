@@ -30,8 +30,10 @@ var Home = React.createClass({
     },
 
     searchBarUpdated: function(data) {
-        console.log(data);
-        // console.log(new SearchBar().ALL);
+        console.log("event:");
+        console.log(data.events);
+        console.log("calendar:");
+        console.log(data.calendar);
     },
 
     render: function () {
