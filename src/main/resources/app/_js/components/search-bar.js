@@ -10,6 +10,12 @@ var SearchBar = React.createClass({
     CALENDAR: 0x02,
     ALL: 0xFF,
 
+    componentDidMount: function() {
+        if(this.props.query != null) {
+            this.queryChanged(null);
+        }
+    },
+
     queryChanged: function(e) {
         var value = this.refs.searchInput.value;
 
@@ -61,7 +67,7 @@ var SearchBar = React.createClass({
     render: function() {
         return (
             <div className="text-center">
-                <input type="text" className="input-text" ref="searchInput" onChange={this.queryChanged} placeholder="Entrez votre recherche ici..."/>
+                <input type="text" className="input-text" ref="searchInput" onChange={this.queryChanged} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
             </div>
         );
     }
