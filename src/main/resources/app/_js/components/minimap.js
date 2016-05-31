@@ -1,5 +1,7 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var Ol = require('openlayers');
+
 var CityLink = require('./city-link');
 
 var Minimap = React.createClass({
@@ -24,42 +26,37 @@ var Minimap = React.createClass({
 
     render: function() {
         var parentThis = this;
-        var linkToCity = function(city) {
-            /*
-             * Equirectangular projection :
-             * North : 51.5500
-             * South : 40.9982
-             * East : 9.9675
-             * West : -5.8125
-             *
-             * With pic of 2,000px * 1,922px (the original) :
-             * cx = (51.55 - ${lon}) / 0.005490
-             * cy = (5.8125 + ${lat}) / 0.007890
-             */
-            if(city.location) {
-                var zoom = 600 / 2000;
-                var cy = parseInt((51.55 - city.location.lat) / (0.005490 / zoom));
-                var cx = parseInt((5.8125 + city.location.lon) / (0.007890 / zoom));
-                return (
-                    <a onMouseEnter={parentThis.setMinimapText} onMouseLeave={parentThis.resetMinimapText} key={city.id} xlinkHref={"city/" + city.name} title={city.name + " (" + city.count + ")"}>
-                        <ellipse fill="#337AB7" cx={cx + ""} cy={cy + ""} rx="5" ry="5"/>
-                    </a>
-                );
-            } else {
-                return null;
-            }
-        };
-        var minimapTextRender = function(text, isHover) {
-            if(isHover) {
-                return (
-                    <span className="label label-primary">{text}</span>
-                );
-            } else {
-                return (
-                    <span className="label label-default">{text}</span>
-                );
-            }
-        };
+        var cityMarker = function(city) {
+            var iconFeature = new Ol.Feature({
+                geometry: new Ol.geom.Point(Ol.proj.fromLonLat([city.location.lon, city.location.lat])),
+                name: city.name,
+                population: 4000,
+                rainfall: 500
+            });
+
+            return iconFeature;
+        }
+
+        var vectorSource = new Ol.source.Vector({
+            features: this.props.cities.filter(
+                function(city) {return city.location != null}
+            ).map(cityMarker)
+        });
+
+        var vectorLayer = new Ol.layer.Vector({
+            source: vectorSource
+        });
+        var map = new Ol.Map({
+            target: "map",
+            layers: [
+                new Ol.layer.Tile({source: new Ol.source.OSM()}),
+                vectorLayer
+            ],
+            view: new Ol.View({
+                center: Ol.proj.fromLonLat([2.367, 46.500]),
+                zoom: 5.8
+            })
+        });
         var linkNotLocatedCity = function(city) {
             if(city.location != null) {
                 return null;
@@ -71,13 +68,9 @@ var Minimap = React.createClass({
         }
         return (
             <div className="minimap text-center hidden-xs">
-                <p className="city">
-                    {minimapTextRender(this.state.minimapText, this.state.linkHovered)}
-                </p>
-                <svg width="600" height="577">
-                    <image xlinkHref="/img/france_map.svg" width="600" height="577"/>
-                    {this.props.cities.map(linkToCity)}
-                </svg>
+
+                <div id="map" className="center-block"></div>
+
                 <div>
                     <p className="city">
                         <span className="label label-default">Ville(s) non affichée(s) :</span>
