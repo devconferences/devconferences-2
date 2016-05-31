@@ -31,7 +31,7 @@ var Home = React.createClass({
 
     searchBarUpdated: function(data) {
         console.log(data);
-        console.log(new SearchBar().ALL);
+        // console.log(new SearchBar().ALL);
     },
 
     render: function () {

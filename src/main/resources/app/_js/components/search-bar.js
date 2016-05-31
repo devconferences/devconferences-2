@@ -44,15 +44,15 @@ var SearchBar = React.createClass({
         if(searchType | this.EVENTS) {
             DevConferencesClient.searchEvents(query, page).then(result => {
                 data.events = result.data;
+                this.props.onUpdate(data);
             });
         }
         if(searchType | this.CALENDAR) {
            DevConferencesClient.searchCalendar(query, page).then(result => {
                data.calendar = result.data;
+               this.props.onUpdate(data);
            });
        }
-
-        this.props.onUpdate(data);
     },
 
     render: function() {
