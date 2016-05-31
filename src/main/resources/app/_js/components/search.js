@@ -5,6 +5,7 @@ var $ = require('jquery');
 
 var Event = require('./event');
 var TimelineEvent = require('./timeline-event');
+var SearchBar = require('./search-bar');
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;
@@ -16,72 +17,57 @@ var Search = React.createClass({
     getInitialState: function(){
         return {
             lastSearch: null,
-            searchType: "events"
+            searchType: "events",
+            page: null
         }
     },
 
     componentDidMount: function() {
-        this.changeInput(null);
+        // TODO Add forceUpdate function in SearchBar
+        //this.changeInput(null);
     },
 
     componentWillReceiveProps: function(newProps) {
-        this.research(newProps.params.query, newProps.params.page, null);
-    },
-
-    selectEvent: function (e) {
-        alert('yo');
-    },
-
-    changeInput: function (e) {
-        var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
-        var query = this.props.params.query || "";
-        var page = 1;
-
-        if(query != "" && searchValue == query) {
-            page = this.props.params.page || 1;
-        }
-
-        this.research(searchValue, page, null);
+        // TODO idem
+        this.setState({
+            page: newProps.page
+        })
     },
 
     changeSearchType: function(e) {
-        this.research(null, null, e.target.value);
+        var newSearchType = e.target.value;
+        this.refs.searchBar.changeSearchType(this.convertSearchType(newSearchType));
     },
 
-    research: function(query, page, searchType) {
-        // Prepare data
-        if(!query && this.state.lastSearch) {
-            query = this.state.lastSearch.query;
-        }
-        if(!page) {
-            page = 1;
-        }
+    searchBarUpdated: function(data) {
+        this.setState({
+            lastSearch: data,
+            searchType: (data.events ? "events" : "calendar"),
+            page: data.page
+        });
+    },
+
+    convertSearchType: function(searchType) {
         if(!searchType) {
-            searchType = this.state.searchType;
+            searchType = this.state.searchType
         }
 
         if(searchType == "events") {
-            DevConferencesClient.searchEvents(query, page).then(result => {
-                this.setState({
-                    lastSearch: result.data,
-                    searchType: searchType
-                })
-            });
+            return new SearchBar().EVENTS;
         } else if(searchType == "calendar") {
-           DevConferencesClient.searchCalendar(query, page).then(result => {
-               this.setState({
-                   lastSearch: result.data,
-                   searchType: searchType
-               })
-           });
-       }
+            return new SearchBar().CALENDAR;
+        }
     },
 
     render: function () {
         var items = function(lastSearch, searchType) {
             var list = [];
             if(lastSearch) {
-                list = lastSearch.hits;
+                if(searchType == "events") {
+                    list = lastSearch.events.hits;
+                } else if(searchType == "calendar") {
+                     list = lastSearch.calendar.hits;
+                 }
             }
             return (
                 list.map(function (event) {
@@ -122,10 +108,16 @@ var Search = React.createClass({
             var currPage = 1;
             var query = "";
             if(lastSearch) {
-                nbrResults = lastSearch.totalHits;
-                totalPage = lastSearch.totalPage;
-                currPage = lastSearch.currPage;
-                query = lastSearch.query;
+                var data = null;
+                if(searchType == "events") {
+                    data = lastSearch.events;
+                } else if(searchType == "calendar") {
+                   data = lastSearch.calendar;
+                }
+                nbrResults = data.totalHits;
+                totalPage = data.totalPage;
+                currPage = data.currPage;
+                query = data.query;
             }
             var pageLinks = function() {
                 var linkList = [];
@@ -154,15 +146,20 @@ var Search = React.createClass({
                 </div>
             );
         }.bind(this);
-        var query = this.props.params.query || "";
+        var query = this.state.lastSearch ? this.state.lastSearch.query : (this.props.params.query || "");
+
+        var searchType = this.convertSearchType();
+        // condition fix searchType update and pagination
+        var page = this.state.page ? this.state.page : (this.props.params.page || 1);
+
         return (
             <div className="search">
                 <div className="text-center">
-                    <input type="text" className="input-text" ref="searchInput" onChange={this.changeInput} defaultValue={query} />
+                    <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page}/>
                     {dataSearch(this.state.searchType, this.changeSearchType)}
                 </div>
                 <div className="search-result">
-                    {resultsHead(this.state.lastSearch)}
+                    {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
                     <div className="results">
                         {items(this.state.lastSearch, this.state.searchType)}
                     </div>
