@@ -41,13 +41,13 @@ var SearchBar = React.createClass({
         data.events = null;
         data.calendar = null;
 
-        if(searchType | this.EVENTS) {
+        if(searchType & this.EVENTS) {
             DevConferencesClient.searchEvents(query, page).then(result => {
                 data.events = result.data;
                 this.props.onUpdate(data);
             });
         }
-        if(searchType | this.CALENDAR) {
+        if(searchType & this.CALENDAR) {
            DevConferencesClient.searchCalendar(query, page).then(result => {
                data.calendar = result.data;
                this.props.onUpdate(data);
