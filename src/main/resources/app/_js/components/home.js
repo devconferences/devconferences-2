@@ -45,7 +45,7 @@ var Home = React.createClass({
                     de développeurs en France.
                 </div>
 
-                <SearchBar onUpdate={this.searchBarUpdated}/>
+                <SearchBar onUpdate={this.searchBarUpdated} all={true}/>
 
                 <CityLinkList cities={this.state.cities}/>
 

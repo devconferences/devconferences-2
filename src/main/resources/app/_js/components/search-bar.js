@@ -10,10 +10,22 @@ var SearchBar = React.createClass({
     CALENDAR: 0x02,
     ALL: 0xFF,
 
+    getInitialState: function() {
+        return {
+            page: null,
+            query: null,
+            searchType: null
+        };
+    },
+
     componentDidMount: function() {
         if(this.props.query != null) {
             this.queryChanged(null);
         }
+    },
+
+    componentWillReceiveProps: function(newProps) {
+        this.research(newProps.query, newProps.page, newProps.searchType);
     },
 
     queryChanged: function(e) {
@@ -21,10 +33,10 @@ var SearchBar = React.createClass({
 
         var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
                 var query = this.props.query || "";
-                var page = 0;
+                var page = (this.props.all ? 0 : 1);
 
                 if(query != "" && searchValue == query) {
-                    page = this.props.page || 0;
+                    page = this.props.page || (this.props.all ? 0 : 1);
                 }
 
         this.research(searchValue, page, null);
@@ -33,10 +45,20 @@ var SearchBar = React.createClass({
     research: function(query, page, searchType) {
         // Prepare data
         if(!page) {
-            page = 0;
+            page = (this.props.all ? 0 : 1);
         }
         if(!searchType) {
             searchType = this.props.searchType || this.ALL;
+        }
+
+        if(query == this.state.query && page == this.state.page && searchType == this.state.searchType) {
+            return;
+        } else {
+            this.setState({
+                query: query,
+                page: page,
+                searchType: searchType
+            });
         }
 
         setTimeout(function() {
@@ -61,7 +83,6 @@ var SearchBar = React.createClass({
                 }
             }
         }.bind(this), 300);
-
     },
 
     render: function() {
