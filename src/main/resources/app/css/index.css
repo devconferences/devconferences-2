@@ -84,8 +84,11 @@ div.conflinks a {
     margin-right: 25%;
 }
 
+.timeline-event {
+    padding: 0px 1em 0.5em;
+}
+
 .timeline-event-list .timeline-event {
-    padding: 1em;
     margin: 0.5em 1em;
 }
 
