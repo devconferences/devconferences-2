@@ -94,7 +94,7 @@ var TimelineEvent = React.createClass({
         };
 
         return (
-            <div className="timeline-event panel panel-default"  data-toggle="collapse" data-target={"#" + event.id}>
+            <div className="timeline-event panel panel-default"  data-toggle="collapse" data-target={"#" + event.id} title="Cliquez pour afficher toutes les informations">
                 <div>
                     <h3>
                         <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}

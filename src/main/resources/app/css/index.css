@@ -172,3 +172,11 @@ div.event img.avatar {
     height: 100%;
     display: inline-block;
 }
+
+#informations {
+    padding: 0px 1em;
+}
+
+[data-toggle~=collapse] {
+    cursor: pointer;
+}
