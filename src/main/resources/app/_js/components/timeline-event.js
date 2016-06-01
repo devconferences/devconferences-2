@@ -4,7 +4,6 @@ var ReactBootstrap = require('react-bootstrap');
 
 var Glyphicon = ReactBootstrap.Glyphicon;
 
-
 var TimelineEvent = React.createClass({
 
     render: function() {
@@ -92,20 +91,24 @@ var TimelineEvent = React.createClass({
             } else {
                 return (<span></span>);
             }
-        }
+        };
 
         return (
-            <div className="timeline-event">
-                <h3>
-                    <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}
-                </h3>
-                <p>
-                    {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
-                </p>
-                {location(event.location)}
-                {cfp(event.cfp)}
-                <div className="text-justify pre-style">
-                    {event.description}
+            <div className="timeline-event panel panel-default"  data-toggle="collapse" data-target={"#" + event.id}>
+                <div>
+                    <h3>
+                        <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}
+                    </h3>
+                    <p>
+                        {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
+                    </p>
+                    {location(event.location)}
+                </div>
+                <div id={event.id} className="collapse">
+                    {cfp(event.cfp)}
+                    <div>
+                        {event.description}
+                    </div>
                 </div>
             </div>
         );

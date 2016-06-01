@@ -86,6 +86,7 @@ div.conflinks a {
 
 .timeline-event-list .timeline-event {
     padding: 1em;
+    margin: 0.5em 1em;
 }
 
 .search-result div.results {
@@ -136,5 +137,6 @@ div.event img.avatar {
 
 #map {
     width: 100%;
+    overflow-y: hidden;
     height: 600px;
 }
