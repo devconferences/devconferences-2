@@ -73,7 +73,7 @@ var Minimap = React.createClass({
             ],
             view: new ol.View({
                 center: ol.proj.fromLonLat([2.367, 46.500]),
-                zoom: 5.8
+                zoom: 5.3
             })
         });
 
@@ -122,11 +122,16 @@ var Minimap = React.createClass({
         };
         return (
             <div className="minimap text-center hidden-xs">
+                <h2>
+                    Villes répertoriées
+                </h2>
                 <p className="city">
                     <span id="citySelected" className="label label-primary">{this.state.minimapText}</span>
                 </p>
 
-                <div id="map" className="center-block"></div>
+                <div className="wrapper-map">
+                    <div id="map" className="center-block"></div>
+                </div>
 
                 <div>
                     <p className="city">

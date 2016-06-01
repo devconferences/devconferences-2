@@ -52,11 +52,9 @@ var Home = React.createClass({
 
                 <CityLinkList cities={this.state.cities}/>
 
-                <Minimap cities={this.state.cities} />
-
                 <Grid>
                     <Row>
-                        <Col md={8} className="text-center">
+                        <Col lg={7} className="text-center">
                             <h2>Prochains événements</h2>
 
                             <p>Les prochains événements sont répertoriés ici.</p>
@@ -65,7 +63,11 @@ var Home = React.createClass({
                                 <TimelineEventList />
                             </div>
                         </Col>
-                        <Col md={4} className="text-center">
+                        <Col lg={5} className="text-center">
+                            <Minimap cities={this.state.cities} />
+
+                            <hr/>
+
                             <h2>Dernières infos</h2>
 
                             <p>

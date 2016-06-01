@@ -106,7 +106,7 @@ var TimelineEvent = React.createClass({
                 </div>
                 <div id={event.id} className="collapse">
                     {cfp(event.cfp)}
-                    <div>
+                    <div className="pre-style text-justify">
                         {event.description}
                     </div>
                 </div>

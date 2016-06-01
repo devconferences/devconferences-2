@@ -88,7 +88,13 @@ div.conflinks a {
     padding: 0px 1em 0.5em;
 }
 
-.timeline-event-list .timeline-event {
+#timeline-event-list {
+    width: 100%;
+    margin: 0.5em auto;
+    display: block;
+}
+
+#timeline-event-list .timeline-event {
     margin: 0.5em 1em;
 }
 
@@ -105,7 +111,19 @@ div.conflinks a {
     overflow-x: hidden;
     height: 550px;
     max-width: 90%;
-    margin-top: 1em;
+    margin: 1em auto;
+}
+
+@media (max-width: 1199px) {
+    #timeline-event-list {
+        height: 25em;
+    }
+}
+
+@media (min-width: 1200px) {
+    #timeline-event-list {
+        height: 80em;
+    }
 }
 
 .separe, scrollable {
@@ -113,7 +131,7 @@ div.conflinks a {
     border-bottom: 1px rgba(15, 70, 100, 0.12) solid;
 }
 
-.separe-bottom, .timeline-event-list .timeline-event {
+.separe-bottom, #timeline-event-list .timeline-event {
     border-bottom: 1px rgba(15, 70, 100, 0.12) solid;
 }
 
@@ -138,8 +156,19 @@ div.event img.avatar {
     max-height: 256px;
 }
 
-#map {
+.wrapper-map {
     width: 100%;
+    padding-bottom: 100%;
+    height: 0px;
     overflow-y: hidden;
-    height: 600px;
+    position: relative;
+}
+
+#map {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    display: inline-block;
 }
