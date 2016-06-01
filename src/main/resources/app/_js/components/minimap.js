@@ -39,6 +39,20 @@ var Minimap = React.createClass({
                 name: city.name
             });
 
+            iconFeature.setStyle(new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 6,
+                    fill: new ol.style.Fill({
+                        color: [50, 128, 192]
+                    })
+                }),
+                text: new ol.style.Text({
+                    text: city.name,
+                    font: "bold 10px \"Open Sans\", sans-serif",
+                    offsetY: -12
+                })
+            }));
+
             return iconFeature;
         }
 
