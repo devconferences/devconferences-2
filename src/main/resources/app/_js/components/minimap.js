@@ -1,10 +1,17 @@
+import {Router, browserHistory} from 'react-router';
+
 var React = require('react');
 var ReactDOM = require('react-dom');
-var Ol = require('openlayers');
+var ol = require('openlayers');
+var $ = require('jquery');
 
 var CityLink = require('./city-link');
 
 var Minimap = React.createClass({
+    contextTypes: {
+        router: React.PropTypes.object.isRequired
+    },
+
     getInitialState: function() {
         return {
             minimapText: "Choisissez une ville sur la carte.",
@@ -25,38 +32,71 @@ var Minimap = React.createClass({
     },
 
     render: function() {
-        var parentThis = this;
+        // Begin OSM Map Config
         var cityMarker = function(city) {
-            var iconFeature = new Ol.Feature({
-                geometry: new Ol.geom.Point(Ol.proj.fromLonLat([city.location.lon, city.location.lat])),
-                name: city.name,
-                population: 4000,
-                rainfall: 500
+            var iconFeature = new ol.Feature({
+                geometry: new ol.geom.Point(ol.proj.fromLonLat([city.location.lon, city.location.lat])),
+                name: city.name
             });
 
             return iconFeature;
         }
 
-        var vectorSource = new Ol.source.Vector({
+        var vectorSource = new ol.source.Vector({
             features: this.props.cities.filter(
                 function(city) {return city.location != null}
             ).map(cityMarker)
         });
 
-        var vectorLayer = new Ol.layer.Vector({
+        var vectorLayer = new ol.layer.Vector({
             source: vectorSource
         });
-        var map = new Ol.Map({
+        var map = new ol.Map({
             target: "map",
             layers: [
-                new Ol.layer.Tile({source: new Ol.source.OSM()}),
+                new ol.layer.Tile({source: new ol.source.OSM()}),
                 vectorLayer
             ],
-            view: new Ol.View({
-                center: Ol.proj.fromLonLat([2.367, 46.500]),
+            view: new ol.View({
+                center: ol.proj.fromLonLat([2.367, 46.500]),
                 zoom: 5.8
             })
         });
+
+        // handle popup behaviour
+        var citySelected = document.getElementById('citySelected');
+
+        // display popup on click
+        map.on('click', function(evt) {
+            var feature = map.forEachFeatureAtPixel(evt.pixel,
+            function(feature) {
+                  return feature;
+            });
+            if (feature) {
+                this.context.router.push("/city/" + feature.get('name'));
+            }
+        }.bind(this));
+
+        // change mouse cursor when over marker
+        map.on('pointermove', function(e) {
+            if (e.dragging) {
+                return;
+            }
+            var pixel = map.getEventPixel(e.originalEvent);
+            var hit = map.hasFeatureAtPixel(pixel);
+            map.getTargetElement().style.cursor = hit ? 'pointer' : '';
+
+            if(hit) {
+                map.forEachFeatureAtPixel(pixel,
+                function(feature) {
+                      citySelected.innerHTML = feature.get('name');
+                });
+            } else {
+                  citySelected.innerHTML = "Choisissez une ville sur la carte.";
+            }
+        });
+        // End OSM Map
+
         var linkNotLocatedCity = function(city) {
             if(city.location != null) {
                 return null;
@@ -65,9 +105,12 @@ var Minimap = React.createClass({
                     <CityLink key={city.id} city={city}/>
                 );
             }
-        }
+        };
         return (
             <div className="minimap text-center hidden-xs">
+                <p className="city">
+                    <span id="citySelected" className="label label-primary">{this.state.minimapText}</span>
+                </p>
 
                 <div id="map" className="center-block"></div>
 
