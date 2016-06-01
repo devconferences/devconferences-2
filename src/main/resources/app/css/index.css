@@ -180,3 +180,7 @@ div.event img.avatar {
 [data-toggle~=collapse] {
     cursor: pointer;
 }
+/* Override OSM default font-size */
+.ol-attribution ul {
+    font-size: 1rem;
+}

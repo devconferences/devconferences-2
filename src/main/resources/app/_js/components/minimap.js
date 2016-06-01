@@ -71,6 +71,11 @@ var Minimap = React.createClass({
                 new ol.layer.Tile({source: new ol.source.OSM()}),
                 vectorLayer
             ],
+            controls: ol.control.defaults({
+                attributionOptions: ({
+                    collapsible: false
+                })
+            }),
             view: new ol.View({
                 center: ol.proj.fromLonLat([2.367, 46.500]),
                 zoom: 5.3
