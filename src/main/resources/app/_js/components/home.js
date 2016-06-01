@@ -39,13 +39,30 @@ var Home = React.createClass({
     render: function () {
 
         return (
-            <div className="container">
-                <div className="text-center">
-                    Annuaire des
-                    <abbr title="Evénements se déroulant sur un ou plusieurs jours, généralement annuellement"> conférences </abbr>
-                    et
-                    <abbr title="Groupes d'utilisateurs se rencontrant généralement mensuellement"> communautés </abbr>
-                    de développeurs en France.
+            <div className="container text-center">
+                <div title="Cliquez pour affichez plus d'informations"  id="informations" className="panel panel-default"  data-toggle="collapse" data-target="#informationsCollapse">
+                    <div>
+                       <h3>
+                            Bienvenue sur <em>Dev Conferences</em> !
+                       </h3>
+                    </div>
+                    <div id="informationsCollapse" className="collapse">
+                        <p>
+                            Ce site rassemble les conférences, ainsi que les communautés de développeurs dans toute la France.
+                        </p>
+                        <p>
+                            Vous êtes actuellement dans une ville, et vous voulez savoir ce qu'il s'y passe ? Cliquez sur la carte !
+                        </p>
+                        <p>
+                            Vous êtes prêts à bouger ? Effectuez une recherche sur un thème pour avoir une liste complète sur toute la France !
+                        </p>
+                        <p>
+                            Une conférence ou une communauté manque sur le site ?<br/>Un événement à venir n'est pas répertorié ?<br/>Des suggestions, des bugs à nous faire parvenir ?<br/>Visitez notre <a href="//github.com/devconferences/devconferences-2">dépôt Github</a> !
+                        </p>
+                        <p>
+                            Bonne visite !
+                        </p>
+                    </div>
                 </div>
 
                 <SearchBar onUpdate={this.searchBarUpdated} all={true}/>
