@@ -46,6 +46,40 @@ var SearchBar = React.createClass({
         this.research(searchValue, page, null);
     },
 
+    mergeSuggests: function(data) {
+        // Concat both arrays
+        data.suggests = [];
+        if(data.events) {
+            data.suggests = data.suggests.concat(data.events.suggests);
+        }
+        if(data.calendar) {
+            data.suggests = data.suggests.concat(data.calendar.suggests);
+        }
+
+        // Merge items with the same text (then add the score)
+        var uniqueItems = [];
+        for(var i = 0; i < data.suggests.length; i++) {
+            for(var j = i + 1; j < data.suggests.length; j++) {
+                if(data.suggests[i].text == data.suggests[j].text) {
+                    // Add score in lower index, then remove higher index
+                    data.suggests[i].score += data.suggests[j].score;
+                    data.suggests.splice(j,1);
+                }
+            }
+            uniqueItems.push(data.suggests[i]);
+        }
+        data.suggests = uniqueItems;
+
+        // Sort suggests
+        data.suggests.sort(function(o,t1){
+            if(o.score != t1.score) {
+                return t1.score - o.score;
+            } else {
+                return o.text.localeCompare(t1.text);
+            }
+        });
+    },
+
     research: function(query, page, searchType) {
         // Prepare data
         if(query == null) {
@@ -87,6 +121,7 @@ var SearchBar = React.createClass({
                         data.events = result.data;
                         searchDone += this.EVENTS;
                         if(searchDone == searchType) {
+                            this.mergeSuggests(data);
                             this.props.onUpdate(data);
                         }
                     });
@@ -96,6 +131,7 @@ var SearchBar = React.createClass({
                        data.calendar = result.data;
                        searchDone += this.CALENDAR;
                        if(searchDone == searchType) {
+                           this.mergeSuggests(data);
                            this.props.onUpdate(data);
                        }
                    });
