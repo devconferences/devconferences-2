@@ -59,14 +59,18 @@ var SearchBar = React.createClass({
         // Merge items with the same text (then add the score)
         var uniqueItems = [];
         for(var i = 0; i < data.suggests.length; i++) {
+            var item = {
+                text: data.suggests[i].text,
+                score: data.suggests[i].score
+            };
             for(var j = i + 1; j < data.suggests.length; j++) {
-                if(data.suggests[i].text == data.suggests[j].text) {
+                if(item.text == data.suggests[j].text) {
                     // Add score in lower index, then remove higher index
-                    data.suggests[i].score += data.suggests[j].score;
+                    item.score += data.suggests[j].score;
                     data.suggests.splice(j,1);
                 }
             }
-            uniqueItems.push(data.suggests[i]);
+            uniqueItems.push(item);
         }
         data.suggests = uniqueItems;
 
