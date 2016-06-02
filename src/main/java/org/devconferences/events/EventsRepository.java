@@ -1,6 +1,7 @@
 package org.devconferences.events;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.Bucket;
@@ -8,7 +9,11 @@ import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Collector;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.elasticsearch.action.suggest.SuggestAction;
+import org.elasticsearch.action.suggest.SuggestRequest;
+import org.elasticsearch.action.suggest.SuggestRequestBuilder;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -18,18 +23,37 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 
 import javax.inject.Singleton;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Singleton
 public class EventsRepository {
+    private final class SuggestResponse {
+        public Suggests suggest;
+
+        public class Suggests {
+            public List<SuggestsData> citySuggest;
+            public List<SuggestsData> nameSuggest;
+            public List<SuggestsData> tagsSuggest;
+
+            public class SuggestsData {
+                public List<AbstractSearchResult.Suggest> options;
+            }
+        }
+
+    }
     public static final String EVENTS_TYPE = "events";
     public static final String CALENDAREVENTS_TYPE = "calendarevents";
 
@@ -49,6 +73,9 @@ public class EventsRepository {
             client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
         } else if(obj instanceof Event) {
             Event event = (Event) obj;
+            event.name_suggest.input = Arrays.asList(event.name.split(" "));
+            event.tags_suggest.input = event.tags;
+            event.city_suggest.input = event.city;
             client.indexES(EVENTS_TYPE, event, event.id);
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
@@ -198,6 +225,15 @@ public class EventsRepository {
             searchQuery.size(countResult.getTotal());
         }
 
+        if(typeSearch.equals(EVENTS_TYPE)) {
+            searchQuery.suggest().addSuggestion(
+                    SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_suggest")
+            ).addSuggestion(
+                    SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
+            ).addSuggestion(
+                    SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_suggest")
+            );
+        }
 
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
 
@@ -222,6 +258,41 @@ public class EventsRepository {
         res.lon = lon;
         res.distance = distance;
 
+        // Suggestions
+        res.suggests = new ArrayList<>();
+
+        HashMap<String, Double> rating = new HashMap<>();
+
+        SuggestResponse test = new Gson().fromJson(searchResult.getJsonObject(), SuggestResponse.class);
+        if(test.suggest != null) {
+            // Merge 3 suggests list, and add scores if a suggest appears at least twice
+            test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+            test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+            test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+
+            rating.forEach((key, value) -> {
+                AbstractSearchResult.Suggest item = res.new Suggest();
+                item.text = key;
+                item.score = value;
+                res.suggests.add(item);
+            });
+
+            res.suggests.sort((Comparator) (o, t1) -> {
+                if (o instanceof AbstractSearchResult.Suggest && t1 instanceof AbstractSearchResult.Suggest) {
+                    AbstractSearchResult.Suggest suggO = (AbstractSearchResult.Suggest) o;
+                    AbstractSearchResult.Suggest suggT1 = (AbstractSearchResult.Suggest) t1;
+
+                    if(suggO.score.compareTo(suggT1.score) != 0) {
+                        return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
+                    } else {
+                        return suggO.text.compareTo(suggT1.text);
+                    }
+                } else {
+                    return -1;
+                }
+            });
+        }
+
         int totalPages;
         if(pageInt > 0) {
             totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / 10.0f);
@@ -241,6 +312,14 @@ public class EventsRepository {
         }
 
         return res;
+    }
+
+    private void getSuggestConsumer(AbstractSearchResult.Suggest suggest, HashMap<String, Double> rating) {
+            if(rating.containsKey(suggest.text)) {
+                rating.replace(suggest.text, suggest.score + rating.get(suggest.text));
+            } else {
+                rating.put(suggest.text, suggest.score);
+            }
     }
 
     public void deleteEvent(String eventId) {

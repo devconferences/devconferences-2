@@ -12,4 +12,10 @@ public abstract class AbstractSearchResult<T> {
     public String totalPage;
     public String currPage;
     public List<T> hits;
+    public List<Suggest> suggests;
+
+    public class Suggest {
+        public String text;
+        public Double score;
+    }
 }

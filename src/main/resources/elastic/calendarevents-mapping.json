@@ -7,6 +7,9 @@
       "name": {
         "type": "string"
       },
+      "name_suggest": {
+        "type": "completion"
+      },
       "url": {
         "type": "string",
         "index": "not_analyzed"

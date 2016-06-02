@@ -7,6 +7,9 @@
       "name": {
         "type": "string"
       },
+      "name_suggest": {
+        "type": "completion"
+      },
       "avatar": {
         "type": "string",
         "index": "not_analyzed"
@@ -49,9 +52,18 @@
         "type": "string",
         "index": "not_analyzed"
       },
+      "tags": {
+        "type": "string"
+      },
+      "tags_suggest": {
+        "type": "completion"
+      },
       "city": {
         "type": "string",
         "index": "not_analyzed"
+      },
+      "city_suggest": {
+        "type": "completion"
       },
       "location" : {
         "type" : "geo_point"
