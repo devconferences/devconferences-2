@@ -70,13 +70,13 @@ public class EventsRepository {
     public void indexOrUpdate(Object obj) {
         if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
-            calendarEvent.name_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
+            calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
             client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
         } else if(obj instanceof Event) {
             Event event = (Event) obj;
-            event.name_suggest.input = Arrays.asList(event.name.split(" "));
-            event.tags_suggest.input = event.tags;
-            event.city_suggest.input = event.city;
+            event.name_event_suggest.input = Arrays.asList(event.name.split(" "));
+            event.tags_event_suggest.input = event.tags;
+            event.city_event_suggest.input = event.city;
             client.indexES(EVENTS_TYPE, event, event.id);
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
@@ -230,16 +230,16 @@ public class EventsRepository {
         switch(typeSearch) {
             case EVENTS_TYPE:
                 searchQuery.suggest().addSuggestion(
-                        SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_suggest")
+                        SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_event_suggest")
                 ).addSuggestion(
-                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
+                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_event_suggest")
                 ).addSuggestion(
-                        SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_suggest")
+                        SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_event_suggest")
                 );
                 break;
             case CALENDAREVENTS_TYPE:
                 searchQuery.suggest().addSuggestion(
-                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
+                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_calendar_suggest")
                 );
                 break;
             default:

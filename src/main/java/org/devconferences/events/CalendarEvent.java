@@ -8,7 +8,7 @@ import java.util.List;
 public class CalendarEvent {
     public String id;
     public String name;
-    public Completion<List<String>> name_suggest = new Completion<>();
+    public Completion<List<String>> name_calendar_suggest = new Completion<>();
     public long date;
     public long duration;
     public String url;

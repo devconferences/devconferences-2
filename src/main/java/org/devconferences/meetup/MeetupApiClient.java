@@ -13,6 +13,7 @@ import org.elasticsearch.common.geo.GeoPoint;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +85,7 @@ public class MeetupApiClient {
             CalendarEvent calendarEvent = new CalendarEvent();
             calendarEvent.id = "meetup_" + data.id;
             calendarEvent.name = data.name;
+            calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
             calendarEvent.url = data.event_url;
             calendarEvent.description = data.description;
             calendarEvent.date = data.time;

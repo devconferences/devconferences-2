@@ -7,7 +7,7 @@
       "name": {
         "type": "string"
       },
-      "name_suggest": {
+      "name_calendar_suggest": {
         "type": "completion"
       },
       "url": {

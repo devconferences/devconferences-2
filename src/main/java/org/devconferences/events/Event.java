@@ -10,7 +10,7 @@ public class Event {
 
     public String id;
     public String name;
-    public Completion<List<String>> name_suggest = new Completion<>();
+    public Completion<List<String>> name_event_suggest = new Completion<>();
     public String avatar;
     public String description;
     public String website;
@@ -20,9 +20,9 @@ public class Event {
     public Youtube youtube;
     public String parleys;
     public String city;
-    public Completion<String> city_suggest = new Completion<>();
+    public Completion<String> city_event_suggest = new Completion<>();
     public List<String> tags = new ArrayList<>();
-    public Completion<List<String>> tags_suggest = new Completion<>();
+    public Completion<List<String>> tags_event_suggest = new Completion<>();
     public Type type;
     public GeoPoint location;
 
