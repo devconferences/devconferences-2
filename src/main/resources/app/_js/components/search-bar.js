@@ -14,7 +14,8 @@ var SearchBar = React.createClass({
         return {
             page: null,
             query: null,
-            searchType: null
+            searchType: null,
+            suggests: [],
         };
     },
 
@@ -127,16 +128,22 @@ var SearchBar = React.createClass({
                         if(searchDone == searchType) {
                             this.mergeSuggests(data);
                             this.props.onUpdate(data);
+                            this.setState({
+                                suggests: data.suggests
+                            });
                         }
                     });
                 }
                 if(searchType & this.CALENDAR) {
-                   DevConferencesClient.searchCalendar(query, page).then(result => {
-                       data.calendar = result.data;
-                       searchDone += this.CALENDAR;
-                       if(searchDone == searchType) {
-                           this.mergeSuggests(data);
-                           this.props.onUpdate(data);
+                    DevConferencesClient.searchCalendar(query, page).then(result => {
+                        data.calendar = result.data;
+                        searchDone += this.CALENDAR;
+                        if(searchDone == searchType) {
+                        this.mergeSuggests(data);
+                            this.props.onUpdate(data);
+                            this.setState({
+                                suggests: data.suggests
+                            });
                        }
                    });
                 }
@@ -145,9 +152,26 @@ var SearchBar = React.createClass({
     },
 
     render: function() {
+        var suggestItem = function(suggest) {
+            return (
+                <li>{suggest.text}</li>
+            );
+        }
+        var classNameSuggests = function(suggests) {
+            if(suggests.length > 0) {
+                return "search-suggests panel panel-default";
+            } else {
+                return "hidden search-results panel panel-default";
+            }
+        }
         return (
-            <div className="text-center">
-                <input type="text" className="input-text" ref="searchInput" onChange={this.queryChanged} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+            <div className="search-bar-container text-center">
+                <input type="text" className="search-bar" ref="searchInput" onChange={this.queryChanged} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+                <div className={classNameSuggests(this.state.suggests)}>
+                    <ul>
+                        {this.state.suggests.map(suggestItem)}
+                    </ul>
+                </div>
             </div>
         );
     }

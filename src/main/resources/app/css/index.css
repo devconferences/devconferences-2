@@ -1,5 +1,6 @@
 * {
     font-family: 'Open Sans', sans-serif;
+    z-index: -1;
 }
 
 body {
@@ -183,4 +184,25 @@ div.event img.avatar {
 /* Override OSM default font-size */
 .ol-attribution ul {
     font-size: 1rem;
+}
+
+.search-bar-container {
+    width: 50%;
+    max-height: 2em;
+    margin: 0px auto;
+}
+
+.search-bar-container .search-bar {
+    width: 100%;
+}
+
+.search-suggests {
+    z-index: 1000;
+    text-align: left;
+    width: 100%;
+}
+
+.search-suggests ul {
+    list-style-type: none;
+    padding: 0px 7px;
 }
