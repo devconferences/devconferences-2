@@ -70,6 +70,7 @@ public class EventsRepository {
     public void indexOrUpdate(Object obj) {
         if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
+            calendarEvent.name_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
             client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
         } else if(obj instanceof Event) {
             Event event = (Event) obj;
@@ -225,14 +226,25 @@ public class EventsRepository {
             searchQuery.size(countResult.getTotal());
         }
 
-        if(typeSearch.equals(EVENTS_TYPE)) {
-            searchQuery.suggest().addSuggestion(
-                    SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_suggest")
-            ).addSuggestion(
-                    SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
-            ).addSuggestion(
-                    SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_suggest")
-            );
+        // Suggestions
+        switch(typeSearch) {
+            case EVENTS_TYPE:
+                searchQuery.suggest().addSuggestion(
+                        SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_suggest")
+                ).addSuggestion(
+                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
+                ).addSuggestion(
+                        SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_suggest")
+                );
+                break;
+            case CALENDAREVENTS_TYPE:
+                searchQuery.suggest().addSuggestion(
+                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_suggest")
+                );
+                break;
+            default:
+                throw new RuntimeException("Unknown search type : " + typeSearch);
+
         }
 
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
@@ -265,11 +277,18 @@ public class EventsRepository {
 
         SuggestResponse test = new Gson().fromJson(searchResult.getJsonObject(), SuggestResponse.class);
         if(test.suggest != null) {
-            // Merge 3 suggests list, and add scores if a suggest appears at least twice
-            test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-            test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-            test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+            switch (typeSearch) {
+                case EVENTS_TYPE:
+                    // Merge 3 suggests list, and add scores if a suggest appears at least twice
+                    test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+                    test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+                    break;
+                case CALENDAREVENTS_TYPE:
+                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+            }
 
+            // Create list of suggestions
             rating.forEach((key, value) -> {
                 AbstractSearchResult.Suggest item = res.new Suggest();
                 item.text = key;
@@ -277,6 +296,7 @@ public class EventsRepository {
                 res.suggests.add(item);
             });
 
+            // Sort all of this : (high score, alphabetical text)
             res.suggests.sort((Comparator) (o, t1) -> {
                 if (o instanceof AbstractSearchResult.Suggest && t1 instanceof AbstractSearchResult.Suggest) {
                     AbstractSearchResult.Suggest suggO = (AbstractSearchResult.Suggest) o;

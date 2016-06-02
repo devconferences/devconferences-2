@@ -1,10 +1,14 @@
 package org.devconferences.events;
 
+import org.devconferences.elastic.Completion;
 import org.elasticsearch.common.geo.GeoPoint;
+
+import java.util.List;
 
 public class CalendarEvent {
     public String id;
     public String name;
+    public Completion<List<String>> name_suggest = new Completion<>();
     public long date;
     public long duration;
     public String url;
