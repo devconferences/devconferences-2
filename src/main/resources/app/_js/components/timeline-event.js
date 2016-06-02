@@ -29,21 +29,23 @@ var TimelineEvent = React.createClass({
                 );
             }
         };
-        var organizer = function(name, url) {
-            if(name) {
-                if(url) {
-                    return (
-                        <span>, par <a href={url}>{name}</a></span>
-                    );
+        var organizer = function(org) {
+            if(org) {
+                if(org.name) {
+                    if(org.url) {
+                        return (
+                            <span>, par <a href={org.url}>{org.name}</a></span>
+                        );
+                    } else {
+                        return (
+                            <span>, par {org.name}</span>
+                        );
+                    }
                 } else {
-                    return (
-                        <span>, par {name}</span>
-                    );
+                    return null;
                 }
             } else {
-                return (
-                    <span></span>
-                );
+                return null;
             }
         };
         var nameTitle = function(name, url) {
@@ -100,7 +102,7 @@ var TimelineEvent = React.createClass({
                         <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}
                     </h3>
                     <p>
-                        {prettyDates(date, event.duration)}{organizer(event.organizerName, event.organizerUrl)}
+                        {prettyDates(date, event.duration)}{organizer(event.organizer)}
                     </p>
                     {location(event.location)}
                 </div>
