@@ -165,7 +165,11 @@ var SearchBar = React.createClass({
                    });
                 }
                 if(searchType & this.CITIES) {
-                    DevConferencesClient.cities(query, false).then(result => {
+                    var allWhenEmpty = false;
+                    if(!query) {
+                        allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    }
+                    DevConferencesClient.cities(query, allWhenEmpty).then(result => {
                         data.cities = result.data;
                         searchDone += this.CITIES;
                         if(searchDone == searchType) {

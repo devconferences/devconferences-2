@@ -28,10 +28,6 @@ var Home = React.createClass({
         };
     },
 
-    componentDidMount: function () {
-        DevConferencesClient.cities(null, true).then(cities => this.setState({ cities: cities.data }));
-    },
-
     searchBarUpdated: function(data) {
         console.log("all:");
         console.log(data);
@@ -70,7 +66,7 @@ var Home = React.createClass({
                     </div>
                 </div>
 
-                <SearchBar onUpdate={this.searchBarUpdated} all={true} query="" searchType={new SearchBar().ALL}/>
+                <SearchBar onUpdate={this.searchBarUpdated} all={true} query="" searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
                 <CityLinkList cities={this.state.cities}/>
 
