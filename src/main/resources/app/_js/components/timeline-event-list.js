@@ -26,7 +26,6 @@ var TimelineEventList = React.createClass({
                 <TimelineEvent key={event.id} event={event} />
             );
         };
-        console.log(this.props.calendar);
         return (
             <div id="timeline-event-list" className="text-left separe scrollable">
                 <div>

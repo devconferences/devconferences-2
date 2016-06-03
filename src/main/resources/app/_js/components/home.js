@@ -29,8 +29,6 @@ var Home = React.createClass({
     },
 
     searchBarUpdated: function(data) {
-        console.log("all:");
-        console.log(data);
         this.setState({
             cities: data.cities,
             calendar: data.calendar

@@ -268,9 +268,7 @@ public class EventsRepository {
             }
         }
 
-        System.out.println(searchQuery);
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
-        System.out.println(new Gson().toJson(searchResult.getJsonObject()));
 
         // Create result of search
         AbstractSearchResult res;

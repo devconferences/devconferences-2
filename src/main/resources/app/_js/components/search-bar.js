@@ -139,7 +139,11 @@ var SearchBar = React.createClass({
                 data.cities = null;
 
                 if(searchType & this.EVENTS) {
-                    DevConferencesClient.searchEvents(query, page).then(result => {
+                    var allWhenEmpty = false;
+                    if(!query) {
+                        allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    }
+                    DevConferencesClient.searchEvents(query, page, null, null, null, allWhenEmpty).then(result => {
                         data.events = result.data;
                         searchDone += this.EVENTS;
                         if(searchDone == searchType) {
@@ -152,7 +156,11 @@ var SearchBar = React.createClass({
                     });
                 }
                 if(searchType & this.CALENDAR) {
-                    DevConferencesClient.searchCalendar(query, page).then(result => {
+                    var allWhenEmpty = false;
+                    if(!query) {
+                        allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    }
+                    DevConferencesClient.searchCalendar(query, page, null, null, null, allWhenEmpty).then(result => {
                         data.calendar = result.data;
                         searchDone += this.CALENDAR;
                         if(searchDone == searchType) {
