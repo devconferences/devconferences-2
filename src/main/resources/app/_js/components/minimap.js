@@ -50,7 +50,7 @@ var Minimap = React.createClass({
                     })
                 }),
                 text: new ol.style.Text({
-                    text: (city.name + "(" + city.count + ")"),
+                    text: (city.name),
                     font: "bold 10px \"Open Sans\", sans-serif",
                     offsetY: -12
                 })
@@ -87,6 +87,7 @@ var Minimap = React.createClass({
 
         // handle popup behaviour
         var citySelected = document.getElementById('citySelected');
+        var cityCount = document.getElementById('cityCount');
 
         // display popup on click
         map.on('click', function(evt) {
@@ -111,10 +112,12 @@ var Minimap = React.createClass({
             if(hit) {
                 map.forEachFeatureAtPixel(pixel,
                 function(feature) {
-                      citySelected.innerHTML = feature.get('name') + "(" + feature.get('count') + ")";
+                      citySelected.innerHTML = feature.get('name');
+                      cityCount.innerHTML = feature.get('count');
                 });
             } else {
                   citySelected.innerHTML = "Choisissez une ville sur la carte.";
+                  cityCount.innerHTML = null;
             }
         });
         // End OSM Map
@@ -150,7 +153,7 @@ var Minimap = React.createClass({
                     Villes répertoriées
                 </h2>
                 <p className="city">
-                    <span id="citySelected" className="label label-primary">{this.state.minimapText}</span>
+                    <span className="label btn-primary label-primary"><span id="citySelected">{this.state.minimapText}</span> <span id="cityCount" className="badge"></span></span>
                 </p>
 
                 <div className="wrapper-map">
