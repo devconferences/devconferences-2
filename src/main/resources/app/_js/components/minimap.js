@@ -18,25 +18,28 @@ var Minimap = React.createClass({
             linkHovered: false
         }
     },
-    setMinimapText: function(e) {
-        this.setState({
-            minimapText: e.target.parentNode.attributes["title"].value || "...",
-            linkHovered: true
-        })
-    },
-    resetMinimapText: function(e) {
-        this.setState({
-            minimapText: "Choisissez une ville sur la carte.",
-            linkHovered: false
-        });
+
+    componentDidMount: function() {
+        this.clearMapNode();
     },
 
-    render: function() {
+    componentDidUpdate: function() {
+        this.clearMapNode();
+    },
+
+    clearMapNode: function() {
+        // Because OSM APPEND maps instead of replace, we need to remove #map children before render a new map
+        var mapNode = ReactDOM.findDOMNode(this.refs.map);
+        while (mapNode.lastChild) {
+            mapNode.removeChild(mapNode.lastChild);
+        }
+
         // Begin OSM Map Config
         var cityMarker = function(city) {
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([city.location.lon, city.location.lat])),
-                name: city.name
+                name: city.name,
+                count: city.count
             });
 
             iconFeature.setStyle(new ol.style.Style({
@@ -47,7 +50,7 @@ var Minimap = React.createClass({
                     })
                 }),
                 text: new ol.style.Text({
-                    text: city.name,
+                    text: (city.name + "(" + city.count + ")"),
                     font: "bold 10px \"Open Sans\", sans-serif",
                     offsetY: -12
                 })
@@ -108,13 +111,29 @@ var Minimap = React.createClass({
             if(hit) {
                 map.forEachFeatureAtPixel(pixel,
                 function(feature) {
-                      citySelected.innerHTML = feature.get('name');
+                      citySelected.innerHTML = feature.get('name') + "(" + feature.get('count') + ")";
                 });
             } else {
                   citySelected.innerHTML = "Choisissez une ville sur la carte.";
             }
         });
         // End OSM Map
+    },
+
+    setMinimapText: function(e) {
+        this.setState({
+            minimapText: e.target.parentNode.attributes["title"].value || "...",
+            linkHovered: true
+        })
+    },
+    resetMinimapText: function(e) {
+        this.setState({
+            minimapText: "Choisissez une ville sur la carte.",
+            linkHovered: false
+        });
+    },
+
+    render: function() {
 
         var linkNotLocatedCity = function(city) {
             if(city.location != null) {
@@ -135,7 +154,7 @@ var Minimap = React.createClass({
                 </p>
 
                 <div className="wrapper-map">
-                    <div id="map" className="center-block"></div>
+                    <div ref="map" id="map" className="center-block"></div>
                 </div>
 
                 <div>

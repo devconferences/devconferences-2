@@ -15,10 +15,10 @@ var TimelineEventList = React.createClass({
         this.reloadCE(null);
     },
     reloadCE: function(e) {
-        DevConferencesClient.calendar(this.state.page + 10).then(calendar => this.setState({
-           eventsList: calendar.data,
-            page: calendar.data.length
-        }));
+//        DevConferencesClient.calendar(this.state.page + 10).then(calendar => this.setState({
+//           eventsList: calendar.data,
+//            page: calendar.data.length
+//        }));
     },
     render: function() {
         var calendarEvent = function(event) {
@@ -26,10 +26,11 @@ var TimelineEventList = React.createClass({
                 <TimelineEvent key={event.id} event={event} />
             );
         };
+        console.log(this.props.calendar);
         return (
             <div id="timeline-event-list" className="text-left separe scrollable">
                 <div>
-                    {this.state.eventsList.map(calendarEvent)}
+                    {this.props.calendar.map(calendarEvent)}
                     <div className="text-center blockLink">
                         <a onClick={this.reloadCE} className="moreLink">Plus d'événements...</a>
                     </div>

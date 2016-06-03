@@ -21,7 +21,10 @@ var Home = React.createClass({
 
     getInitialState: function () {
         return {
-            cities: []
+            cities: [],
+            calendar: {
+                hits: []
+            }
         };
     },
 
@@ -32,6 +35,10 @@ var Home = React.createClass({
     searchBarUpdated: function(data) {
         console.log("all:");
         console.log(data);
+        this.setState({
+            cities: data.cities,
+            calendar: data.calendar
+        });
     },
 
     render: function () {
@@ -63,7 +70,7 @@ var Home = React.createClass({
                     </div>
                 </div>
 
-                <SearchBar onUpdate={this.searchBarUpdated} all={true}/>
+                <SearchBar onUpdate={this.searchBarUpdated} all={true} query="" searchType={new SearchBar().ALL}/>
 
                 <CityLinkList cities={this.state.cities}/>
 
@@ -75,7 +82,7 @@ var Home = React.createClass({
                             <p>Les prochains événements sont répertoriés ici.</p>
 
                             <div>
-                                <TimelineEventList />
+                                <TimelineEventList calendar={this.state.calendar.hits}/>
                             </div>
                         </Col>
                         <Col lg={5} className="text-center">
