@@ -206,5 +206,18 @@ div.event img.avatar {
 
 .search-suggests ul {
     list-style-type: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.search-suggests ul:hover {
+    cursor: pointer;
+}
+
+.search-suggests li {
     padding: 0px 7px;
+}
+
+.search-suggests li.hovered {
+    background-color: #CCC;
 }

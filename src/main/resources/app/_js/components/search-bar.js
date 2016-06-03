@@ -93,9 +93,11 @@ var SearchBar = React.createClass({
     },
 
     hideSuggests: function(e) {
-        this.setState({
-            showSuggests: false
-        });
+        setTimeout(function() {
+            this.setState({
+                showSuggests: false
+            });
+        }.bind(this), 300);
     },
 
     research: function(query, page, searchType) {
@@ -164,12 +166,25 @@ var SearchBar = React.createClass({
         }.bind(this), 300);
     },
 
+
+    setSearchQuery: function(e) {
+        // Change searchInput value, to pass condition with the timeout
+        ReactDOM.findDOMNode(this.refs.searchInput).value = e.target.firstChild.nodeValue;
+        this.research(e.target.firstChild.nodeValue, null, null);
+    },
+
     render: function() {
+        var hoverSuggest = function(e) {
+            e.target.className = "hovered";
+        };
+        var noHoverSuggest = function(e) {
+            e.target.className = "";
+        };
         var suggestItem = function(suggest) {
             return (
-                <li>{suggest.text}</li>
+                <li onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
             );
-        };
+        }.bind(this);
         var classNameSuggests = function(suggests, showSuggests) {
             if(suggests.length > 0 && showSuggests) {
                 return "search-suggests panel panel-default";
