@@ -24,10 +24,10 @@ public class EventsEndPoint {
         this.eventsRepository = eventsRepository;
     }
 
-    @Gets({@Get("cities"), @Get("cities/")})
+    @Gets({@Get("cities?q=:query&all=:all"), @Get("cities/?q=:query&all=:all")})
     @AllowOrigin("*")
-    public List<CityLight> allCities() {
-        return eventsRepository.getAllCities();
+    public List<CityLight> allCities(String query, String all) {
+        return eventsRepository.getAllCitiesWithQuery(query, Boolean.parseBoolean(all));
     }
 
     @Get("cities/:id")

@@ -8,7 +8,8 @@ var SearchBar = React.createClass({
     // All kind of research
     EVENTS: 0x01,
     CALENDAR: 0x02,
-    ALL: 0x03,
+    CITIES: 0x04,
+    ALL: 0x07,
 
     getInitialState: function() {
         return {
@@ -135,6 +136,7 @@ var SearchBar = React.createClass({
                 data.page = page;
                 data.events = null;
                 data.calendar = null;
+                data.cities = null;
 
                 if(searchType & this.EVENTS) {
                     DevConferencesClient.searchEvents(query, page).then(result => {
@@ -154,7 +156,20 @@ var SearchBar = React.createClass({
                         data.calendar = result.data;
                         searchDone += this.CALENDAR;
                         if(searchDone == searchType) {
-                        this.mergeSuggests(data);
+                            this.mergeSuggests(data);
+                            this.props.onUpdate(data);
+                            this.setState({
+                                suggests: data.suggests
+                            });
+                       }
+                   });
+                }
+                if(searchType & this.CITIES) {
+                    DevConferencesClient.cities(query, false).then(result => {
+                        data.cities = result.data;
+                        searchDone += this.CITIES;
+                        if(searchDone == searchType) {
+                            this.mergeSuggests(data);
                             this.props.onUpdate(data);
                             this.setState({
                                 suggests: data.suggests

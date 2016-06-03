@@ -26,7 +26,7 @@ var Home = React.createClass({
     },
 
     componentDidMount: function () {
-        DevConferencesClient.cities().then(cities => this.setState({ cities: cities.data }));
+        DevConferencesClient.cities(null, true).then(cities => this.setState({ cities: cities.data }));
     },
 
     searchBarUpdated: function(data) {

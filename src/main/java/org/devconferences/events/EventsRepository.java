@@ -91,14 +91,25 @@ public class EventsRepository {
         }
     }
 
-    public List<CityLight> getAllCities() {
+    public List<CityLight> getAllCitiesWithQuery(String query, boolean matchAll) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
-        searchQuery.size(0).aggregation(
-                AggregationBuilders.terms("cities")
-                        .field("city")
-                        .size(100)
-                        .order(Terms.Order.term(true))
-        );
+        searchQuery.size(0);
+
+        if(matchAll) {
+            searchQuery.aggregation(
+                    AggregationBuilders.terms("cities")
+                            .field("city")
+                            .size(100)
+                            .order(Terms.Order.term(true))
+            );
+        } else {
+            searchQuery.query(QueryBuilders.queryStringQuery(query)).aggregation(
+                    AggregationBuilders.terms("cities")
+                            .field("city")
+                            .size(100)
+                            .order(Terms.Order.term(true))
+            );
+        }
 
         SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
 
@@ -109,6 +120,11 @@ public class EventsRepository {
                 .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount(),
                         GeopointCities.getInstance().getLocation(entry.getKey())))
                 .collect(Collectors.toList());
+    }
+
+    @Deprecated
+    public List<CityLight> getAllCities() {
+        return getAllCitiesWithQuery(null, true);
     }
 
     public City getCity(String cityId) {

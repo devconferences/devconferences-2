@@ -217,7 +217,7 @@ public class EventsRepositoryTest {
                 "}";
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 10, "[]", searchAggreg);
 
-        List<CityLight> cityLightList = eventsEndPoint.allCities();
+        List<CityLight> cityLightList = eventsEndPoint.allCities(null, "true");
         Assertions.assertThat(cityLightList).hasSize(4);
         Assertions.assertThat(cityLightList.get(0).count).isEqualTo(1);
         Assertions.assertThat(cityLightList.get(0).name).matches("City 1");

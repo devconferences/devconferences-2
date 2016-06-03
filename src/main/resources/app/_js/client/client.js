@@ -15,8 +15,8 @@ function createClient(u) {
       actualUrl = CLEVER_URL;
     });
 
-    function cities() {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities`).catch(errorCallback));
+    function cities(query, all) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities?q=${query}&all=${all}`).catch(errorCallback));
     }
 
     function city(id) {
