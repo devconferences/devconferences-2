@@ -188,6 +188,7 @@ div.event img.avatar {
 
 .search-bar-container {
     width: 50%;
+    height: 2em;
     max-height: 2em;
     margin: 0px auto;
 }

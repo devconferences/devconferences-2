@@ -90,10 +90,12 @@ var Search = React.createClass({
         var dataSearch = function(searchType, changeSearchType) {
             var searchTypeUI = function() {
                 return (
-                    <ul className="list-inline text-center">
-                        <li><label><input type="radio" name="searchType" value="events" checked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</label></li>
-                        <li><label><input type="radio" name="searchType" value="calendar" checked={searchType == "calendar"} onChange={changeSearchType}/>Événements</label></li>
-                    </ul>
+                    <div className="text-center">
+                        <ul className="list-inline text-center">
+                            <li><label><input type="radio" name="searchType" value="events" checked={searchType == "events"}  onChange={changeSearchType} />Conférence / Communauté</label></li>
+                            <li><label><input type="radio" name="searchType" value="calendar" checked={searchType == "calendar"} onChange={changeSearchType}/>Événements</label></li>
+                        </ul>
+                    </div>
                 );
             }.bind(this);
             return (
@@ -153,11 +155,9 @@ var Search = React.createClass({
         var page = this.state.page ? this.state.page : (this.props.params.page || 1);
 
         return (
-            <div className="search">
-                <div className="text-center">
-                    <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page}/>
-                    {dataSearch(this.state.searchType, this.changeSearchType)}
-                </div>
+            <div className="container">
+                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page}/>
+                {dataSearch(this.state.searchType, this.changeSearchType)}
                 <div className="search-result">
                     {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
                     <div className="results">

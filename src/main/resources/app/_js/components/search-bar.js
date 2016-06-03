@@ -161,7 +161,7 @@ var SearchBar = React.createClass({
             if(suggests.length > 0) {
                 return "search-suggests panel panel-default";
             } else {
-                return "hidden search-results panel panel-default";
+                return "hidden search-suggests panel panel-default";
             }
         }
         return (
