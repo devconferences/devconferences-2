@@ -201,27 +201,29 @@ public class EventsRepository {
     }
 
 
-    public EventSearch searchEvents(String query, String page, String lat, String lon, String distance) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, lat, lon, distance);
+    public EventSearch searchEvents(String query, String page, String lat, String lon, String distance, Boolean all) {
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, lat, lon, distance, all);
     }
 
-    public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance) {
+    public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance, Boolean all) {
         QueryBuilder filterOldCE = QueryBuilders.rangeQuery("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance, all);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, QueryBuilder filter, String lat, String lon, String distance) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, QueryBuilder filter, String lat, String lon, String distance, Boolean allMatch) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         int pageInt = Integer.decode(page);
 
         // Count query
         searchQuery.size(0);
-        if (filter == null) {
-            searchQuery.query(queryStringQuery(QueryParser.escape(query)));
-        } else {
-            searchQuery.query(queryStringQuery(QueryParser.escape(query))).postFilter(filter);
+        if (allMatch == null || !allMatch) {
+            if (filter == null) {
+                searchQuery.query(queryStringQuery(QueryParser.escape(query)));
+            } else {
+                searchQuery.query(queryStringQuery(QueryParser.escape(query))).postFilter(filter);
+            }
         }
 
         SearchResult countResult = client.searchES(typeSearch, searchQuery.toString());
@@ -243,27 +245,32 @@ public class EventsRepository {
         }
 
         // Suggestions
-        switch(typeSearch) {
-            case EVENTS_TYPE:
-                searchQuery.suggest().addSuggestion(
-                        SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_event_suggest")
-                ).addSuggestion(
-                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_event_suggest")
-                ).addSuggestion(
-                        SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_event_suggest")
-                );
-                break;
-            case CALENDAREVENTS_TYPE:
-                searchQuery.suggest().addSuggestion(
-                        SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_calendar_suggest")
-                );
-                break;
-            default:
-                throw new RuntimeException("Unknown search type : " + typeSearch);
+        // Disable when query is empty / null...
+        if(query != null && !query.equals("")) {
+            switch (typeSearch) {
+                case EVENTS_TYPE:
+                    searchQuery.suggest().addSuggestion(
+                            SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_event_suggest")
+                    ).addSuggestion(
+                            SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_event_suggest")
+                    ).addSuggestion(
+                            SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_event_suggest")
+                    );
+                    break;
+                case CALENDAREVENTS_TYPE:
+                    searchQuery.suggest().addSuggestion(
+                            SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_calendar_suggest")
+                    );
+                    break;
+                default:
+                    throw new RuntimeException("Unknown search type : " + typeSearch);
 
+            }
         }
 
+        System.out.println(searchQuery);
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
+        System.out.println(new Gson().toJson(searchResult.getJsonObject()));
 
         // Create result of search
         AbstractSearchResult res;
