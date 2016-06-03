@@ -16,6 +16,7 @@ var SearchBar = React.createClass({
             query: null,
             searchType: null,
             suggests: [],
+            showSuggests: false
         };
     },
 
@@ -82,6 +83,18 @@ var SearchBar = React.createClass({
             } else {
                 return o.text.localeCompare(t1.text);
             }
+        });
+    },
+
+    showSuggests: function(e) {
+        this.setState({
+            showSuggests: true
+        });
+    },
+
+    hideSuggests: function(e) {
+        this.setState({
+            showSuggests: false
         });
     },
 
@@ -156,18 +169,18 @@ var SearchBar = React.createClass({
             return (
                 <li>{suggest.text}</li>
             );
-        }
-        var classNameSuggests = function(suggests) {
-            if(suggests.length > 0) {
+        };
+        var classNameSuggests = function(suggests, showSuggests) {
+            if(suggests.length > 0 && showSuggests) {
                 return "search-suggests panel panel-default";
             } else {
                 return "hidden search-suggests panel panel-default";
             }
-        }
+        };
         return (
             <div className="search-bar-container text-center">
-                <input type="text" className="search-bar" ref="searchInput" onChange={this.queryChanged} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
-                <div className={classNameSuggests(this.state.suggests)}>
+                <input type="text" className="search-bar" ref="searchInput" onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+                <div className={classNameSuggests(this.state.suggests, this.state.showSuggests)}>
                     <ul>
                         {this.state.suggests.map(suggestItem)}
                     </ul>
