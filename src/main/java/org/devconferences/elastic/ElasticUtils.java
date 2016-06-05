@@ -23,6 +23,8 @@ import static org.devconferences.env.EnvUtils.fromEnv;
  * Created by chris on 08/06/15.
  */
 public final class ElasticUtils {
+    public static final int MAX_SIZE = 10000; // Default max value, or ES will throw an Exception
+
     private ElasticUtils() {
 
     }

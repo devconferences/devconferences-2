@@ -10,6 +10,7 @@ import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Collector;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.action.suggest.SuggestAction;
 import org.elasticsearch.action.suggest.SuggestRequest;
@@ -129,7 +130,7 @@ public class EventsRepository {
 
     public City getCity(String cityId) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
-        searchQuery.size(Integer.MAX_VALUE)
+        searchQuery.size(ElasticUtils.MAX_SIZE)
                 .query(QueryBuilders.termQuery("city", cityId));
 
         City city = new City();
@@ -176,7 +177,7 @@ public class EventsRepository {
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon))
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
-                .size(Integer.MAX_VALUE);
+                .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
 
         SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
         return getHitsFromSearch(result, CalendarEvent.class);
@@ -373,7 +374,7 @@ public class EventsRepository {
     public List<CalendarEvent> getCalendarEvents(String page) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
 
-        int pageInt = Integer.MAX_VALUE;
+        int pageInt = ElasticUtils.MAX_SIZE;
         if(page != null && Integer.decode(page) > 0) {
             pageInt = Integer.decode(page);
         }
