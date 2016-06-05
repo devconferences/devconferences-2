@@ -101,7 +101,10 @@ public final class ElasticUtils {
             }
 
             PutMapping putMapping = new PutMapping.Builder(DEV_CONFERENCES_INDEX, type, mappingFile).build();
-            client.execute(putMapping);
+            JestResult jestResult = client.execute(putMapping);
+            if(!jestResult.isSucceeded()) {
+                throw new IllegalStateException("Can't create type '" + type + "' : " + jestResult.getErrorMessage());
+            }
         }
     }
 

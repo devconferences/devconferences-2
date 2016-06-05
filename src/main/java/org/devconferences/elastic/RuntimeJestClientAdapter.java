@@ -55,7 +55,10 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     public int indexES(String type, Object event, String id) {
         Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(type).id(id).build();
 
-        execute(index);
+        JestResult result = execute(index);
+        if(!result.isSucceeded()) {
+            throw new IllegalStateException("Can't index '" + id + "' in type '" + type + "' : " + result.getErrorMessage());
+        }
 
         return 0;
     }
