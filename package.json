@@ -26,8 +26,8 @@
     "babel-loader": "^5.4",
     "node-libs-browser": "^0.5.2",
     "react-hot-loader": "^1.2.7",
-    "webpack": "^1.9.10",
-    "webpack-dev-server": "^1.9.0"
+    "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.14.1"
   },
   "scripts": {
     "build": "webpack -p --colors",
