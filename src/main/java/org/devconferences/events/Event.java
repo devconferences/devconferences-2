@@ -24,7 +24,7 @@ public class Event {
     public List<String> tags = new ArrayList<>();
     public Completion<List<String>> tags_event_suggest = new Completion<>();
     public Type type;
-    public GeoPoint location;
+    public GeoPoint gps;
 
     public class Youtube {
         public String channel;

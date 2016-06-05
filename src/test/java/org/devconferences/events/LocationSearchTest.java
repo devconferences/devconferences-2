@@ -46,7 +46,7 @@ public class LocationSearchTest {
     public void should_find_event_around() {
         Event event = new Event();
         event.id = UUID.randomUUID().toString();
-        event.location = new GeoPoint(1.0f, 1.0f);
+        event.gps = new GeoPoint(1.0f, 1.0f);
 
         EventsRepository eventsRepository = new EventsRepository();
         eventsRepository.createEvent(event);
@@ -70,11 +70,11 @@ public class LocationSearchTest {
     public void should_not_find_event_far_away() {
         Event event = new Event();
         event.id = UUID.randomUUID().toString();
-        event.location = new GeoPoint(1.0f, 1.0f);
+        event.gps = new GeoPoint(1.0f, 1.0f);
 
         Event event2 = new Event();
         event2.id = UUID.randomUUID().toString();
-        event2.location = new GeoPoint(50.0f, 50.0f);
+        event2.gps = new GeoPoint(50.0f, 50.0f);
 
         EventsRepository eventsRepository = new EventsRepository();
         eventsRepository.createEvent(event);

@@ -1,6 +1,7 @@
 package org.devconferences.elastic;
 
 import org.apache.commons.io.FileUtils;
+import org.devconferences.env.EnvUtils;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.settings.Settings;
@@ -58,7 +59,7 @@ public class DeveloppementESNode {
 
             // Fix possible broken "path.home"
             if(settings.get("path.home") == null) {
-                settings.put("path.home", System.getenv("ES_PATH_HOME"));
+                settings.put("path.home", EnvUtils.fromEnv("ES_PATH_HOME", "tmp/es-local-home"));
             }
 
             esNode = NodeBuilder.nodeBuilder()

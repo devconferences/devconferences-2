@@ -156,7 +156,7 @@ Les différents tags de l'Event.
 Cela permet de regrouper les différents Events par thème (`java`, `jug`, `gdg`, ...),
 notamment lors de la recherche. Il s'agit d'un tableau.
 
-#### `location`
+#### `gps`
 
 La localisation de l'Event.
 

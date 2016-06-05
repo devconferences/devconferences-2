@@ -1,11 +1,9 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
-import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
 import org.devconferences.events.GeopointCities;
-import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +35,9 @@ public class ImportEventsJob extends AbstractImportJSONJob {
                 String city = path.split("/")[2]; // <null> / events / <cityname> / <eventId>.json
                 event.city = city;
 
-                // Add default location for this city
-                if(event.location == null) {
-                    event.location = GeopointCities.getInstance().getLocation(event.city);
+                // Add default gps for this city
+                if(event.gps == null) {
+                    event.gps = GeopointCities.getInstance().getLocation(event.city);
                 }
 
                 // Default avatar

@@ -156,12 +156,12 @@ public class EventsRepository {
 
     public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
         String eventLocations = new SearchSourceBuilder()
-                .query(QueryBuilders.geoDistanceQuery("location")
+                .query(QueryBuilders.geoDistanceQuery("gps")
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon)
                 )
                 .size(0)
-                .aggregation(AggregationBuilders.geohashGrid("event_locations").field("location").precision(geohashPrecision))
+                .aggregation(AggregationBuilders.geohashGrid("event_locations").field("gps").precision(geohashPrecision))
                 .toString();
 
         SearchResult result = client.searchES(EVENTS_TYPE, eventLocations);

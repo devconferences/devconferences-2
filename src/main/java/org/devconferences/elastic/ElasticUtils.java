@@ -1,5 +1,6 @@
 package org.devconferences.elastic;
 
+import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
@@ -125,7 +126,7 @@ public final class ElasticUtils {
         try {
             deleteType(type);
         } catch(IllegalStateException e) {
-            LOGGER.warn("Type '" + EventsRepository.EVENTS_TYPE + "' doesn't exist !");
+            LOGGER.warn("Type '" + type + "' doesn't exist !\n" + e);
         }
         createType(type, mappingFile);
     }

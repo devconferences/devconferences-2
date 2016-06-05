@@ -65,7 +65,7 @@
       "city_event_suggest": {
         "type": "completion"
       },
-      "location" : {
+      "gps" : {
         "type" : "geo_point"
       }
     }
