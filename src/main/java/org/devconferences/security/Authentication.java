@@ -5,9 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
-import net.codestory.http.Cookies;
 import net.codestory.http.NewCookie;
-import net.codestory.http.annotations.Delete;
 import net.codestory.http.annotations.Get;
 import net.codestory.http.annotations.Prefix;
 import net.codestory.http.constants.Headers;
@@ -17,8 +15,7 @@ import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicHeader;
 import org.devconferences.users.UsersRepository;
 import org.devconferences.users.User;
@@ -28,28 +25,65 @@ import java.util.Map;
 
 import static org.devconferences.env.EnvUtils.fromEnv;
 
+class GithubCalls {
+    public static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
+    public static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
+
+    final String clientId;
+    private final String clientSecret;
+
+    private final Gson gson = new Gson();
+
+    public GithubCalls() {
+        clientId = fromEnv(GITHUB_OAUTH_CLIENT_ID, "9a8a7843de53c0561a73");
+        clientSecret = fromEnv(GITHUB_OAUTH_CLIENT_SECRET, "64b3cb1d323b0ef17aa5f0390e4dde88c8ec42a0");
+    }
+
+    public Authentication.GitHubAuthenticationResponse connect(String code) throws IOException {
+        Content content = Request.Post("https://github.com/login/oauth/access_token")
+                .bodyForm(Form.form()
+                        .add("client_id", clientId)
+                        .add("client_secret", clientSecret)
+                        .add("code", code)
+                        .build())
+                .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
+                .execute()
+                .returnContent();
+        return gson.fromJson(content.asString(), Authentication.GitHubAuthenticationResponse.class);
+    }
+
+    public Response getUser(String accessToken, boolean withBody) throws IOException {
+        if(withBody) {
+            return Request.Get("https://api.github.com/user?access_token=" + accessToken)
+                    .execute();
+        } else {
+            return Request.Head("https://api.github.com/user?access_token=" + accessToken)
+                    .execute();
+        }
+    }
+}
+
 /**
  * Created by chris on 05/06/15.
  */
 @Prefix("auth/")
 public class Authentication {
-    public static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
-    public static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
     public static final String ACCESS_TOKEN = "access_token";
-
-    private final String clientId;
-    private final String clientSecret;
 
     private final Encrypter encrypter;
     private final UsersRepository usersRepository;
+    private final GithubCalls githubCalls;
 
     private final Gson gson = new Gson();
 
     @Inject
     public Authentication(Encrypter encrypter, UsersRepository usersRepository) {
-        clientId = fromEnv(GITHUB_OAUTH_CLIENT_ID, "9a8a7843de53c0561a73");
-        clientSecret = fromEnv(GITHUB_OAUTH_CLIENT_SECRET, "64b3cb1d323b0ef17aa5f0390e4dde88c8ec42a0");
+        this(encrypter, usersRepository, new GithubCalls());
+    }
 
+    @Inject
+    public Authentication(Encrypter encrypter, UsersRepository usersRepository, GithubCalls githubCalls) {
+        this.githubCalls = githubCalls;
         this.encrypter = encrypter;
         this.usersRepository = usersRepository;
     }
@@ -57,16 +91,7 @@ public class Authentication {
     @Get("?code=:code")
     public Payload oauthCallBack(String code) {
         try {
-            Content content = Request.Post("https://github.com/login/oauth/access_token")
-                    .bodyForm(Form.form()
-                            .add("client_id", clientId)
-                            .add("client_secret", clientSecret)
-                            .add("code", code)
-                            .build())
-                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json"))
-                    .execute()
-                    .returnContent();
-            GitHubAuthenticationResponse authenticationResponse = gson.fromJson(content.asString(), GitHubAuthenticationResponse.class);
+            GitHubAuthenticationResponse authenticationResponse = githubCalls.connect(code);
 
             User user = getUser(authenticationResponse.accessToken);
             usersRepository.save(user);
@@ -100,7 +125,7 @@ public class Authentication {
 
     @Get("client-id")
     public String getClientId() {
-        return clientId;
+        return githubCalls.clientId;
     }
 
     public boolean isAuthenticated(Context context) throws IOException {
@@ -109,8 +134,7 @@ public class Authentication {
             return false;
         }
 
-        int statusCode = Request.Head("https://api.github.com/user?access_token=" + accessToken)
-                .execute()
+        int statusCode = githubCalls.getUser(accessToken, false)
                 .returnResponse()
                 .getStatusLine()
                 .getStatusCode();
@@ -122,8 +146,7 @@ public class Authentication {
             return null;
         }
         try {
-            Content content = Request.Get("https://api.github.com/user?access_token=" + accessToken)
-                    .execute()
+            Content content = githubCalls.getUser(accessToken, true)
                     .returnContent();
 
             Map<String, Object> map = gson.fromJson(content.asString(), Map.class);
@@ -161,7 +184,7 @@ public class Authentication {
         return cookie != null ? encrypter.decrypt(cookie.value()) : null;
     }
 
-    private class GitHubAuthenticationResponse {
+    class GitHubAuthenticationResponse {
         @SerializedName("access_token")
         public String accessToken;
         @SerializedName("token_type")
