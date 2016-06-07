@@ -3,19 +3,14 @@ package org.devconferences.events;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
-import io.searchbox.core.*;
+import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Collector;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.elasticsearch.action.suggest.SuggestAction;
-import org.elasticsearch.action.suggest.SuggestRequest;
-import org.elasticsearch.action.suggest.SuggestRequestBuilder;
-import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -24,17 +19,13 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
-import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 
 import javax.inject.Singleton;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.QueryBuilders.*;
@@ -98,10 +89,9 @@ public class EventsRepository {
 
         if(matchAll) {
             searchQuery.aggregation(
-                    AggregationBuilders.terms("cities")
-                            .field("city")
-                            .size(100)
-                            .order(Terms.Order.term(true))
+                    AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
+                            AggregationBuilders.terms("types").field("type")
+                    ).order(Terms.Order.term(true))
             );
         } else {
             searchQuery.query(QueryBuilders.queryStringQuery(query)).aggregation(
@@ -117,10 +107,27 @@ public class EventsRepository {
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
-        return cities.getBuckets().stream()
-                .map(entry -> new CityLight(entry.getKey(), entry.getKey(), entry.getCount(),
-                        GeopointCities.getInstance().getLocation(entry.getKey())))
-                .collect(Collectors.toList());
+        List<CityLight> result = new ArrayList<>();
+
+        for (TermsAggregation.Entry city : cities.getBuckets()) {
+            TermsAggregation types = city.getTermsAggregation("types");
+            CityLight cityLight = new CityLight(city.getKey(), city.getKey());
+            cityLight.location = GeopointCities.getInstance().getLocation(city.getKey());
+            cityLight.count = city.getCount();
+            for (TermsAggregation.Entry type : types.getBuckets()) {
+                switch (type.getKey()) {
+                    case "COMMUNITY":
+                        cityLight.totalCommunity = type.getCount();
+                        break;
+                    case "CONFERENCE":
+                        cityLight.totalConference = type.getCount();
+                        break;
+                }
+            }
+            result.add(cityLight);
+        }
+
+        return result;
     }
 
     @Deprecated
