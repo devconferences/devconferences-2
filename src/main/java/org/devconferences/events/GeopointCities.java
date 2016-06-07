@@ -45,4 +45,8 @@ public class GeopointCities {
         return citiesLoc.get(city);
     }
 
+    public HashMap<String,GeoPoint> getAllLocations() {
+        return (HashMap<String, GeoPoint>) citiesLoc.clone();
+    }
+
 }

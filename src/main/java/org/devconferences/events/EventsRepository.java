@@ -3,7 +3,6 @@ package org.devconferences.events;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
-import io.searchbox.core.CountResult;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
@@ -50,6 +49,8 @@ public class EventsRepository {
     public static final String EVENTS_TYPE = "events";
     public static final String CALENDAREVENTS_TYPE = "calendarevents";
 
+    private static final double GEO_DISTANCE = 20d;
+
     public final RuntimeJestClient client;
 
     public EventsRepository() {
@@ -92,13 +93,13 @@ public class EventsRepository {
             searchQuery.aggregation(
                     AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
                             AggregationBuilders.terms("types").field("type")
-                    ).order(Terms.Order.term(true))
+                    )
             );
         } else {
             searchQuery.query(QueryBuilders.queryStringQuery(query)).aggregation(
                     AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
                             AggregationBuilders.terms("types").field("type")
-                    ).order(Terms.Order.term(true))
+                    )
             );
         }
 
@@ -107,7 +108,7 @@ public class EventsRepository {
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
-        List<CityLight> result = new ArrayList<>();
+        HashMap<String,CityLight> resultMap = new HashMap<>();
 
         for (TermsAggregation.Entry city : cities.getBuckets()) {
             TermsAggregation types = city.getTermsAggregation("types");
@@ -123,15 +124,28 @@ public class EventsRepository {
                         break;
                 }
             }
-            if(cityLight.location != null) {
-                cityLight.totalCalendar = countCalendarEventsAround((matchAll ? null : query), cityLight.location.lat(), cityLight.location.lon(), 20d);
-            }
 
-            cityLight.count = cityLight.totalCalendar + cityLight.totalCommunity + cityLight.totalConference;
-            result.add(cityLight);
+            resultMap.put(city.getKey(), cityLight);
         }
 
-        return result;
+        // Attach each CalendarEvent with its city
+        GeopointCities.getInstance().getAllLocations().forEach((key, value) -> {
+            int countForCity = countCalendarEventsAround((matchAll ? null : query), value.lat(), value.lon(), GEO_DISTANCE);
+            if(countForCity > 0) {
+                if (!resultMap.containsKey(key)) {
+                    CityLight cityLight = new CityLight(key, key);
+                    cityLight.location = value;
+                    resultMap.put(key, cityLight);
+                }
+                resultMap.get(key).totalCalendar += countForCity;
+            }
+        });
+
+        // HashMap -> List
+        return resultMap.values().stream().map((city) -> {
+            city.count = city.totalCalendar + city.totalCommunity + city.totalConference;
+            return city;
+        }).collect(Collectors.toList());
     }
 
     @Deprecated
@@ -158,7 +172,7 @@ public class EventsRepository {
 
         city.location = GeopointCities.getInstance().getLocation(city.name);
         if(city.location != null) {
-            city.upcoming_events = findCalendarEventsAround(null, city.location.lat(), city.location.lon(), 20d);
+            city.upcoming_events = findCalendarEventsAround(null, city.location.lat(), city.location.lon(), GEO_DISTANCE);
         } else {
             city.upcoming_events = new ArrayList<>();
         }

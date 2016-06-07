@@ -44,7 +44,7 @@ public class EventsEndPoint {
         try {
             result = eventsRepository.searchEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
         } catch (RuntimeException e) {
-            if(e.getMessage().startsWith("HTML 400 :")) {
+            if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();
             } else {
                 throw e;
@@ -60,7 +60,7 @@ public class EventsEndPoint {
         try {
             result = eventsRepository.searchCalendarEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
         } catch (RuntimeException e) {
-            if(e.getMessage().startsWith("HTML 400 :")) {
+            if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();
             } else {
                 throw e;
