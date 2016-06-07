@@ -1,5 +1,7 @@
 package org.devconferences.security;
 
+import net.codestory.http.Context;
+import net.codestory.http.misc.Env;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Response;
@@ -70,7 +72,7 @@ public class AuthenticationTest {
 
         Authentication authenticationWithMock = new Authentication(new Encrypter(), new UsersRepository(mockClient), mockGithub);
 
-        Payload payload = authenticationWithMock.oauthCallBack("a1b2c3d4e5f67890");
+        Payload payload = authenticationWithMock.oauthCallBack("a1b2c3d4e5f67890", new Context(null, null, null, null, null));
 
         Assertions.assertThat(payload.cookies().get(0).name()).matches("access_token");
         Assertions.assertThat(encrypter.decrypt(payload.cookies().get(0).value())).matches(githubResponse.accessToken);

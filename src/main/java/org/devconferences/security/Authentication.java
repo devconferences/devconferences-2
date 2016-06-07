@@ -88,12 +88,13 @@ public class Authentication {
     }
 
     @Get("?code=:code")
-    public Payload oauthCallBack(String code) {
+    public Payload oauthCallBack(String code, Context context) {
         try {
             GitHubAuthenticationResponse authenticationResponse = githubCalls.authorize(code);
 
             User user = getUser(authenticationResponse.accessToken);
             usersRepository.save(user);
+            context.setCurrentUser(user);
 
             NewCookie accessTokenCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt(authenticationResponse.accessToken), true);
             //TODO move to secure (HTTPS only) newCookie.setSecure(true);
@@ -107,6 +108,7 @@ public class Authentication {
 
     @Get("disconnect")
     public Payload disconnect(Context context) {
+        context.setCurrentUser(null);
         NewCookie disconnectCookie = new NewCookie(ACCESS_TOKEN, null, true).setExpiry(1);
         return Payload.seeOther("/").withCookie(disconnectCookie);
     }
@@ -118,8 +120,13 @@ public class Authentication {
     }
 
     public User getUser(Context context) {
-        String accessToken = extractAccessToken(context);
-        return getUser(accessToken);
+        net.codestory.http.security.User currentUser = context.currentUser();
+        if(currentUser != null && currentUser instanceof User) {
+            return (User) currentUser;
+        } else {
+            String accessToken = extractAccessToken(context);
+            return getUser(accessToken);
+        }
     }
 
     @Get("client-id")

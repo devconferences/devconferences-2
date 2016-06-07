@@ -1,5 +1,6 @@
 package org.devconferences.events;
 
+import net.codestory.http.Context;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
