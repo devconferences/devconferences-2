@@ -39,7 +39,9 @@ var Minimap = React.createClass({
             var iconFeature = new ol.Feature({
                 geometry: new ol.geom.Point(ol.proj.fromLonLat([city.location.lon, city.location.lat])),
                 name: city.name,
-                count: city.count
+                totalCommunity : city.totalCommunity,
+                totalConference : city.totalConference,
+                totalCalendar : city.totalCalendar
             });
 
             iconFeature.setStyle(new ol.style.Style({
@@ -86,8 +88,10 @@ var Minimap = React.createClass({
         });
 
         // handle popup behaviour
-        var citySelected = document.getElementById('citySelected');
-        var cityCount = document.getElementById('cityCount');
+        var cityName = document.getElementById('mapCityName');
+        var cityConference = document.getElementById('mapCityConference');
+        var cityCommunity = document.getElementById('mapCityCommunity');
+        var cityCalendar = document.getElementById('mapCityCalendar');
 
         // display popup on click
         map.on('click', function(evt) {
@@ -112,12 +116,16 @@ var Minimap = React.createClass({
             if(hit) {
                 map.forEachFeatureAtPixel(pixel,
                 function(feature) {
-                      citySelected.innerHTML = feature.get('name');
-                      cityCount.innerHTML = feature.get('count');
+                      cityName.innerHTML = feature.get('name');
+                      cityConference.innerHTML = "Conférences : " + feature.get('totalConference');
+                      cityCommunity.innerHTML = "Communautés : " + feature.get('totalCommunity');
+                      cityCalendar.innerHTML = "Événements : " + feature.get('totalCalendar');
                 });
             } else {
-                  citySelected.innerHTML = "Choisissez une ville sur la carte.";
-                  cityCount.innerHTML = null;
+                      cityName.innerHTML = "Choisissez une ville sur la carte.";
+                      cityConference.innerHTML = "&nbsp;";
+                      cityCommunity.innerHTML = "&nbsp;";
+                      cityCalendar.innerHTML = "&nbsp;";
             }
         });
         // End OSM Map
@@ -152,8 +160,11 @@ var Minimap = React.createClass({
                 <h2>
                     Villes répertoriées
                 </h2>
-                <p className="city">
-                    <span className="label btn-primary label-primary"><span id="citySelected">{this.state.minimapText}</span> <span id="cityCount" className="badge"></span></span>
+                <p>
+                    <span id="mapCityName" className="label label-primary city">{this.state.minimapText}</span><br/>
+                    <span id="mapCityConference">&nbsp;</span><br/>
+                    <span id="mapCityCommunity">&nbsp;</span><br/>
+                    <span id="mapCityCalendar">&nbsp;</span>
                 </p>
 
                 <div className="wrapper-map">
