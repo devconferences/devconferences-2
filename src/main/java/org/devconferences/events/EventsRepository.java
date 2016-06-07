@@ -96,10 +96,9 @@ public class EventsRepository {
             );
         } else {
             searchQuery.query(QueryBuilders.queryStringQuery(query)).aggregation(
-                    AggregationBuilders.terms("cities")
-                            .field("city")
-                            .size(100)
-                            .order(Terms.Order.term(true))
+                    AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
+                            AggregationBuilders.terms("types").field("type")
+                    ).order(Terms.Order.term(true))
             );
         }
 
@@ -125,7 +124,7 @@ public class EventsRepository {
                 }
             }
             if(cityLight.location != null) {
-                cityLight.totalCalendar = countCalendarEventsAround(cityLight.location.lat(), cityLight.location.lon(), 20d);
+                cityLight.totalCalendar = countCalendarEventsAround((matchAll ? null : query), cityLight.location.lat(), cityLight.location.lon(), 20d);
             }
 
             cityLight.count = cityLight.totalCalendar + cityLight.totalCommunity + cityLight.totalConference;
@@ -159,7 +158,7 @@ public class EventsRepository {
 
         city.location = GeopointCities.getInstance().getLocation(city.name);
         if(city.location != null) {
-            city.upcoming_events = findCalendarEventsAround(city.location.lat(), city.location.lon(), 20d);
+            city.upcoming_events = findCalendarEventsAround(null, city.location.lat(), city.location.lon(), 20d);
         } else {
             city.upcoming_events = new ArrayList<>();
         }
@@ -182,7 +181,7 @@ public class EventsRepository {
         return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
     }
 
-    public int countCalendarEventsAround(double lat, double lon, double distance) {
+    public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(matchAllQuery())
                 .size(0)
@@ -190,18 +189,25 @@ public class EventsRepository {
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon));
 
+        if(query != null) {
+            eventLocations.query(QueryBuilders.queryStringQuery(query));
+        }
+
         SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
         return result.getTotal();
     }
 
-    public List<CalendarEvent> findCalendarEventsAround(double lat, double lon, double distance) {
+    public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
-                .query(matchAllQuery())
                 .postFilter(QueryBuilders.geoDistanceQuery("location.gps")
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon))
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
                 .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
+
+        if(query != null) {
+            eventLocations.query(QueryBuilders.queryStringQuery(query));
+        }
 
         SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
         return getHitsFromSearch(result, CalendarEvent.class);
@@ -262,7 +268,7 @@ public class EventsRepository {
         if(allMatch != null && allMatch && pageInt != 1) {
             throw new RuntimeException("HTML 400 : 'all' parameter is true and page is not equals to 1");
         }
-        if(perPage * (pageInt - 1) >= countResult.getTotal()) {
+        if (perPage * (pageInt - 1) >= countResult.getTotal() && (countResult.getTotal() != 0 || pageInt != 1)) {
             throw new RuntimeException("HTML 400 : page out of bounds");
         }
 
