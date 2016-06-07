@@ -15,7 +15,7 @@ public interface RuntimeJestClient extends JestClient, AutoCloseable {
     @Override
     void close();
 
-    int indexES(String type, Object event, String id);
+    int indexES(String type, Object obj, String id);
     SearchResult searchES(String type, String query);
     CountResult countES(String type, String query);
     JestResult getES(String type, String id);

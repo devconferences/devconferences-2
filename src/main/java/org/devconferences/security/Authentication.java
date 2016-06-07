@@ -39,7 +39,7 @@ class GithubCalls {
         clientSecret = fromEnv(GITHUB_OAUTH_CLIENT_SECRET, "64b3cb1d323b0ef17aa5f0390e4dde88c8ec42a0");
     }
 
-    public Authentication.GitHubAuthenticationResponse connect(String code) throws IOException {
+    public Authentication.GitHubAuthenticationResponse authorize(String code) throws IOException {
         Content content = Request.Post("https://github.com/login/oauth/access_token")
                 .bodyForm(Form.form()
                         .add("client_id", clientId)
@@ -81,7 +81,6 @@ public class Authentication {
         this(encrypter, usersRepository, new GithubCalls());
     }
 
-    @Inject
     public Authentication(Encrypter encrypter, UsersRepository usersRepository, GithubCalls githubCalls) {
         this.githubCalls = githubCalls;
         this.encrypter = encrypter;
@@ -91,7 +90,7 @@ public class Authentication {
     @Get("?code=:code")
     public Payload oauthCallBack(String code) {
         try {
-            GitHubAuthenticationResponse authenticationResponse = githubCalls.connect(code);
+            GitHubAuthenticationResponse authenticationResponse = githubCalls.authorize(code);
 
             User user = getUser(authenticationResponse.accessToken);
             usersRepository.save(user);
