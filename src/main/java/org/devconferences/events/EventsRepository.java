@@ -3,6 +3,7 @@ package org.devconferences.events;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
+import io.searchbox.core.CountResult;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
@@ -113,7 +114,6 @@ public class EventsRepository {
             TermsAggregation types = city.getTermsAggregation("types");
             CityLight cityLight = new CityLight(city.getKey(), city.getKey());
             cityLight.location = GeopointCities.getInstance().getLocation(city.getKey());
-            cityLight.count = city.getCount();
             for (TermsAggregation.Entry type : types.getBuckets()) {
                 switch (type.getKey()) {
                     case "COMMUNITY":
@@ -124,6 +124,11 @@ public class EventsRepository {
                         break;
                 }
             }
+            if(cityLight.location != null) {
+                cityLight.totalCalendar = countCalendarEventsAround(cityLight.location.lat(), cityLight.location.lon(), 20d);
+            }
+
+            cityLight.count = cityLight.totalCalendar + cityLight.totalCommunity + cityLight.totalConference;
             result.add(cityLight);
         }
 
@@ -175,6 +180,18 @@ public class EventsRepository {
         SearchResult result = client.searchES(EVENTS_TYPE, eventLocations);
         GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
         return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
+    }
+
+    public int countCalendarEventsAround(double lat, double lon, double distance) {
+        SearchSourceBuilder eventLocations = new SearchSourceBuilder()
+                .query(matchAllQuery())
+                .size(0)
+                .postFilter(QueryBuilders.geoDistanceQuery("location.gps")
+                        .distance(distance, KILOMETERS)
+                        .lat(lat).lon(lon));
+
+        SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
+        return result.getTotal();
     }
 
     public List<CalendarEvent> findCalendarEventsAround(double lat, double lon, double distance) {
