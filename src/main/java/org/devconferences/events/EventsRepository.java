@@ -145,7 +145,7 @@ public class EventsRepository {
         return resultMap.values().stream().map((city) -> {
             city.count = city.totalCalendar + city.totalCommunity + city.totalConference;
             return city;
-        }).collect(Collectors.toList());
+        }).sorted().collect(Collectors.toList());
     }
 
     @Deprecated

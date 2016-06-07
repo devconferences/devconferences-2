@@ -7,7 +7,7 @@ class CityAggreg {
     public long count;
 }
 
-public class CityLight {
+public class CityLight implements Comparable {
 
     public final String id;
     public final String name;
@@ -39,5 +39,11 @@ public class CityLight {
 
     public String name() {
         return name;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        CityLight other = (CityLight) o;
+        return this.name.compareTo(other.name);
     }
 }
