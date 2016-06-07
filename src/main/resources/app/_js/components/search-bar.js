@@ -32,7 +32,7 @@ var SearchBar = React.createClass({
     },
 
     changeSearchType: function(searchType) {
-        this.research(null, (this.props.all ? 0 : 1), searchType);
+        this.research(null, 1, searchType);
     },
 
     queryChanged: function(e) {
@@ -40,10 +40,10 @@ var SearchBar = React.createClass({
 
         var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
         var query = this.props.query || "";
-        var page = (this.props.all ? 0 : 1);
+        var page = 1;
 
         if(query != "" && searchValue == query) {
-            page = this.props.page || (this.props.all ? 0 : 1);
+            page = this.props.page || 1;
         }
 
         this.research(searchValue, page, null);
@@ -107,7 +107,7 @@ var SearchBar = React.createClass({
             query = this.state.query;
         }
         if(!page) {
-            page = (this.props.all ? 0 : 1);
+            page = 1;
         } else if(page == -1) {
             page = this.state.page;
         }

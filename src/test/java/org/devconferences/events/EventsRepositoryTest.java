@@ -73,15 +73,15 @@ public class EventsRepositoryTest {
         Assertions.assertThat(matches.get(0).city).matches(event.city);
         Assertions.assertThat(matches.get(0).description).matches(event.description);
 
-        // With "0", should show all hits
-        eventSearch = eventsEndPoint.eventsSearch("awesome", "0", null, null, null, null);
+        // With all = "true", should show all hits
+        eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null, null, null, "true");
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
-        Assertions.assertThat(eventSearch.totalPage).matches("0");
-        Assertions.assertThat(eventSearch.currPage).matches("0");
+        Assertions.assertThat(eventSearch.totalPage).matches("1");
+        Assertions.assertThat(eventSearch.currPage).matches("1");
         Assertions.assertThat(eventSearch.hits).hasSize(1);
 
-        // With "-1" (and values < 0), should throw an exception
+        // With "-1" (and values <= 0), should throw an exception
         try {
             eventSearch = eventsEndPoint.eventsSearch("awesome", "-1", null, null, null, null);
 

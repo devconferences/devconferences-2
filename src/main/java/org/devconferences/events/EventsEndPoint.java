@@ -3,6 +3,7 @@ package org.devconferences.events;
 import com.google.inject.Inject;
 import net.codestory.http.Context;
 import net.codestory.http.annotations.*;
+import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
 import org.devconferences.users.User;
 
@@ -39,13 +40,33 @@ public class EventsEndPoint {
     @Get("search/events?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance&all=:all")
     @AllowOrigin("*")
     public AbstractSearchResult eventsSearch(String query, String page, String lat, String lon, String distance, String all) {
-        return eventsRepository.searchEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+        AbstractSearchResult result;
+        try {
+            result = eventsRepository.searchEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+        } catch (RuntimeException e) {
+            if(e.getMessage().startsWith("HTML 400 :")) {
+                throw new BadRequestException();
+            } else {
+                throw e;
+            }
+        }
+        return result;
     }
 
     @Get("search/calendar?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance&all=:all")
     @AllowOrigin("*")
     public AbstractSearchResult eventsCalendarSearch(String query, String page, String lat, String lon, String distance, String all) {
-        return eventsRepository.searchCalendarEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+        AbstractSearchResult result;
+        try {
+            result = eventsRepository.searchCalendarEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+        } catch (RuntimeException e) {
+            if(e.getMessage().startsWith("HTML 400 :")) {
+                throw new BadRequestException();
+            } else {
+                throw e;
+            }
+        }
+        return result;
     }
 
     @Get("events/:id")

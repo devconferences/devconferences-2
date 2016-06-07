@@ -216,6 +216,7 @@ public class EventsRepository {
     private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, QueryBuilder filter, String lat, String lon, String distance, Boolean allMatch) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         int pageInt = Integer.decode(page);
+        final int perPage = 10;
 
         // Count query
         searchQuery.size(0);
@@ -230,19 +231,26 @@ public class EventsRepository {
         SearchResult countResult = client.searchES(typeSearch, searchQuery.toString());
 
         // Search query
-        if (pageInt < 0) {
-            throw new RuntimeException("Can't search with a negative page");
+        // Check conditions about page and size
+        if (pageInt <= 0) {
+            throw new RuntimeException("HTML 400 : page parameter is <= 0");
+        }
+        if(allMatch != null && allMatch && pageInt != 1) {
+            throw new RuntimeException("HTML 400 : 'all' parameter is true and page is not equals to 1");
+        }
+        if(perPage * (pageInt - 1) >= countResult.getTotal()) {
+            throw new RuntimeException("HTML 400 : page out of bounds");
         }
 
         if(sortBy != null) {
             searchQuery.sort(sortBy);
         }
 
-        if(!page.equals("0")) {
-            searchQuery.from(10 * (pageInt - 1));
-            searchQuery.size(10);
-        } else {
+        if (allMatch) {
             searchQuery.size(countResult.getTotal());
+        } else {
+            searchQuery.from(perPage * (pageInt - 1));
+            searchQuery.size(perPage);
         }
 
         // Suggestions
@@ -335,15 +343,10 @@ public class EventsRepository {
             });
         }
 
-        int totalPages;
-        if(pageInt > 0) {
-            totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / 10.0f);
-        } else {
-            totalPages = 0;
-        }
+        int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / (float) perPage);
 
         res.totalPage = String.valueOf(totalPages);
-        res.hitsAPage = (pageInt > 0 ? "10" : String.valueOf(res.totalHits));
+        res.hitsAPage = (!allMatch ? String.valueOf(perPage) : String.valueOf(res.totalHits));
 
         if(res instanceof EventSearch) {
             EventSearch resCast = (EventSearch) res;

@@ -39,7 +39,7 @@ public class LocationSearchTest {
 
     @AfterClass
     public static void tearDownOne() {
-        ElasticUtils.deleteIndex();
+        DeveloppementESNode.deleteDevNode();
     }
 
     @Test
