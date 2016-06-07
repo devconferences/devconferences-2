@@ -1,7 +1,6 @@
 package org.devconferences.security;
 
 import net.codestory.http.Context;
-import net.codestory.http.misc.Env;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Response;
@@ -59,6 +58,8 @@ public class AuthenticationTest {
                 "  \"email\": \"foo@devconferences.org\"" +
                 "}";
         String stringGet = githubUser;
+        Context context = new Context(null, null, null, null, null);
+
         try {
             when(contentMock.asString()).thenReturn(githubUser);
             when(responseUser.returnContent()).thenReturn(contentMock);
@@ -72,9 +73,23 @@ public class AuthenticationTest {
 
         Authentication authenticationWithMock = new Authentication(new Encrypter(), new UsersRepository(mockClient), mockGithub);
 
-        Payload payload = authenticationWithMock.oauthCallBack("a1b2c3d4e5f67890", new Context(null, null, null, null, null));
+        Payload payloadConnect = authenticationWithMock.oauthCallBack("a1b2c3d4e5f67890", context);
 
-        Assertions.assertThat(payload.cookies().get(0).name()).matches("access_token");
-        Assertions.assertThat(encrypter.decrypt(payload.cookies().get(0).value())).matches(githubResponse.accessToken);
+        Assertions.assertThat(payloadConnect.cookies().get(0).name()).matches("access_token");
+        Assertions.assertThat(encrypter.decrypt(payloadConnect.cookies().get(0).value())).matches(githubResponse.accessToken);
+
+
+
+        Assertions.assertThat(authenticationWithMock.getConnectedUser(context).login).matches("user123");
+        Assertions.assertThat(authenticationWithMock.getConnectedUser(context).id).matches("1234567.0");
+
+        Assertions.assertThat(authenticationWithMock.getUser(context).login).matches("user123");
+        Assertions.assertThat(authenticationWithMock.getUser(context).id).matches("1234567.0");
+
+        Payload payloadDisconnect = authenticationWithMock.disconnect(context);
+
+        Assertions.assertThat(payloadDisconnect.cookies().get(0).name()).matches("access_token");
+        Assertions.assertThat(payloadDisconnect.cookies().get(0).value()).isNull();
+        Assertions.assertThat(payloadDisconnect.cookies().get(0).expiry()).isEqualTo(1);
     }
 }
