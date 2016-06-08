@@ -160,19 +160,19 @@ var Minimap = React.createClass({
                 <h2>
                     Villes répertoriées
                 </h2>
-                <p>
-                    <span id="mapCityName" className="label label-primary city">{this.state.minimapText}</span><br/>
-                    <span id="mapCityConference">&nbsp;</span><br/>
-                    <span id="mapCityCommunity">&nbsp;</span><br/>
-                    <span id="mapCityCalendar">&nbsp;</span>
-                </p>
+                <div>
+                    <div id="mapCityName" className="label label-primary city">{this.state.minimapText}</div>
+                    <div id="mapCityConference">&nbsp;</div>
+                    <div id="mapCityCommunity">&nbsp;</div>
+                    <div id="mapCityCalendar">&nbsp;</div>
+                </div>
 
                 <div className="wrapper-map">
                     <div ref="map" id="map" className="center-block"></div>
                 </div>
 
                 <div>
-                    <p className="city">
+                    <p>
                         <span className="label label-default">Ville(s) non affichée(s) :</span>
                     </p>
                     <p>
