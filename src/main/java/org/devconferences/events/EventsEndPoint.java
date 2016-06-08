@@ -37,6 +37,12 @@ public class EventsEndPoint {
         return eventsRepository.getCity(id);
     }
 
+    @Get("suggest?q=:query")
+    @AllowOrigin("*")
+    public List<SuggestData> suggest(String query) {
+        return eventsRepository.suggest(query);
+    }
+
     @Get("search/events?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance&all=:all")
     @AllowOrigin("*")
     public AbstractSearchResult eventsSearch(String query, String page, String lat, String lon, String distance, String all) {

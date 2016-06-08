@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.Suggest;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
@@ -11,17 +12,19 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 
 import javax.inject.Singleton;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -32,19 +35,21 @@ import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Singleton
 public class EventsRepository {
+
     private final class SuggestResponse {
         public Suggests suggest;
 
         public class Suggests {
-            public List<SuggestsData> citySuggest;
-            public List<SuggestsData> nameSuggest;
-            public List<SuggestsData> tagsSuggest;
+            public List<SuggestsData> cityEventSuggest;
+            public List<SuggestsData> nameEventSuggest;
+            public List<SuggestsData> tagsEventSuggest;
+            public List<SuggestsData> nameCalendarSuggest;
 
-            public class SuggestsData {
-                public List<AbstractSearchResult.Suggest> options;
-            }
         }
 
+        public class SuggestsData {
+            public List<SuggestData> options;
+        }
     }
     public static final String EVENTS_TYPE = "events";
     public static final String CALENDAREVENTS_TYPE = "calendarevents";
@@ -83,6 +88,67 @@ public class EventsRepository {
         } else {
             client.indexES(EVENTS_TYPE, event, event.id);
         }
+    }
+
+    public List<SuggestData> suggest(String query) {
+        SuggestBuilder suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion(
+                SuggestBuilders.completionSuggestion("nameEventSuggest")
+                        .field("name_event_suggest").text(query)
+        ).addSuggestion(
+                SuggestBuilders.completionSuggestion("cityEventSuggest")
+                        .field("city_event_suggest").text(query)
+        ).addSuggestion(
+                SuggestBuilders.completionSuggestion("tagsEventSuggest")
+                        .field("tags_event_suggest").text(query)
+        ).addSuggestion(
+                SuggestBuilders.completionSuggestion("nameCalendarSuggest")
+                        .field("name_calendar_suggest").text(query)
+        );
+
+        JestResult jestResult = new JestResult(new Gson());
+        try {
+            jestResult = client.execute(new Suggest.Builder(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false)).build());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Suggestions
+        List<SuggestData> result = new ArrayList<>();
+
+        HashMap<String, Double> rating = new HashMap<>();
+
+        SuggestResponse.Suggests test = new Gson().fromJson(jestResult.getJsonObject(), SuggestResponse.Suggests.class);
+        test.cityEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+        test.nameEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+        test.tagsEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+        test.nameCalendarSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+
+        // Create list of suggestions
+        rating.forEach((key, value) -> {
+            SuggestData item = new SuggestData();
+            item.text = key;
+            item.score = value;
+            result.add(item);
+        });
+
+        // Sort all of this : (high score, alphabetical text)
+        result.sort((Comparator) (o, t1) -> {
+            if (o instanceof SuggestData && t1 instanceof SuggestData) {
+                SuggestData suggO = (SuggestData) o;
+                SuggestData suggT1 = (SuggestData) t1;
+
+                if(suggO.score.compareTo(suggT1.score) != 0) {
+                    return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
+                } else {
+                    return suggO.text.compareTo(suggT1.text);
+                }
+            } else {
+                return -1;
+            }
+        });
+
+        return result;
     }
 
     public List<CityLight> getAllCitiesWithQuery(String query, boolean matchAll) {
@@ -344,48 +410,48 @@ public class EventsRepository {
         res.lon = lon;
         res.distance = distance;
 
-        // Suggestions
-        res.suggests = new ArrayList<>();
-
-        HashMap<String, Double> rating = new HashMap<>();
-
-        SuggestResponse test = new Gson().fromJson(searchResult.getJsonObject(), SuggestResponse.class);
-        if(test.suggest != null) {
-            switch (typeSearch) {
-                case EVENTS_TYPE:
-                    // Merge 3 suggests list, and add scores if a suggest appears at least twice
-                    test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-                    test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-                    break;
-                case CALENDAREVENTS_TYPE:
-                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-            }
-
-            // Create list of suggestions
-            rating.forEach((key, value) -> {
-                AbstractSearchResult.Suggest item = res.new Suggest();
-                item.text = key;
-                item.score = value;
-                res.suggests.add(item);
-            });
-
-            // Sort all of this : (high score, alphabetical text)
-            res.suggests.sort((Comparator) (o, t1) -> {
-                if (o instanceof AbstractSearchResult.Suggest && t1 instanceof AbstractSearchResult.Suggest) {
-                    AbstractSearchResult.Suggest suggO = (AbstractSearchResult.Suggest) o;
-                    AbstractSearchResult.Suggest suggT1 = (AbstractSearchResult.Suggest) t1;
-
-                    if(suggO.score.compareTo(suggT1.score) != 0) {
-                        return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
-                    } else {
-                        return suggO.text.compareTo(suggT1.text);
-                    }
-                } else {
-                    return -1;
-                }
-            });
-        }
+//        // Suggestions
+//        res.suggests = new ArrayList<>();
+//
+//        HashMap<String, Double> rating = new HashMap<>();
+//
+//        SuggestResponse test = new Gson().fromJson(searchResult.getJsonObject(), SuggestResponse.class);
+//        if(test.suggest != null) {
+//            switch (typeSearch) {
+//                case EVENTS_TYPE:
+//                    // Merge 3 suggests list, and add scores if a suggest appears at least twice
+//                    test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+//                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+//                    test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+//                    break;
+//                case CALENDAREVENTS_TYPE:
+//                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+//            }
+//
+//            // Create list of suggestions
+//            rating.forEach((key, value) -> {
+//                AbstractSearchResult.SuggestData item = res.new SuggestData();
+//                item.text = key;
+//                item.score = value;
+//                res.suggests.add(item);
+//            });
+//
+//            // Sort all of this : (high score, alphabetical text)
+//            res.suggests.sort((Comparator) (o, t1) -> {
+//                if (o instanceof AbstractSearchResult.SuggestData && t1 instanceof AbstractSearchResult.SuggestData) {
+//                    AbstractSearchResult.SuggestData suggO = (AbstractSearchResult.SuggestData) o;
+//                    AbstractSearchResult.SuggestData suggT1 = (AbstractSearchResult.SuggestData) t1;
+//
+//                    if(suggO.score.compareTo(suggT1.score) != 0) {
+//                        return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
+//                    } else {
+//                        return suggO.text.compareTo(suggT1.text);
+//                    }
+//                } else {
+//                    return -1;
+//                }
+//            });
+//        }
 
         int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / (float) perPage);
 
@@ -403,12 +469,12 @@ public class EventsRepository {
         return res;
     }
 
-    private void getSuggestConsumer(AbstractSearchResult.Suggest suggest, HashMap<String, Double> rating) {
-            if(rating.containsKey(suggest.text)) {
-                rating.replace(suggest.text, suggest.score + rating.get(suggest.text));
-            } else {
-                rating.put(suggest.text, suggest.score);
-            }
+    private void getSuggestConsumer(SuggestData suggest, HashMap<String, Double> rating) {
+        if(rating.containsKey(suggest.text)) {
+            rating.replace(suggest.text, suggest.score + rating.get(suggest.text));
+        } else {
+            rating.put(suggest.text, suggest.score);
+        }
     }
 
     public void deleteEvent(String eventId) {
