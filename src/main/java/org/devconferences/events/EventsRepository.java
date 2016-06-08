@@ -358,35 +358,11 @@ public class EventsRepository {
             searchQuery.sort(sortBy);
         }
 
-        if (allMatch) {
+        if (allMatch != null && allMatch) {
             searchQuery.size(countResult.getTotal());
         } else {
             searchQuery.from(perPage * (pageInt - 1));
             searchQuery.size(perPage);
-        }
-
-        // Suggestions
-        // Disable when query is empty / null...
-        if(query != null && !query.equals("")) {
-            switch (typeSearch) {
-                case EVENTS_TYPE:
-                    searchQuery.suggest().addSuggestion(
-                            SuggestBuilders.completionSuggestion("citySuggest").text(query).field("city_event_suggest")
-                    ).addSuggestion(
-                            SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_event_suggest")
-                    ).addSuggestion(
-                            SuggestBuilders.completionSuggestion("tagsSuggest").text(query).field("tags_event_suggest")
-                    );
-                    break;
-                case CALENDAREVENTS_TYPE:
-                    searchQuery.suggest().addSuggestion(
-                            SuggestBuilders.completionSuggestion("nameSuggest").text(query).field("name_calendar_suggest")
-                    );
-                    break;
-                default:
-                    throw new RuntimeException("Unknown search type : " + typeSearch);
-
-            }
         }
 
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
@@ -411,49 +387,6 @@ public class EventsRepository {
         res.lat = lat;
         res.lon = lon;
         res.distance = distance;
-
-//        // Suggestions
-//        res.suggests = new ArrayList<>();
-//
-//        HashMap<String, Double> rating = new HashMap<>();
-//
-//        SuggestResponse test = new Gson().fromJson(searchResult.getJsonObject(), SuggestResponse.class);
-//        if(test.suggest != null) {
-//            switch (typeSearch) {
-//                case EVENTS_TYPE:
-//                    // Merge 3 suggests list, and add scores if a suggest appears at least twice
-//                    test.suggest.citySuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-//                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-//                    test.suggest.tagsSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-//                    break;
-//                case CALENDAREVENTS_TYPE:
-//                    test.suggest.nameSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-//            }
-//
-//            // Create list of suggestions
-//            rating.forEach((key, value) -> {
-//                AbstractSearchResult.SuggestData item = res.new SuggestData();
-//                item.text = key;
-//                item.score = value;
-//                res.suggests.add(item);
-//            });
-//
-//            // Sort all of this : (high score, alphabetical text)
-//            res.suggests.sort((Comparator) (o, t1) -> {
-//                if (o instanceof AbstractSearchResult.SuggestData && t1 instanceof AbstractSearchResult.SuggestData) {
-//                    AbstractSearchResult.SuggestData suggO = (AbstractSearchResult.SuggestData) o;
-//                    AbstractSearchResult.SuggestData suggT1 = (AbstractSearchResult.SuggestData) t1;
-//
-//                    if(suggO.score.compareTo(suggT1.score) != 0) {
-//                        return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
-//                    } else {
-//                        return suggO.text.compareTo(suggT1.text);
-//                    }
-//                } else {
-//                    return -1;
-//                }
-//            });
-//        }
 
         int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / (float) perPage);
 

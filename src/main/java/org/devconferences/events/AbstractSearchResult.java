@@ -12,6 +12,5 @@ public abstract class AbstractSearchResult<T> {
     public String totalPage;
     public String currPage;
     public List<T> hits;
-    public List<SuggestData> suggests;
 
 }
