@@ -23,7 +23,7 @@ var SearchBar = React.createClass({
 
     componentDidMount: function() {
         if(this.props.query != null) {
-            this.queryChanged(null);
+            this.prepareSearch(null);
         }
     },
 
@@ -36,55 +36,17 @@ var SearchBar = React.createClass({
     },
 
     queryChanged: function(e) {
-        var value = this.refs.searchInput.value;
-
-        var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
-        var query = this.props.query || "";
-        var page = 1;
-
-        if(query != "" && searchValue == query) {
-            page = this.props.page || 1;
+        if(e) {
+            DevConferencesClient.suggest(e.target.value).then(result => {
+                this.setState({
+                    suggests: result.data
+                })
+            })
+        } else {
+            this.setState({
+                suggests: []
+            })
         }
-
-        this.research(searchValue, page, null);
-    },
-
-    mergeSuggests: function(data) {
-        // Concat both arrays
-        data.suggests = [];
-        if(data.events) {
-            data.suggests = data.suggests.concat(data.events.suggests);
-        }
-        if(data.calendar) {
-            data.suggests = data.suggests.concat(data.calendar.suggests);
-        }
-
-        // Merge items with the same text (then add the score)
-        var uniqueItems = [];
-        for(var i = 0; i < data.suggests.length; i++) {
-            var item = {
-                text: data.suggests[i].text,
-                score: data.suggests[i].score
-            };
-            for(var j = i + 1; j < data.suggests.length; j++) {
-                if(item.text == data.suggests[j].text) {
-                    // Add score in lower index, then remove higher index
-                    item.score += data.suggests[j].score;
-                    data.suggests.splice(j,1);
-                }
-            }
-            uniqueItems.push(item);
-        }
-        data.suggests = uniqueItems;
-
-        // Sort suggests
-        data.suggests.sort(function(o,t1){
-            if(o.score != t1.score) {
-                return t1.score - o.score;
-            } else {
-                return o.text.localeCompare(t1.text);
-            }
-        });
     },
 
     showSuggests: function(e) {
@@ -147,11 +109,7 @@ var SearchBar = React.createClass({
                         data.events = result.data;
                         searchDone += this.EVENTS;
                         if(searchDone == searchType) {
-                            this.mergeSuggests(data);
                             this.props.onUpdate(data);
-                            this.setState({
-                                suggests: data.suggests
-                            });
                         }
                     });
                 }
@@ -164,11 +122,7 @@ var SearchBar = React.createClass({
                         data.calendar = result.data;
                         searchDone += this.CALENDAR;
                         if(searchDone == searchType) {
-                            this.mergeSuggests(data);
                             this.props.onUpdate(data);
-                            this.setState({
-                                suggests: data.suggests
-                            });
                        }
                    });
                 }
@@ -181,11 +135,7 @@ var SearchBar = React.createClass({
                         data.cities = result.data;
                         searchDone += this.CITIES;
                         if(searchDone == searchType) {
-                            this.mergeSuggests(data);
                             this.props.onUpdate(data);
-                            this.setState({
-                                suggests: data.suggests
-                            });
                        }
                    });
                 }
@@ -200,33 +150,56 @@ var SearchBar = React.createClass({
         this.research(e.target.firstChild.nodeValue, null, null);
     },
 
+    prepareSearch: function(e) {
+        var value = this.refs.searchInput.value;
+
+        var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
+        var query = this.props.query || "";
+        var page = 1;
+
+        if(query != "" && searchValue == query) {
+            page = this.props.page || 1;
+        }
+
+        this.research(searchValue, page, null);
+    },
+
+    onEnterPress: function(e) {
+        if(e.key == 'Enter') {
+            this.prepareSearch(e);
+        }
+    },
+
     render: function() {
-        var hoverSuggest = function(e) {
-            e.target.className = "hovered";
-        };
-        var noHoverSuggest = function(e) {
-            e.target.className = "";
-        };
-        var suggestItem = function(suggest) {
-            return (
-                <li onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
-            );
-        }.bind(this);
-        var classNameSuggests = function(suggests, showSuggests) {
-            if(suggests.length > 0 && showSuggests) {
-                return "search-suggests panel panel-default";
+        var suggestList = function(suggests, showSuggests) {
+            var hoverSuggest = function(e) {
+                e.target.className = "hovered";
+            };
+            var noHoverSuggest = function(e) {
+                e.target.className = "";
+            };
+            var suggestItem = function(suggest, onClickFunc) {
+                return (
+                    <li onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
+                );
+            }.bind(this);
+
+            if(suggests.length <= 0 || !showSuggests) {
+                return null;
             } else {
-                return "hidden search-suggests panel panel-default";
+                return (
+                    <div className="search-suggests panel panel-default">
+                        <ul>
+                            {suggests.map(suggestItem)}
+                        </ul>
+                    </div>
+                );
             }
-        };
+        }.bind(this);
         return (
             <div className="search-bar-container text-center">
-                <input type="text" className="search-bar" ref="searchInput" onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
-                <div className={classNameSuggests(this.state.suggests, this.state.showSuggests)}>
-                    <ul>
-                        {this.state.suggests.map(suggestItem)}
-                    </ul>
-                </div>
+                <input type="text" className="search-bar" ref="searchInput" onKeyPress={this.onEnterPress} onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+                {suggestList(this.state.suggests, this.state.showSuggests)}
             </div>
         );
     }

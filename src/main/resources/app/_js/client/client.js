@@ -35,6 +35,10 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/events/${id}`).catch(errorCallback));
     }
 
+    function suggest(query) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/suggest?q=${query}`).catch(errorCallback));
+    }
+
     function creationEvent(event) {
         if (!event.id) {
             throw new Error('Event does not have an id');
@@ -75,6 +79,7 @@ function createClient(u) {
         cities,
         city,
         event,
+        suggest,
         searchEvents,
         searchCalendar,
         creationEvent,
