@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.devconferences.env.EnvUtils;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
@@ -52,15 +53,10 @@ public class DeveloppementESNode {
             }
 
 
-            Settings.Builder settings = Settings.builder()
+            Settings.Builder settings = ImmutableSettings.builder()
                     .put("http.port", port)
                     .put("network.host", "localhost")
                     .put("path.data", ES_LOCAL_DATA);
-
-            // Fix possible broken "path.home"
-            if(settings.get("path.home") == null) {
-                settings.put("path.home", EnvUtils.fromEnv("ES_PATH_HOME", "tmp/es-local-home"));
-            }
 
             esNode = NodeBuilder.nodeBuilder()
                     .local(true)

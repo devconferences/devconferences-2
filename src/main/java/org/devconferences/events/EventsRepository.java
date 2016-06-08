@@ -10,9 +10,11 @@ import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.xml.builders.FilteredQueryBuilder;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.common.xcontent.XContentHelper;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -31,6 +33,8 @@ import java.util.stream.StreamSupport;
 
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
+import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
+import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Singleton
@@ -250,10 +254,11 @@ public class EventsRepository {
 
     public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
         String eventLocations = new SearchSourceBuilder()
-                .query(QueryBuilders.geoDistanceQuery("gps")
+                .query(filteredQuery(matchAllQuery(),
+                        geoDistanceFilter("gps")
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon)
-                )
+                ))
                 .size(0)
                 .aggregation(AggregationBuilders.geohashGrid("event_locations").field("gps").precision(geohashPrecision))
                 .toString();
@@ -264,32 +269,28 @@ public class EventsRepository {
     }
 
     public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
+        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
-                .query(matchAllQuery())
-                .size(0)
-                .postFilter(QueryBuilders.geoDistanceQuery("location.gps")
+                .query(filteredQuery(queryBuilder,
+                        geoDistanceFilter("location.gps")
                         .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon));
-
-        if(query != null) {
-            eventLocations.query(QueryBuilders.queryStringQuery(query));
-        }
+                        .lat(lat).lon(lon)))
+                .size(0);
 
         SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
         return result.getTotal();
     }
 
     public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
+        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
-                .postFilter(QueryBuilders.geoDistanceQuery("location.gps")
-                        .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon))
+                .query(filteredQuery(queryBuilder,
+                        geoDistanceFilter("location.gps")
+                                .distance(distance, KILOMETERS)
+                                .lat(lat).lon(lon)
+                ))
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
                 .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
-
-        if(query != null) {
-            eventLocations.query(QueryBuilders.queryStringQuery(query));
-        }
 
         SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
         return getHitsFromSearch(result, CalendarEvent.class);
@@ -319,13 +320,13 @@ public class EventsRepository {
     }
 
     public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance, Boolean all) {
-        QueryBuilder filterOldCE = QueryBuilders.rangeQuery("date").gt(System.currentTimeMillis());
+        FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
         return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance, all);
     }
 
     // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, QueryBuilder filter, String lat, String lon, String distance, Boolean allMatch) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String lat, String lon, String distance, Boolean allMatch) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         int pageInt = Integer.decode(page);
         final int perPage = 10;
@@ -336,7 +337,7 @@ public class EventsRepository {
             if (filter == null) {
                 searchQuery.query(queryStringQuery(QueryParser.escape(query)));
             } else {
-                searchQuery.query(queryStringQuery(QueryParser.escape(query))).postFilter(filter);
+                searchQuery.query(filteredQuery(queryStringQuery(QueryParser.escape(query)), filter));
             }
         }
 

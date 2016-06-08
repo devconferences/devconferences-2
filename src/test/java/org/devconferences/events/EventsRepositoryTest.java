@@ -1,5 +1,6 @@
 package org.devconferences.events;
 
+import com.google.gson.Gson;
 import net.codestory.http.Context;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
@@ -209,19 +210,30 @@ public class EventsRepositoryTest {
                 "    \"doc_count_error_upper_bound\": 0 ," +
                 "    \"sum_other_doc_count\": 0 ," +
                 "    \"buckets\": [" +
-                "      {\"key\": \"City 1\", \"doc_count\": 1}," +
-                "      {\"key\": \"City 2\", \"doc_count\": 2}," +
-                "      {\"key\": \"City 3\", \"doc_count\": 3}," +
-                "      {\"key\": \"City 4\", \"doc_count\": 4}" +
+                "      {\"key\":\"City 1\",\"doc_count\":4, \"types\":{" +
+                "        \"buckets\":[" +
+                "          {\"key\":\"CONFERENCE\",\"doc_count\":3}," +
+                "          {\"key\":\"COMMUNITY\",\"doc_count\":1}" +
+                "        ]" +
+                "      }}," +
+                "      {\"key\":\"City 2\",\"doc_count\":7, \"types\":{" +
+                "        \"buckets\":[" +
+                "          {\"key\":\"CONFERENCE\",\"doc_count\":2}," +
+                "          {\"key\":\"COMMUNITY\",\"doc_count\":5}" +
+                "        ]" +
+                "      }}" +
                 "    ]" +
                 "  }" +
                 "}";
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 10, "[]", searchAggreg);
+        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 0, "[]", "{}");
 
         List<CityLight> cityLightList = eventsEndPoint.allCities(null, "true");
-        Assertions.assertThat(cityLightList).hasSize(4);
-        Assertions.assertThat(cityLightList.get(0).count).isEqualTo(1);
+        Assertions.assertThat(cityLightList).hasSize(2);
+        Assertions.assertThat(cityLightList.get(0).count).isEqualTo(4);
         Assertions.assertThat(cityLightList.get(0).name).matches("City 1");
+        Assertions.assertThat(cityLightList.get(0).totalCommunity).isEqualTo(1);
+        Assertions.assertThat(cityLightList.get(0).totalConference).isEqualTo(3);
     }
 
     @Test

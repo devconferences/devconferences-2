@@ -11,6 +11,7 @@ import io.searchbox.indices.mapping.DeleteMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
+import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public final class ElasticUtils {
                 LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
                 CreateIndex createIndex =
                         new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
-                                .settings(Settings.settingsBuilder().build().getAsMap())
+                                .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
                                 .build();
                 JestResult jestResult = client.execute(createIndex);
                 if (!jestResult.isSucceeded()) {
