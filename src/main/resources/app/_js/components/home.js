@@ -64,7 +64,7 @@ var Home = React.createClass({
                     </div>
                 </div>
 
-                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} query="" searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
+                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
                 <CityLinkList cities={this.state.cities}/>
 

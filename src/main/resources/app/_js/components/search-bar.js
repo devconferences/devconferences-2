@@ -24,9 +24,7 @@ var SearchBar = React.createClass({
     },
 
     componentDidMount: function() {
-        if(this.props.query != null) {
-            this.prepareSearch(null);
-        }
+        this.research(this.props.query || "", null, null);
     },
 
     componentWillReceiveProps: function(newProps) {
@@ -40,10 +38,15 @@ var SearchBar = React.createClass({
     queryChanged: function(e) {
         if(e) {
             DevConferencesClient.suggest(e.target.value).then(result => {
-                if(this.refs.searchInput.value == result.data.query) {
-                    this.setState({
-                        suggests: result.data
-                    });
+                // First condition prevents failed request to update suggests (no 'data' property)
+                if(result.data) {
+                    if(this.refs.searchInput.value == result.data.query) {
+                        this.setState({
+                            suggests: result.data
+                        });
+                    }
+                } else {
+                    console.warn("Previous query failed");
                 }
             })
         } else {
@@ -91,60 +94,73 @@ var SearchBar = React.createClass({
             });
         }
 
-        setTimeout(function() {
-            var inputVal = ReactDOM.findDOMNode(this.refs.searchInput).value;
-            if(inputVal == query || (
-                inputVal == "" && query == null // Case of "" (e.target.value == null , #searchInput.value == "") ...
-            )) {
-                var data = {};
-                var searchDone = 0x00; // Avoid multiple calls of onUpdate when searchType == ALL
-                data.query = query;
-                data.page = page;
-                data.events = null;
-                data.calendar = null;
-                data.cities = null;
+        var inputVal = ReactDOM.findDOMNode(this.refs.searchInput).value;
+        if(inputVal == query || (
+            inputVal == "" && query == null // Case of "" (e.target.value == null , #searchInput.value == "") ...
+        )) {
+            var data = {};
+            var searchDone = 0x00; // Avoid multiple calls of onUpdate when searchType == ALL
+            data.query = query;
+            data.page = page;
+            data.events = null;
+            data.calendar = null;
+            data.cities = null;
 
-                if(searchType & this.EVENTS) {
-                    var allWhenEmpty = false;
-                    if(!query) {
-                        allWhenEmpty = this.props.allDataWhenEmpty || false;
-                    }
-                    DevConferencesClient.searchEvents(query, page, null, null, null, allWhenEmpty).then(result => {
-                        data.events = result.data;
+            if(searchType & this.EVENTS) {
+                var allWhenEmpty = false;
+                if(!query) {
+                    allWhenEmpty = this.props.allDataWhenEmpty || false;
+                }
+                DevConferencesClient.searchEvents(query, page, null, null, null, allWhenEmpty).then(result => {
+                    data.events = result.data;
+                    // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
+                    if(result.data) {
                         searchDone += this.EVENTS;
-                        if(searchDone == searchType) {
-                            this.props.onUpdate(data);
-                        }
-                    });
-                }
-                if(searchType & this.CALENDAR) {
-                    var allWhenEmpty = false;
-                    if(!query) {
-                        allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    } else {
+                        console.warn("Previous query failed");
                     }
-                    DevConferencesClient.searchCalendar(query, page, null, null, null, allWhenEmpty).then(result => {
-                        data.calendar = result.data;
-                        searchDone += this.CALENDAR;
-                        if(searchDone == searchType) {
-                            this.props.onUpdate(data);
-                       }
-                   });
-                }
-                if(searchType & this.CITIES) {
-                    var allWhenEmpty = false;
-                    if(!query) {
-                        allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    if(searchDone == searchType) {
+                        this.props.onUpdate(data);
                     }
-                    DevConferencesClient.cities(query, allWhenEmpty).then(result => {
-                        data.cities = result.data;
-                        searchDone += this.CITIES;
-                        if(searchDone == searchType) {
-                            this.props.onUpdate(data);
-                       }
-                   });
-                }
+                });
             }
-        }.bind(this), 300);
+            if(searchType & this.CALENDAR) {
+                var allWhenEmpty = false;
+                if(!query) {
+                    allWhenEmpty = this.props.allDataWhenEmpty || false;
+                }
+                DevConferencesClient.searchCalendar(query, page, null, null, null, allWhenEmpty).then(result => {
+                    data.calendar = result.data;
+                    // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
+                    if(result.data) {
+                        searchDone += this.CALENDAR;
+                    } else {
+                        console.warn("Previous query failed");
+                    }
+                    if(searchDone == searchType) {
+                        this.props.onUpdate(data);
+                   }
+               });
+            }
+            if(searchType & this.CITIES) {
+                var allWhenEmpty = false;
+                if(!query) {
+                    allWhenEmpty = this.props.allDataWhenEmpty || false;
+                }
+                DevConferencesClient.cities(query, allWhenEmpty).then(result => {
+                    data.cities = result.data;
+                    // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
+                    if(result.data) {
+                        searchDone += this.CITIES;
+                    } else {
+                        console.warn("Previous query failed");
+                    }
+                    if(searchDone == searchType) {
+                        this.props.onUpdate(data);
+                   }
+               });
+            }
+        }
     },
 
 
