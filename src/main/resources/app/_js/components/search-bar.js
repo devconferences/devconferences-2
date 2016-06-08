@@ -16,7 +16,9 @@ var SearchBar = React.createClass({
             page: null,
             query: null,
             searchType: null,
-            suggests: [],
+            suggests: {
+                hits: []
+            },
             showSuggests: false
         };
     },
@@ -38,13 +40,15 @@ var SearchBar = React.createClass({
     queryChanged: function(e) {
         if(e) {
             DevConferencesClient.suggest(e.target.value).then(result => {
-                this.setState({
-                    suggests: result.data
-                })
+                if(this.refs.searchInput.value == result.data.query) {
+                    this.setState({
+                        suggests: result.data
+                    });
+                }
             })
         } else {
             this.setState({
-                suggests: []
+                suggests: {}
             })
         }
     },
@@ -184,13 +188,13 @@ var SearchBar = React.createClass({
                 );
             }.bind(this);
 
-            if(suggests.length <= 0 || !showSuggests) {
+            if(suggests.hits.length <= 0 || !showSuggests) {
                 return null;
             } else {
                 return (
                     <div className="search-suggests panel panel-default">
                         <ul>
-                            {suggests.map(suggestItem)}
+                            {suggests.hits.map(suggestItem)}
                         </ul>
                     </div>
                 );

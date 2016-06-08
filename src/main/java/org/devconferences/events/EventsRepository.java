@@ -90,7 +90,7 @@ public class EventsRepository {
         }
     }
 
-    public List<SuggestData> suggest(String query) {
+    public CompletionResult suggest(String query) {
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion(
                 SuggestBuilders.completionSuggestion("nameEventSuggest")
@@ -114,7 +114,9 @@ public class EventsRepository {
         }
 
         // Suggestions
-        List<SuggestData> result = new ArrayList<>();
+        CompletionResult result = new CompletionResult();
+        result.query = query;
+        result.hits = new ArrayList<>();
 
         HashMap<String, Double> rating = new HashMap<>();
 
@@ -129,11 +131,11 @@ public class EventsRepository {
             SuggestData item = new SuggestData();
             item.text = key;
             item.score = value;
-            result.add(item);
+            result.hits.add(item);
         });
 
         // Sort all of this : (high score, alphabetical text)
-        result.sort((Comparator) (o, t1) -> {
+        result.hits.sort((Comparator) (o, t1) -> {
             if (o instanceof SuggestData && t1 instanceof SuggestData) {
                 SuggestData suggO = (SuggestData) o;
                 SuggestData suggT1 = (SuggestData) t1;

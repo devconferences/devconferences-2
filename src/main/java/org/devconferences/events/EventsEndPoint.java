@@ -39,7 +39,7 @@ public class EventsEndPoint {
 
     @Get("suggest?q=:query")
     @AllowOrigin("*")
-    public List<SuggestData> suggest(String query) {
+    public CompletionResult suggest(String query) {
         return eventsRepository.suggest(query);
     }
 
