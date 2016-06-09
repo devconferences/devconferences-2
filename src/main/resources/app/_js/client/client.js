@@ -19,8 +19,8 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities?q=${query}&all=${all}`).catch(errorCallback));
     }
 
-    function city(id) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities/${id}`).catch(errorCallback));
+    function city(id,query) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities/${id}?q=${query}`).catch(errorCallback));
     }
 
     function searchEvents(q,p,lat,lon,dist,all) {

@@ -227,7 +227,7 @@ public class EventsRepository {
     }
 
     public City getCity(String cityId, String query) {
-        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(ElasticUtils.MAX_SIZE)
                 .query(filteredQuery(queryBuilder, FilterBuilders.queryFilter(
@@ -273,7 +273,7 @@ public class EventsRepository {
     }
 
     public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
-        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
@@ -286,7 +286,7 @@ public class EventsRepository {
     }
 
     public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
-        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
