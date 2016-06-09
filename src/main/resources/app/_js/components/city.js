@@ -18,7 +18,7 @@ var City = React.createClass({
     },
 
     componentDidMount: function () {
-      DevConferencesClient.city(this.props.params.id).then(city => this.setState({ city: city.data }));
+      DevConferencesClient.city(this.props.params.id, this.props.params.query).then(city => this.setState({ city: city.data }));
     },
 
     render: function () {
@@ -37,12 +37,21 @@ var City = React.createClass({
                     </div>
                 );
             }
+        };
+        var queryText = function(query) {
+            if(query) {
+                return (
+                    <span>#{query}</span>
+                );
+            } else {
+                return null;
+            }
         }
         if (this.state.city) {
             return (
                 <div className="container">
                     <div className="text-center">
-                        <h1>Dev Conferences @ {this.state.city.name}</h1>
+                        <h1>Dev Conferences @ {this.state.city.name} {queryText(this.props.params.query)}</h1>
                     </div>
 
                     {renderAnchorList(this.state.city.conferences, 'Conférences')}
