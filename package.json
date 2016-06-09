@@ -31,7 +31,8 @@
   },
   "scripts": {
     "build": "webpack -p --colors",
-    "dev": "webpack-dev-server --colors --content-base src/main/resources/app", 
+    "build-dev": "webpack -d --colors",
+    "dev": "webpack-dev-server --colors --content-base src/main/resources/app",
     "start": "webpack --watch --colors -d"
   }
 }
