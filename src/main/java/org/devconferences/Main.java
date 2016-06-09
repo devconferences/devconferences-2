@@ -27,6 +27,7 @@ public class Main {
         final boolean skipDevNode;
         final boolean createIndex;
         final boolean reloadData;
+        final boolean noReloadData;
 
         BooleanProperties() {
             prodMode = getBooleanProperty(PROD_MODE);
@@ -38,6 +39,7 @@ public class Main {
             skipDevNode = getBooleanProperty(SKIP_CREATE_ES_DEV_NODE);
             createIndex = getBooleanProperty(CREATE_INDEX);
             reloadData = getBooleanProperty(RELOAD_EVENTS);
+            noReloadData = getBooleanProperty(NO_RELOAD_DATA);
         }
 
         private boolean getBooleanProperty(String property) {
@@ -55,6 +57,7 @@ public class Main {
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
     public static final String CREATE_INDEX = "CREATE_INDEX";
     public static final String RELOAD_EVENTS = "RELOAD_EVENTS";
+    public static final String NO_RELOAD_DATA = "NO_RELOAD_DATA";
     public static final String CHECK_EVENTS = "CHECK_EVENTS";
     public static final String ONLY_CHECK_EVENTS = "ONLY_CHECK_EVENTS";
     public static final String ONLY_RELOAD_CALENDAR = "ONLY_RELOAD_CALENDAR";
@@ -63,8 +66,8 @@ public class Main {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
-    static void checkData(boolean prodMode, boolean checkData, boolean onlyCheckData, AbstractImportJSONJob job) {
-        if(prodMode || checkData || onlyCheckData) {
+    static void checkData(boolean noReloadData, boolean prodMode, boolean checkData, boolean onlyCheckData, AbstractImportJSONJob job) {
+        if(!noReloadData && (prodMode || checkData || onlyCheckData)) {
             LOGGER.info(job.getClass().getSimpleName() + " : Checking data...");
             try {
                 job.checkAllData(); // This might throw an RuntimeException
@@ -81,19 +84,21 @@ public class Main {
     }
 
     static void ifCheckEvents(BooleanProperties booleans) {
+        boolean noReloadData = booleans.noReloadData;
         boolean prodMode = booleans.prodMode;
         boolean checkEvents = booleans.checkEvents;
         boolean onlyCheckEvents = booleans.onlyCheckEvents;
 
-        checkData(prodMode, checkEvents, onlyCheckEvents, importEventsJob);
+        checkData(noReloadData, prodMode, checkEvents, onlyCheckEvents, importEventsJob);
     }
 
     static void ifCheckCalendarEvents(BooleanProperties booleans) {
+        boolean noReloadData = booleans.noReloadData;
         boolean prodMode = booleans.prodMode;
         boolean checkCalendar = booleans.checkCalendar;
         boolean onlyCheckCalendar = booleans.onlyCheckCalendar;
 
-        checkData(prodMode, checkCalendar, onlyCheckCalendar, importCalendarEventsJob);
+        checkData(noReloadData, prodMode, checkCalendar, onlyCheckCalendar, importCalendarEventsJob);
     }
 
     static void ifOnlyReloadCalendar(boolean onlyReloadCalendar) {
@@ -106,19 +111,20 @@ public class Main {
     }
 
     static void manageESNode(BooleanProperties booleans) {
+        boolean noReloadData = booleans.noReloadData;
         boolean prodMode = booleans.prodMode;
         boolean skipDevNode = booleans.skipDevNode;
         boolean createIndex = booleans.createIndex;
         boolean reloadData = booleans.reloadData;
 
-        if (!prodMode && !skipDevNode) {
+        if (!noReloadData && !prodMode && !skipDevNode) {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
         }
-        if((!prodMode && !skipDevNode) || createIndex) {
+        if(!noReloadData && ((!prodMode && !skipDevNode) || createIndex)) {
             ElasticUtils.createIndex();
         }
-        if((!prodMode && !skipDevNode) || createIndex || prodMode || reloadData) {
+        if(!noReloadData && ((!prodMode && !skipDevNode) || createIndex || prodMode || reloadData)) {
             LOGGER.info("Reload data from resources and online services...");
             importEventsJob.reloadData(false);
             importCalendarEventsJob.reloadData(false);
@@ -144,12 +150,19 @@ public class Main {
         return webServer;
     }
 
+    static void ifNoReloadData(BooleanProperties booleans) {
+        if(booleans.noReloadData) {
+            LOGGER.info("No data reload");
+        }
+    }
+
     public static void main(String[] args) {
         BooleanProperties booleans = new BooleanProperties();
 
         ifCheckEvents(booleans);
         ifCheckCalendarEvents(booleans);
         ifOnlyReloadCalendar(booleans.onlyReloadCalendar);
+        ifNoReloadData(booleans);
 
         WebServer webServer = configureWebServer();
         webServer.start(PORT);
