@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.SearchResult;
 import io.searchbox.core.Suggest;
+import io.searchbox.core.SuggestResult;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
@@ -38,24 +39,24 @@ import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
+final class SuggestResponse {
+    public Suggests suggest;
+
+    public class Suggests {
+        public List<SuggestsData> cityEventSuggest;
+        public List<SuggestsData> nameEventSuggest;
+        public List<SuggestsData> tagsEventSuggest;
+        public List<SuggestsData> nameCalendarSuggest;
+
+    }
+
+    public class SuggestsData {
+        public List<SuggestData> options;
+    }
+}
+
 @Singleton
 public class EventsRepository {
-
-    private final class SuggestResponse {
-        public Suggests suggest;
-
-        public class Suggests {
-            public List<SuggestsData> cityEventSuggest;
-            public List<SuggestsData> nameEventSuggest;
-            public List<SuggestsData> tagsEventSuggest;
-            public List<SuggestsData> nameCalendarSuggest;
-
-        }
-
-        public class SuggestsData {
-            public List<SuggestData> options;
-        }
-    }
     public static final String EVENTS_TYPE = "events";
     public static final String CALENDAREVENTS_TYPE = "calendarevents";
 
@@ -113,7 +114,7 @@ public class EventsRepository {
 
         JestResult jestResult = new JestResult(new Gson());
         try {
-            jestResult = client.execute(new Suggest.Builder(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false)).build());
+            jestResult = client.suggestES(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false));
         } catch (IOException e) {
             e.printStackTrace();
         }

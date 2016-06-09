@@ -6,6 +6,8 @@ import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.JestResultHandler;
 import io.searchbox.core.*;
+import org.elasticsearch.common.xcontent.XContentHelper;
+import org.elasticsearch.search.suggest.SuggestBuilder;
 
 import java.io.IOException;
 import java.util.Set;
@@ -90,6 +92,13 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, id).type(type).build();
 
         return execute(get);
+    }
+
+    @Override
+    public JestResult suggestES(String query) {
+        Suggest suggest = new Suggest.Builder(query).build();
+
+        return execute(suggest);
     }
 
     @Override

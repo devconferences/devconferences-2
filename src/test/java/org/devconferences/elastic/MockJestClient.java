@@ -73,6 +73,17 @@ public class MockJestClient {
         when(mock.searchES(eq(typeES), anyString())).thenReturn(mockSearchResult);
     }
 
+    public static void configSuggest(RuntimeJestClientAdapter mock, String content) {
+        String jsonSearch = content;
+        JestResult mockSuggestResult = new JestResult(new Gson());
+        mockSuggestResult.setJsonString(jsonSearch);
+        mockSuggestResult.setSucceeded(true);
+        mockSuggestResult.setJsonObject(new JsonParser().parse(jsonSearch).getAsJsonObject());
+        mockSuggestResult.setPathToResult("");
+
+        when(mock.suggestES(anyString())).thenReturn(mockSuggestResult);
+    }
+
     public static void configGet(RuntimeJestClientAdapter mock, String typeES, String content) {
         String jsonGet = content;
         JestResult mockGetResult = new JestResult(new Gson());

@@ -8,6 +8,7 @@ import org.devconferences.elastic.RuntimeJestClientAdapter;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -374,5 +375,38 @@ public class EventsRepositoryTest {
         Assertions.assertThat(calendarEventList.get(0).name).matches("Event 1");
         Assertions.assertThat(calendarEventList.get(0).description).matches("Event 1");
         Assertions.assertThat(calendarEventList.get(0).url).matches("http://www.example.com");
+    }
+
+    @Test
+    public void should_find_suggestions() {
+        String suggestResult = "{" +
+                "  \"cityEventSuggest\": [{" +
+                "    \"options\":[" +
+                "      {\"text\":\"Brest\",\"score\":1.0}" +
+                "    ]" +
+                "  }]," +
+                "  \"nameEventSuggest\":[{" +
+                "    \"options\":[" +
+                "      {\"text\":\"Breizh\",\"score\":1.0}," +
+                "      {\"text\":\"BreizhCamp\",\"score\":1.0}" +
+                "    ]" +
+                "  }]," +
+                "  \"tagsEventSuggest\":[{" +
+                "    \"options\":[" +
+                "    ]" +
+                "  }]," +
+                "  \"nameCalendarSuggest\":[{" +
+                "    \"options\":[" +
+                "      {\"text\":\"BreizhCamp\",\"score\":1.0}" +
+                "    ]" +
+                "  }]" +
+                "}";
+
+        MockJestClient.configSuggest(mockClient, suggestResult);
+
+        CompletionResult suggestDatas = eventsEndPoint.suggest("Br");
+        Assertions.assertThat(suggestDatas.hits).hasSize(3);
+        Assertions.assertThat(suggestDatas.hits.get(0).text).matches("BreizhCamp");
+        Assertions.assertThat(suggestDatas.hits.get(0).score).isEqualTo(2.0d);
     }
 }

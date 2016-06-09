@@ -1,9 +1,6 @@
 package org.devconferences.elastic;
 
 import org.apache.commons.io.FileUtils;
-import org.devconferences.env.EnvUtils;
-import org.devconferences.jobs.ImportCalendarEventsJob;
-import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
@@ -20,8 +17,8 @@ import java.util.UUID;
  */
 public class DeveloppementESNode {
 
-    public static final String ES_LOCAL_DATA = "tmp/es-local-data";
-    public static String elasticPort = "9200";
+    private static final String ES_LOCAL_DATA = "tmp/es-local-data";
+    static String elasticPort = "9200";
     private static final Logger LOGGER = LoggerFactory.getLogger(DeveloppementESNode.class);
     static Node esNode = null;
     static String portNode = null;
