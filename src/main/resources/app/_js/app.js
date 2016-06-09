@@ -100,6 +100,7 @@ var routes = (
     <Route path="/" component={App}>
         <IndexRoute component={Home}/>
         <Route path="/city/:id" component={City}/>
+        <Route path="/city/:id/:query" component={City}/>
         <Route path="/search" component={Search}/>
         <Route path="/search/:query" component={Search}/>
         <Route path="/search/:query/:page" component={Search}/>

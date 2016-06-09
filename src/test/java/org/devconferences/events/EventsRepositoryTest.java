@@ -279,7 +279,7 @@ public class EventsRepositoryTest {
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 3, searchHits, "{}");
         MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 0, "[]", "{}");
 
-        City city = eventsEndPoint.city("the_city");
+        City city = eventsEndPoint.city("the_city", null);
         Assertions.assertThat(city.id).matches("the_city");
         Assertions.assertThat(city.name).matches("the_city");
         Assertions.assertThat(city.communities).hasSize(1);
@@ -308,7 +308,7 @@ public class EventsRepositoryTest {
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 1, searchHits, "{}");
 
         try {
-            City city = eventsEndPoint.city("the_city");
+            City city = eventsEndPoint.city("the_city", null);
 
             Assertions.failBecauseExceptionWasNotThrown(NullPointerException.class);
         } catch (NullPointerException e) {

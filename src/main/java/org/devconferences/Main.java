@@ -136,6 +136,7 @@ public class Main {
                 .add(MeetupEndPoint.class)
                 .get("/ping", (context) -> "pong")
                 .get("/city/:id", (context, id) -> ModelAndView.of("index"))
+                .get("/city/:id/:query", (context, id, query) -> ModelAndView.of("index"))
                 .get("/search", (context) -> ModelAndView.of("index"))
                 .get("/search/:query", (context, query) -> ModelAndView.of("index"))
                 .get("/search/:query/:page", (context, query, page) -> ModelAndView.of("index"))

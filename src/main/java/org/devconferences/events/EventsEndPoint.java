@@ -31,10 +31,10 @@ public class EventsEndPoint {
         return eventsRepository.getAllCitiesWithQuery(query, Boolean.parseBoolean(all));
     }
 
-    @Get("cities/:id")
+    @Get("cities/:id?q=:query")
     @AllowOrigin("*")
-    public City city(String id) {
-        return eventsRepository.getCity(id);
+    public City city(String id, String query) {
+        return eventsRepository.getCity(id, query);
     }
 
     @Get("suggest?q=:query")

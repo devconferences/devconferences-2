@@ -15,6 +15,7 @@ import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -225,10 +226,13 @@ public class EventsRepository {
         return getAllCitiesWithQuery(null, true);
     }
 
-    public City getCity(String cityId) {
+    public City getCity(String cityId, String query) {
+        QueryBuilder queryBuilder = (query == null ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(ElasticUtils.MAX_SIZE)
-                .query(QueryBuilders.termQuery("city", cityId));
+                .query(filteredQuery(queryBuilder, FilterBuilders.queryFilter(
+                    QueryBuilders.termQuery("city", cityId)
+                )));
 
         City city = new City();
         city.id = cityId;
@@ -244,7 +248,7 @@ public class EventsRepository {
 
         city.location = GeopointCities.getInstance().getLocation(city.name);
         if(city.location != null) {
-            city.upcoming_events = findCalendarEventsAround(null, city.location.lat(), city.location.lon(), GEO_DISTANCE);
+            city.upcoming_events = findCalendarEventsAround(query, city.location.lat(), city.location.lon(), GEO_DISTANCE);
         } else {
             city.upcoming_events = new ArrayList<>();
         }
