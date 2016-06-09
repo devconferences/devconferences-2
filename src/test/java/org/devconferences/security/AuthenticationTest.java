@@ -1,7 +1,12 @@
 package org.devconferences.security;
 
 import net.codestory.http.Context;
+import net.codestory.http.Cookie;
+import net.codestory.http.Cookies;
+import net.codestory.http.constants.HttpStatus;
 import net.codestory.http.payload.Payload;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Response;
 import org.assertj.core.api.Assertions;
@@ -47,25 +52,42 @@ public class AuthenticationTest {
     public void testConnect() {
         DeveloppementESNode.setPortNode("9450");
         GithubCalls mockGithub = mock(GithubCalls.class);
-        Authentication.GitHubAuthenticationResponse githubResponse = authentication.new GitHubAuthenticationResponse();
-        githubResponse.accessToken = "azoekmv646ZEKMKL51aze";
         Response responseUser = mock(Response.class);
         Content contentMock = mock(Content.class);
+        Context context = mock(Context.class);
+        Cookie cookie = mock(Cookie.class);
+        Cookies cookies = mock(Cookies.class);
+        Authentication.GitHubAuthenticationResponse githubResponse = authentication.new GitHubAuthenticationResponse();
+        githubResponse.accessToken = "azoekmv646ZEKMKL51aze";
         String githubUser = "{" +
                 "  \"login\": \"user123\"," +
                 "  \"id\": 1234567," +
                 "  \"avatar_url\": \"http://my-avatar.com\"," +
                 "  \"email\": \"foo@devconferences.org\"" +
                 "}";
-        String stringGet = githubUser;
-        Context context = new Context(null, null, null, null, null);
 
+        when(context.cookies()).thenReturn(cookies);
+
+        // IsAuthenticated should return false
+        try {
+            when(cookies.get("access_token")).thenReturn(null);
+            Assertions.assertThat(authentication.isAuthenticated(context)).isFalse();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        when(cookies.get("access_token")).thenReturn(cookie);
+        when(cookie.name()).thenReturn("access_token");
+        when(cookie.value()).thenReturn(encrypter.encrypt(githubResponse.accessToken));
+
+        // Try to authorize connection
         try {
             when(contentMock.asString()).thenReturn(githubUser);
             when(responseUser.returnContent()).thenReturn(contentMock);
             when(mockGithub.getUser(githubResponse.accessToken, true)).thenReturn(responseUser);
             when(mockGithub.authorize("a1b2c3d4e5f67890")).thenReturn(githubResponse);
-            MockJestClient.configGet(mockClient, UsersRepository.USERS_TYPE, stringGet);
+            MockJestClient.configGet(mockClient, UsersRepository.USERS_TYPE, githubUser);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +100,20 @@ public class AuthenticationTest {
         Assertions.assertThat(payloadConnect.cookies().get(0).name()).matches("access_token");
         Assertions.assertThat(encrypter.decrypt(payloadConnect.cookies().get(0).value())).matches(githubResponse.accessToken);
 
+        // IsAuthenticated should return true
+        try {
+            HttpResponse httpResponse = mock(HttpResponse.class);
+            StatusLine statusLine = mock(StatusLine.class);
 
+            when(mockGithub.getUser(githubResponse.accessToken, false)).thenReturn(responseUser);
+            when(responseUser.returnResponse()).thenReturn(httpResponse);
+            when(httpResponse.getStatusLine()).thenReturn(statusLine);
+            when(statusLine.getStatusCode()).thenReturn(HttpStatus.OK);
+
+            Assertions.assertThat(authenticationWithMock.isAuthenticated(context)).isTrue();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Assertions.assertThat(authenticationWithMock.getConnectedUser(context).login).matches("user123");
         Assertions.assertThat(authenticationWithMock.getConnectedUser(context).id).matches("1234567.0");
@@ -86,6 +121,7 @@ public class AuthenticationTest {
         Assertions.assertThat(authenticationWithMock.getUser(context).login).matches("user123");
         Assertions.assertThat(authenticationWithMock.getUser(context).id).matches("1234567.0");
 
+        // Try to disconnect
         Payload payloadDisconnect = authenticationWithMock.disconnect(context);
 
         Assertions.assertThat(payloadDisconnect.cookies().get(0).name()).matches("access_token");
