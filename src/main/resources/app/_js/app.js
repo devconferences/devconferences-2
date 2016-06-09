@@ -42,7 +42,7 @@ var App = React.createClass({
                         </p>
                         <div id="informationsCollapse" className="collapse">
                             <p>
-                                Ce site rassemble les conférences, ainsi que les communautés de développeurs dans toute la France.
+                                Dev Conferences rassemble les conférences, ainsi que les communautés de développeurs dans toute la France.
                             </p>
                             <p>
                                 Vous êtes actuellement dans une ville, et vous voulez savoir ce qu'il s'y passe ? Cliquez sur la carte !
