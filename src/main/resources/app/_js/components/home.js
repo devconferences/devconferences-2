@@ -41,7 +41,7 @@ var Home = React.createClass({
             <div className="container text-center">
                 <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
-                <CityLinkList cities={this.state.cities}/>
+                <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 
                 <Grid>
                     <Row>
@@ -55,7 +55,7 @@ var Home = React.createClass({
                             </div>
                         </Col>
                         <Col lg={5} className="text-center">
-                            <Minimap cities={this.state.cities} />
+                            <Minimap cities={this.state.cities} query={this.state.calendar.query}/>
 
                             <hr/>
 

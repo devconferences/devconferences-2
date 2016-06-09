@@ -6,7 +6,8 @@ var Link = Router.Link;
 var CityLink = React.createClass({
     render: function () {
         return (
-            <Link to={`/city/${this.props.city.id}`} className='btn btn-primary btn-city'
+            <Link to={"/city/" + this.props.city.id + (this.props.query ? "/" + this.props.query : "")}
+                    className='btn btn-primary btn-city'
                     title={this.props.city.totalConference + " conférence(s), " +
                            this.props.city.totalCommunity + " communauté(s), " +
                            this.props.city.totalCalendar + " événement(s)."}>

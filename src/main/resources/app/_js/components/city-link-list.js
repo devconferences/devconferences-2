@@ -8,9 +8,9 @@ var CityLinkList = React.createClass({
     render: function () {
         var renderCity = function (city) {
             return (
-                <CityLink key={city.id} city={city} />
+                <CityLink key={city.id} city={city} query={this.props.query}/>
             );
-        };
+        }.bind(this);
         return (
             <div className="text-center visible-xs-block">
                     { this.props.cities.map(renderCity) }

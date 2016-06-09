@@ -100,7 +100,7 @@ var Minimap = React.createClass({
                   return feature;
             });
             if (feature) {
-                this.context.router.push("/city/" + feature.get('name'));
+                this.context.router.push("/city/" + feature.get('name') + (this.props.query ? "/" + this.props.query : ""));
             }
         }.bind(this));
 
@@ -151,10 +151,10 @@ var Minimap = React.createClass({
                 return null;
             } else {
                 return (
-                    <CityLink key={city.id} city={city}/>
+                    <CityLink key={city.id} city={city} query={this.props.query}/>
                 );
             }
-        };
+        }.bind(this);
         return (
             <div className="minimap text-center hidden-xs">
                 <h2>
