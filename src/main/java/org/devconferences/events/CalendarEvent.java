@@ -1,14 +1,10 @@
 package org.devconferences.events;
 
-import org.devconferences.elastic.Completion;
 import org.elasticsearch.common.geo.GeoPoint;
-
-import java.util.List;
 
 public class CalendarEvent {
     public String id;
     public String name;
-    public Completion<List<String>> name_calendar_suggest = new Completion<>();
     public long date;
     public long duration;
     public String url;
@@ -16,6 +12,36 @@ public class CalendarEvent {
     public Group organizer;
     public Location location;
     public CallForPapers cfp;
+
+    public CalendarEvent() {
+
+    }
+
+    public CalendarEvent(CalendarEvent obj) {
+        id = obj.id;
+        name = obj.name;
+        date = obj.date;
+        duration = obj.duration;
+        url = obj.url;
+        description = obj.description;
+        if(obj.organizer != null) {
+            organizer = new Group();
+            organizer.name = obj.organizer.name;
+            organizer.url = obj.organizer.url;
+        }
+        if(obj.location != null) {
+            location = new Location();
+            location.city = obj.location.city;
+            location.address = obj.location.address;
+            location.gps = new GeoPoint(obj.location.gps.lat(), obj.location.gps.lon());
+            location.name = obj.location.name;
+        }
+        if(obj.cfp != null) {
+            cfp = new CallForPapers();
+            cfp.dateSubmission = obj.cfp.dateSubmission;
+            cfp.url = obj.cfp.url;
+        }
+    }
 
     public class Group {
         public String name;

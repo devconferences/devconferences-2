@@ -74,15 +74,15 @@ public class EventsRepository {
 
     public void indexOrUpdate(Object obj) {
         if(obj instanceof CalendarEvent) {
-            CalendarEvent calendarEvent = (CalendarEvent) obj;
+            ESCalendarEvents calendarEvent = new ESCalendarEvents((CalendarEvent) obj);
             calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
             client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
         } else if(obj instanceof Event) {
-            Event event = (Event) obj;
-            event.name_event_suggest.input = Arrays.asList(event.name.split(" "));
-            event.tags_event_suggest.input = event.tags;
-            event.city_event_suggest.input = event.city;
-            client.indexES(EVENTS_TYPE, event, event.id);
+            ESEvents esEvents = new ESEvents((Event) obj);
+            esEvents.name_event_suggest.input = Arrays.asList(esEvents.name.split(" "));
+            esEvents.tags_event_suggest.input = esEvents.tags;
+            esEvents.city_event_suggest.input = esEvents.city;
+            client.indexES(EVENTS_TYPE, esEvents, esEvents.id);
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
         }

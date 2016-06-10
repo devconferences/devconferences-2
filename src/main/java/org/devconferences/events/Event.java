@@ -10,7 +10,6 @@ public class Event {
 
     public String id;
     public String name;
-    public Completion<List<String>> name_event_suggest = new Completion<>();
     public String avatar;
     public String description;
     public String website;
@@ -20,19 +19,43 @@ public class Event {
     public Youtube youtube;
     public String parleys;
     public String city;
-    public Completion<String> city_event_suggest = new Completion<>();
     public List<String> tags = new ArrayList<>();
-    public Completion<List<String>> tags_event_suggest = new Completion<>();
     public Type type;
     public GeoPoint gps;
+
+    public Event() {
+
+    }
+
+    public Event(Event obj) {
+        id = obj.id;
+        name = obj.name;
+        avatar = obj.avatar;
+        description = obj.description;
+        website = obj.website;
+        twitter = obj.twitter;
+        facebook = obj.facebook;
+        meetup = obj.meetup;
+        if(obj.youtube != null) {
+            youtube = new Youtube();
+            youtube.channel = obj.youtube.channel;
+            youtube.name = obj.youtube.name;
+        }
+        parleys = obj.parleys;
+        city = obj.city;
+        tags = new ArrayList<>(obj.tags);
+        type = obj.type;
+        if(obj.gps != null) {
+            gps = new GeoPoint(obj.gps.lat(), obj.gps.lon());
+        }
+    }
 
     public class Youtube {
         public String channel;
         public String name;
     }
 
-
     public enum Type{
-        COMMUNITY, CONFERENCE;
+        COMMUNITY, CONFERENCE
     }
 }
