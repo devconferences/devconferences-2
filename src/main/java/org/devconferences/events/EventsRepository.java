@@ -28,7 +28,6 @@ import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
@@ -443,9 +442,8 @@ public class EventsRepository {
     }
 
     private List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
-        return (StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(searchResult.getHits(sourceType).iterator(), Spliterator.ORDERED),
-                false).map(hitResult -> hitResult.source).collect(Collectors.toList())
+        return (searchResult.getHits(sourceType).stream()
+                .map((data) -> data.source).collect(Collectors.toList())
         );
     }
 }
