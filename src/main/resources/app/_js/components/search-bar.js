@@ -209,7 +209,7 @@ var SearchBar = React.createClass({
             };
             var suggestItem = function(suggest, onClickFunc) {
                 return (
-                    <li onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
+                    <li key={suggest.text} onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
                 );
             }.bind(this);
 

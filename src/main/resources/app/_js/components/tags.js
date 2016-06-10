@@ -7,7 +7,7 @@ var Tags = React.createClass({
     render: function() {
         var aTag = function(tag) {
             var linkToURL = "/search/" + tag;
-            return ( <span> <Link to={linkToURL} >{tag}</Link>; </span> );
+            return ( <span key={tag}> <Link to={linkToURL} >{tag}</Link>; </span> );
         };
         return (
             <i className="fa fa-key">

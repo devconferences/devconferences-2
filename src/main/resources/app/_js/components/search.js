@@ -73,15 +73,11 @@ var Search = React.createClass({
                 list.map(function (event) {
                     if(searchType == "events") {
                         return (
-                            <div>
-                                <Event event={event} />
-                            </div>
+                            <Event key={event.id} event={event} />
                         );
                     } else if(searchType == "calendar") {
                         return (
-                            <div>
-                                <TimelineEvent event={event} />
-                            </div>
+                            <TimelineEvent event={event} key={event.id} />
                         );
                     }
                 }.bind(this))
@@ -126,9 +122,9 @@ var Search = React.createClass({
                 for(var i = 1; i <= totalPage; i++) {
                     var linkURL = "/search/" + query + "/" + i;
                     if(i == currPage) {
-                        linkList.push(<li className="active"><Link to={linkURL}>{i}</Link></li>);
+                        linkList.push(<li key={i} className="active"><Link to={linkURL}>{i}</Link></li>);
                     } else {
-                        linkList.push(<li><Link to={linkURL}>{i}</Link></li>);
+                        linkList.push(<li key={i}><Link to={linkURL}>{i}</Link></li>);
                     }
                 }
                 return (
