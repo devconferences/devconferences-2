@@ -23,6 +23,7 @@ var Home = React.createClass({
         return {
             cities: [],
             calendar: {
+                query: null,
                 hits: []
             }
         };
@@ -35,8 +36,16 @@ var Home = React.createClass({
         });
     },
 
-    render: function () {
+    moreUpcomingEvents: function(limit) {
+        DevConferencesClient.searchCalendar(this.state.calendar.query, 1, limit).then( result => {
+            this.setState({
+                calendar: result.data
+            });
+        });
+    },
 
+    render: function () {
+        console.log(this.state);
         return (
             <div className="container text-center">
                 <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
@@ -51,7 +60,7 @@ var Home = React.createClass({
                             <p>Les prochains événements sont répertoriés ici.</p>
 
                             <div>
-                                <TimelineEventList calendar={this.state.calendar.hits}/>
+                                <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents}/>
                             </div>
                         </Col>
                         <Col lg={5} className="text-center">

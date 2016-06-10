@@ -110,7 +110,7 @@ var SearchBar = React.createClass({
             if(searchType & this.EVENTS) {
                 var limit = null;
                 if(!query) {
-                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : null);
+                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : this.props.limit);
                 }
                 DevConferencesClient.searchEvents(query, page, limit).then(result => {
                     if(query != "" || this.props.all) {
@@ -132,7 +132,7 @@ var SearchBar = React.createClass({
             if(searchType & this.CALENDAR) {
                 var limit = null;
                 if(!query) {
-                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : null);
+                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : this.props.limit);
                 }
                 DevConferencesClient.searchCalendar(query, page, limit).then(result => {
                     if(query != "" || this.props.all) {
