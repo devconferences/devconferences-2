@@ -39,14 +39,14 @@ final class SuggestResponse {
     public Suggests suggest;
 
     public class Suggests {
-        public List<SuggestsData> cityEventSuggest;
-        public List<SuggestsData> nameEventSuggest;
-        public List<SuggestsData> tagsEventSuggest;
-        public List<SuggestsData> nameCalendarSuggest;
+        public List<SuggestDataList> cityEventSuggest;
+        public List<SuggestDataList> nameEventSuggest;
+        public List<SuggestDataList> tagsEventSuggest;
+        public List<SuggestDataList> nameCalendarSuggest;
 
     }
 
-    public class SuggestsData {
+    public class SuggestDataList {
         public List<SuggestData> options;
     }
 }
