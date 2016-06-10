@@ -23,12 +23,6 @@ public class GeopointCities {
         CityList cities = new Gson().fromJson(new InputStreamReader(GeopointCities.class.getResourceAsStream("/cities/cities.json")), CityList.class);
 
         cities.all.forEach(city -> {
-            int comma = city.location.indexOf(',');
-            if (comma != -1) {
-                double lat = Double.parseDouble(city.location.substring(0, comma).trim());
-                double lon = Double.parseDouble(city.location.substring(comma + 1).trim());
-            }
-
             citiesLoc.put(city.name, new GeoPoint(city.location));
         });
     }

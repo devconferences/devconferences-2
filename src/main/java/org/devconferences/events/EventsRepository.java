@@ -137,11 +137,8 @@ public class EventsRepository {
         });
 
         // Sort all of this : (high score, alphabetical text)
-        result.hits.sort((Comparator) (o, t1) -> {
-            if (o instanceof SuggestData && t1 instanceof SuggestData) {
-                SuggestData suggO = (SuggestData) o;
-                SuggestData suggT1 = (SuggestData) t1;
-
+        result.hits.sort((suggO, suggT1) -> {
+            if (suggO != null && suggT1 != null) {
                 if(suggO.score.compareTo(suggT1.score) != 0) {
                     return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
                 } else {
@@ -400,7 +397,7 @@ public class EventsRepository {
         if(res instanceof EventSearch) {
             EventSearch resCast = (EventSearch) res;
             resCast.hits = getHitsFromSearch(searchResult, Event.class);
-        } else if(res instanceof CalendarEventSearch) {
+        } else {
             CalendarEventSearch resCast = (CalendarEventSearch) res;
             resCast.hits = getHitsFromSearch(searchResult, CalendarEvent.class);
         }
