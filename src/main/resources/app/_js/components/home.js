@@ -48,7 +48,7 @@ var Home = React.createClass({
         console.log(this.state);
         return (
             <div className="container text-center">
-                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
+                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
                 <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 

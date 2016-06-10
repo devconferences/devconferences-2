@@ -344,8 +344,8 @@ public class EventsRepository {
         if (query == null || query.equals("undefined")) {
             throw new RuntimeException("HTML 400 : query parameter is missing");
         }
-        if (perPage < 1 || perPage > 50) {
-            throw new RuntimeException("HTML 400 : limit parameter must be between 1 and 50");
+        if (perPage < 1 || perPage > 1000) {
+            throw new RuntimeException("HTML 400 : limit parameter must be between 1 and 1000");
         }
 
         // Count query
