@@ -3,6 +3,9 @@ package org.devconferences.events;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
+import org.devconferences.events.search.CalendarEventSearch;
+import org.devconferences.events.search.EventSearch;
+import org.devconferences.events.search.CompletionSearch;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +62,7 @@ public class EventsRepositoryTest {
         eventsEndPoint.createEvent(event);
 
         // Check header content of this searchEvents
-        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
+        EventSearch eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -122,7 +125,7 @@ public class EventsRepositoryTest {
         eventsRepository.indexOrUpdate(event);
 
         // Check header content of this searchEvents
-        AbstractSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
+        CalendarEventSearch eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -393,7 +396,7 @@ public class EventsRepositoryTest {
 
         MockJestClient.configSuggest(mockClient, suggestResult);
 
-        CompletionResult suggestDatas = eventsEndPoint.suggest("Br");
+        CompletionSearch suggestDatas = eventsEndPoint.suggest("Br");
         Assertions.assertThat(suggestDatas.hits).hasSize(3);
         Assertions.assertThat(suggestDatas.hits.get(0).text).matches("BreizhCamp");
         Assertions.assertThat(suggestDatas.hits.get(0).score).isEqualTo(2.0d);

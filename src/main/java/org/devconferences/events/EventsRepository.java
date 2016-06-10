@@ -11,6 +11,10 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.devconferences.events.search.PaginatedSearchResult;
+import org.devconferences.events.search.CalendarEventSearch;
+import org.devconferences.events.search.CompletionSearch;
+import org.devconferences.events.search.EventSearch;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -92,7 +96,7 @@ public class EventsRepository {
         }
     }
 
-    public CompletionResult suggest(String query) {
+    public CompletionSearch suggest(String query) {
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion(
                 SuggestBuilders.completionSuggestion("nameEventSuggest")
@@ -116,7 +120,7 @@ public class EventsRepository {
         }
 
         // Suggestions
-        CompletionResult result = new CompletionResult();
+        CompletionSearch result = new CompletionSearch();
         result.query = query;
         result.hits = new ArrayList<>();
 
@@ -326,7 +330,7 @@ public class EventsRepository {
         return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);
     }
 
-    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String limit) {
+    private PaginatedSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String limit) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         final int pageInt = (page == null || page.equals("undefined") || page.equals("null") ?
                 1 : Integer.valueOf(page));
@@ -372,7 +376,7 @@ public class EventsRepository {
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
 
         // Create result of search
-        AbstractSearchResult res;
+        PaginatedSearchResult res;
 
         switch(typeSearch) {
             case EVENTS_TYPE:
@@ -395,11 +399,9 @@ public class EventsRepository {
         res.hitsAPage = String.valueOf(Math.min(perPage, Integer.valueOf(res.totalHits)));
 
         if(res instanceof EventSearch) {
-            EventSearch resCast = (EventSearch) res;
-            resCast.hits = getHitsFromSearch(searchResult, Event.class);
+            res.hits = getHitsFromSearch(searchResult, Event.class);
         } else {
-            CalendarEventSearch resCast = (CalendarEventSearch) res;
-            resCast.hits = getHitsFromSearch(searchResult, CalendarEvent.class);
+            res.hits = getHitsFromSearch(searchResult, CalendarEvent.class);
         }
 
         return res;
