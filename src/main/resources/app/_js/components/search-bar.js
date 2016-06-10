@@ -10,6 +10,7 @@ var SearchBar = React.createClass({
     CALENDAR: 0x02,
     CITIES: 0x04,
     ALL: 0x07,
+    MAX_RESULTS: 50,
 
     getInitialState: function() {
         return {
@@ -76,7 +77,7 @@ var SearchBar = React.createClass({
             query = this.state.query;
         }
         if(!page) {
-            page = 1;
+            page = this.props.page || 1;
         } else if(page == -1) {
             page = this.state.page;
         }
@@ -107,12 +108,16 @@ var SearchBar = React.createClass({
             data.cities = null;
 
             if(searchType & this.EVENTS) {
-                var allWhenEmpty = false;
+                var limit = null;
                 if(!query) {
-                    allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : null);
                 }
-                DevConferencesClient.searchEvents(query, page, null, null, null, allWhenEmpty).then(result => {
-                    data.events = result.data;
+                DevConferencesClient.searchEvents(query, page, limit).then(result => {
+                    if(query != "" || this.props.all) {
+                        data.events = result.data;
+                    } else {
+                        data.events = {};
+                    }
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.EVENTS;
@@ -125,12 +130,16 @@ var SearchBar = React.createClass({
                 });
             }
             if(searchType & this.CALENDAR) {
-                var allWhenEmpty = false;
+                var limit = null;
                 if(!query) {
-                    allWhenEmpty = this.props.allDataWhenEmpty || false;
+                    limit = (this.props.allDataWhenEmpty ? this.MAX_RESULTS : null);
                 }
-                DevConferencesClient.searchCalendar(query, page, null, null, null, allWhenEmpty).then(result => {
-                    data.calendar = result.data;
+                DevConferencesClient.searchCalendar(query, page, limit).then(result => {
+                    if(query != "" || this.props.all) {
+                        data.calendar = result.data;
+                    } else {
+                        data.calendar = {};
+                    }
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.CALENDAR;
@@ -143,12 +152,12 @@ var SearchBar = React.createClass({
                });
             }
             if(searchType & this.CITIES) {
-                var allWhenEmpty = false;
-                if(!query) {
-                    allWhenEmpty = this.props.allDataWhenEmpty || false;
-                }
-                DevConferencesClient.cities(query, allWhenEmpty).then(result => {
-                    data.cities = result.data;
+                DevConferencesClient.cities(query).then(result => {
+                    if(query != "" || this.props.all) {
+                        data.cities = result.data;
+                    } else {
+                        data.cities = {};
+                    }
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.CITIES;

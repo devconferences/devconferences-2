@@ -1,14 +1,11 @@
 package org.devconferences.events;
 
-import com.google.gson.Gson;
-import net.codestory.http.Context;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +59,7 @@ public class EventsRepositoryTest {
         eventsEndPoint.createEvent(event);
 
         // Check header content of this searchEvents
-        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null, null, null, null);
+        AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("10");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -75,17 +72,9 @@ public class EventsRepositoryTest {
         Assertions.assertThat(matches.get(0).city).matches(event.city);
         Assertions.assertThat(matches.get(0).description).matches(event.description);
 
-        // With all = "true", should show all hits
-        eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null, null, null, "true");
-        Assertions.assertThat(eventSearch.hitsAPage).matches("1");
-        Assertions.assertThat(eventSearch.totalHits).matches("1");
-        Assertions.assertThat(eventSearch.totalPage).matches("1");
-        Assertions.assertThat(eventSearch.currPage).matches("1");
-        Assertions.assertThat(eventSearch.hits).hasSize(1);
-
         // With "-1" (and values <= 0), should throw an exception
         try {
-            eventSearch = eventsEndPoint.eventsSearch("awesome", "-1", null, null, null, null);
+            eventSearch = eventsEndPoint.eventsSearch("awesome", "-1", null);
 
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch (RuntimeException e) {
@@ -133,7 +122,7 @@ public class EventsRepositoryTest {
         eventsRepository.indexOrUpdate(event);
 
         // Check header content of this searchEvents
-        AbstractSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null, null, null, null);
+        AbstractSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("10");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -229,7 +218,7 @@ public class EventsRepositoryTest {
         MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 10, "[]", searchAggreg);
         MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 0, "[]", "{}");
 
-        List<CityLight> cityLightList = eventsEndPoint.allCities(null, "true");
+        List<CityLight> cityLightList = eventsEndPoint.allCities(null);
         Assertions.assertThat(cityLightList).hasSize(2);
         Assertions.assertThat(cityLightList.get(0).count).isEqualTo(4);
         Assertions.assertThat(cityLightList.get(0).name).matches("City 1");

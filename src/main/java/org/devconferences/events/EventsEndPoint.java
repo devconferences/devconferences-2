@@ -25,10 +25,10 @@ public class EventsEndPoint {
         this.eventsRepository = eventsRepository;
     }
 
-    @Gets({@Get("cities?q=:query&all=:all"), @Get("cities/?q=:query&all=:all")})
+    @Gets({@Get("cities?q=:query"), @Get("cities/?q=:query")})
     @AllowOrigin("*")
-    public List<CityLight> allCities(String query, String all) {
-        return eventsRepository.getAllCitiesWithQuery(query, Boolean.parseBoolean(all));
+    public List<CityLight> allCities(String query) {
+        return eventsRepository.getAllCitiesWithQuery(query);
     }
 
     @Get("cities/:id?q=:query")
@@ -43,12 +43,12 @@ public class EventsEndPoint {
         return eventsRepository.suggest(query);
     }
 
-    @Get("search/events?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance&all=:all")
+    @Get("search/events?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public AbstractSearchResult eventsSearch(String query, String page, String lat, String lon, String distance, String all) {
+    public AbstractSearchResult eventsSearch(String query, String page, String limit) {
         AbstractSearchResult result;
         try {
-            result = eventsRepository.searchEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+            result = eventsRepository.searchEvents(query, page, limit);
         } catch (RuntimeException e) {
             if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();
@@ -59,12 +59,12 @@ public class EventsEndPoint {
         return result;
     }
 
-    @Get("search/calendar?q=:query&p=:page&lat=:lat&lon=:lon&dist=:distance&all=:all")
+    @Get("search/calendar?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public AbstractSearchResult eventsCalendarSearch(String query, String page, String lat, String lon, String distance, String all) {
+    public AbstractSearchResult eventsCalendarSearch(String query, String page, String limit) {
         AbstractSearchResult result;
         try {
-            result = eventsRepository.searchCalendarEvents(query, page, lat, lon, distance, Boolean.parseBoolean(all));
+            result = eventsRepository.searchCalendarEvents(query, page, limit);
         } catch (RuntimeException e) {
             if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();

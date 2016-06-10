@@ -4,14 +4,11 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.SearchResult;
-import io.searchbox.core.Suggest;
-import io.searchbox.core.SuggestResult;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.xml.builders.FilteredQueryBuilder;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.elasticsearch.common.xcontent.XContentHelper;
@@ -159,23 +156,26 @@ public class EventsRepository {
         return result;
     }
 
-    public List<CityLight> getAllCitiesWithQuery(String query, boolean matchAll) {
+    // Choose between matchAllQuery and queryStringQuery depending of query
+    private QueryBuilder getQueryBuilder(String query) {
+        if(query == null || query.equals("") || query.equals("undefined")) {
+            return QueryBuilders.matchAllQuery();
+        } else {
+            return QueryBuilders.queryStringQuery(QueryParser.escape(query));
+        }
+    }
+
+    public List<CityLight> getAllCitiesWithQuery(String query) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(0);
 
-        if(matchAll) {
-            searchQuery.aggregation(
-                    AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
-                            AggregationBuilders.terms("types").field("type")
-                    )
-            );
-        } else {
-            searchQuery.query(QueryBuilders.queryStringQuery(query)).aggregation(
-                    AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
-                            AggregationBuilders.terms("types").field("type")
-                    )
-            );
-        }
+        QueryBuilder queryBuilder = getQueryBuilder(query);
+
+        searchQuery.query(queryBuilder).aggregation(
+                AggregationBuilders.terms("cities").field("city").size(100).subAggregation(
+                        AggregationBuilders.terms("types").field("type")
+                )
+        );
 
         SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
 
@@ -204,7 +204,7 @@ public class EventsRepository {
 
         // Attach each CalendarEvent with its city
         GeopointCities.getInstance().getAllLocations().forEach((key, value) -> {
-            int countForCity = countCalendarEventsAround((matchAll ? null : query), value.lat(), value.lon(), GEO_DISTANCE);
+            int countForCity = countCalendarEventsAround(query, value.lat(), value.lon(), GEO_DISTANCE);
             if(countForCity > 0) {
                 if (!resultMap.containsKey(key)) {
                     CityLight cityLight = new CityLight(key, key);
@@ -224,11 +224,11 @@ public class EventsRepository {
 
     @Deprecated
     public List<CityLight> getAllCities() {
-        return getAllCitiesWithQuery(null, true);
+        return getAllCitiesWithQuery(null);
     }
 
     public City getCity(String cityId, String query) {
-        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(ElasticUtils.MAX_SIZE)
                 .query(filteredQuery(queryBuilder, FilterBuilders.queryFilter(
@@ -274,7 +274,7 @@ public class EventsRepository {
     }
 
     public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
-        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
@@ -287,7 +287,7 @@ public class EventsRepository {
     }
 
     public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
-        QueryBuilder queryBuilder = (query == null || query.equals("undefined") ? matchAllQuery() : QueryBuilders.queryStringQuery(query));
+        QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
@@ -320,42 +320,48 @@ public class EventsRepository {
     }
 
 
-    public EventSearch searchEvents(String query, String page, String lat, String lon, String distance, Boolean all) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, lat, lon, distance, all);
+    public EventSearch searchEvents(String query, String page, String limit) {
+        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, limit);
     }
 
-    public CalendarEventSearch searchCalendarEvents(String query, String page, String lat, String lon, String distance, Boolean all) {
+    public CalendarEventSearch searchCalendarEvents(String query, String page, String limit) {
         FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, lat, lon, distance, all);
+        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);
     }
 
-    // If page = "0", return ALL matches events
-    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String lat, String lon, String distance, Boolean allMatch) {
+    private AbstractSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String limit) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
-        int pageInt = Integer.decode(page);
-        final int perPage = 10;
+        final int pageInt = (page == null || page.equals("undefined") || page.equals("null") ?
+                1 : Integer.valueOf(page));
+        final int perPage = (limit == null || limit.equals("undefined") || limit.equals("null") ?
+                10 : Integer.valueOf(limit));
+
+        // Check parameters
+        if (pageInt <= 0) {
+            throw new RuntimeException("HTML 400 : page parameter must be positive");
+        }
+        if (query == null || query.equals("undefined")) {
+            throw new RuntimeException("HTML 400 : query parameter is missing");
+        }
+        if (perPage < 1 || perPage > 50) {
+            throw new RuntimeException("HTML 400 : limit parameter must be between 1 and 50");
+        }
 
         // Count query
+        QueryBuilder queryBuilder = getQueryBuilder(query);
+
         searchQuery.size(0);
-        if (allMatch == null || !allMatch) {
-            if (filter == null) {
-                searchQuery.query(queryStringQuery(QueryParser.escape(query)));
-            } else {
-                searchQuery.query(filteredQuery(queryStringQuery(QueryParser.escape(query)), filter));
-            }
+        if (filter == null) {
+            searchQuery.query(queryBuilder);
+        } else {
+            searchQuery.query(filteredQuery(queryBuilder, filter));
         }
 
         SearchResult countResult = client.searchES(typeSearch, searchQuery.toString());
 
         // Search query
-        // Check conditions about page and size
-        if (pageInt <= 0) {
-            throw new RuntimeException("HTML 400 : page parameter is <= 0");
-        }
-        if(allMatch != null && allMatch && pageInt != 1) {
-            throw new RuntimeException("HTML 400 : 'all' parameter is true and page is not equals to 1");
-        }
+        // Check conditions about page and size (part 2)
         if (perPage * (pageInt - 1) >= countResult.getTotal() && (countResult.getTotal() != 0 || pageInt != 1)) {
             throw new RuntimeException("HTML 400 : page out of bounds");
         }
@@ -364,12 +370,8 @@ public class EventsRepository {
             searchQuery.sort(sortBy);
         }
 
-        if (allMatch != null && allMatch) {
-            searchQuery.size(countResult.getTotal());
-        } else {
-            searchQuery.from(perPage * (pageInt - 1));
-            searchQuery.size(perPage);
-        }
+        searchQuery.from(perPage * (pageInt - 1));
+        searchQuery.size(perPage);
 
         SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
 
@@ -389,15 +391,12 @@ public class EventsRepository {
 
         res.totalHits = String.valueOf(countResult.getTotal());
         res.query = query;
-        res.currPage = String.valueOf(page);
-        res.lat = lat;
-        res.lon = lon;
-        res.distance = distance;
+        res.currPage = String.valueOf(pageInt);
 
         int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / (float) perPage);
 
         res.totalPage = String.valueOf(totalPages);
-        res.hitsAPage = (!allMatch ? String.valueOf(perPage) : String.valueOf(res.totalHits));
+        res.hitsAPage = String.valueOf(perPage);
 
         if(res instanceof EventSearch) {
             EventSearch resCast = (EventSearch) res;

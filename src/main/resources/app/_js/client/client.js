@@ -15,20 +15,20 @@ function createClient(u) {
       actualUrl = CLEVER_URL;
     });
 
-    function cities(query, all) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities?q=${query}&all=${all}`).catch(errorCallback));
+    function cities(query) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities?q=${query}`).catch(errorCallback));
     }
 
     function city(id,query) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities/${id}?q=${query}`).catch(errorCallback));
     }
 
-    function searchEvents(q,p,lat,lon,dist,all) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&p=${p}&lat=${lat}&lon=${lon}&dist=${dist}&all=${all}`).catch(errorCallback));
+    function searchEvents(q,p,limit) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/events?q=${q}&page=${p}&limit=${limit}`).catch(errorCallback));
     }
 
-    function searchCalendar(q,p,lat,lon,dist,all) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&p=${p}&lat=${lat}&lon=${lon}&dist=${dist}&all=${all}`).catch(errorCallback));
+    function searchCalendar(q,p,limit) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&page=${p}&limit=${limit}`).catch(errorCallback));
     }
 
     function event(id) {
