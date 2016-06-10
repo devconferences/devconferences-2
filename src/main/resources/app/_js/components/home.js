@@ -45,7 +45,6 @@ var Home = React.createClass({
     },
 
     render: function () {
-        console.log(this.state);
         return (
             <div className="container text-center">
                 <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>

@@ -29,7 +29,6 @@ var TimelineEventList = React.createClass({
             }
         };
         var moreUpcomingEventsCall = function(e) {
-            console.log(this.props.calendar);
             this.props.moreUpcomingEvents(parseInt(this.props.calendar.hitsAPage) + 10);
         }.bind(this);
         return (

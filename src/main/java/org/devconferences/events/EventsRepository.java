@@ -396,7 +396,7 @@ public class EventsRepository {
         int totalPages = (int) Math.ceil(Float.parseFloat(res.totalHits) / (float) perPage);
 
         res.totalPage = String.valueOf(totalPages);
-        res.hitsAPage = String.valueOf(perPage);
+        res.hitsAPage = String.valueOf(Math.min(perPage, Integer.valueOf(res.totalHits)));
 
         if(res instanceof EventSearch) {
             EventSearch resCast = (EventSearch) res;

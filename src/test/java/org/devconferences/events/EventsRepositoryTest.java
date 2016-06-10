@@ -60,7 +60,7 @@ public class EventsRepositoryTest {
 
         // Check header content of this searchEvents
         AbstractSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
-        Assertions.assertThat(eventSearch.hitsAPage).matches("10");
+        Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
         Assertions.assertThat(eventSearch.currPage).matches("1");
@@ -123,7 +123,7 @@ public class EventsRepositoryTest {
 
         // Check header content of this searchEvents
         AbstractSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
-        Assertions.assertThat(eventSearch.hitsAPage).matches("10");
+        Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
         Assertions.assertThat(eventSearch.currPage).matches("1");
