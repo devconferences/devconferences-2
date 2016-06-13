@@ -79,8 +79,20 @@ var Minimap = React.createClass({
             controls: ol.control.defaults({
                 attributionOptions: ({
                     collapsible: false
+                }),
+                rotate: false,
+                zoomOptions: ({
+                    zoomInTipLabel: "Zoom +",
+                    zoomOutTipLabel: "Zoom -"
                 })
-            }),
+            }).extend([
+                new ol.control.ScaleLine(),
+                new ol.control.ZoomToExtent({
+                    extent: [-607062, 5051361, 1099164, 6668810],
+                    tipLabel: "Centrer sur la France",
+                    label: "\uf0b2"
+                })
+            ]),
             view: new ol.View({
                 center: ol.proj.fromLonLat([2.367, 46.500]),
                 zoom: 5.3

@@ -221,3 +221,7 @@ div.event img.avatar {
 .search-suggests li.hovered {
     background-color: #CCC;
 }
+
+.ol-zoom-extent{
+    font-family: "FontAwesome";
+}
