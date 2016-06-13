@@ -19,7 +19,7 @@ public class EventsRepositoryTest {
 
     @Before
     public void setUp() {
-        mockClient = MockJestClient.createMock(EventsRepository.EVENTS_TYPE);
+        mockClient = MockJestClient.createMock();
         eventsRepository = new EventsRepository(mockClient);
         eventsEndPoint = new EventsEndPoint(eventsRepository);
     }
@@ -32,7 +32,7 @@ public class EventsRepositoryTest {
         event.description = "an awesome conf";
 
         int countCount = 1;
-        MockJestClient.configCount(mockClient, EventsRepository.EVENTS_TYPE, countCount);
+        MockJestClient.configCount(mockClient, countCount);
 
         int countSearch = 1;
         String searchHits = "[" +
@@ -47,7 +47,7 @@ public class EventsRepositoryTest {
                 "    }" +
                 "  }" +
                 "]";
-        MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, countSearch, searchHits, "{}");
+        MockJestClient.configSearch(mockClient, countSearch, searchHits, "{}");
 
         String jsonGet = "{" +
                 "  \"_index\": \"dev-conferences\" ," +
@@ -57,7 +57,7 @@ public class EventsRepositoryTest {
                 "  \"found\": false ," +
                 "  \"_source\": null" +
                 "}";
-        MockJestClient.configGet(mockClient, EventsRepository.EVENTS_TYPE, jsonGet);
+        MockJestClient.configGet(mockClient, jsonGet);
 
         eventsEndPoint.createEvent(event);
 
@@ -94,7 +94,7 @@ public class EventsRepositoryTest {
         event.description = "an awesome conf";
 
         int countCount = 1;
-        MockJestClient.configCount(mockClient, EventsRepository.CALENDAREVENTS_TYPE, countCount);
+        MockJestClient.configCount(mockClient, countCount);
 
         int countSearch = 1;
         String searchHits = "[" +
@@ -110,7 +110,7 @@ public class EventsRepositoryTest {
                 "    }" +
                 "  }" +
                 "]";
-        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, countSearch, searchHits, "{}");
+        MockJestClient.configSearch(mockClient, countSearch, searchHits, "{}");
 
         String jsonGet = "{" +
                 "  \"_index\": \"dev-conferences\" ," +
@@ -120,7 +120,7 @@ public class EventsRepositoryTest {
                 "  \"found\": false ," +
                 "  \"_source\": null" +
                 "}";
-        MockJestClient.configGet(mockClient, EventsRepository.CALENDAREVENTS_TYPE, jsonGet);
+        MockJestClient.configGet(mockClient, jsonGet);
 
         eventsRepository.indexOrUpdate(event);
 
@@ -156,7 +156,7 @@ public class EventsRepositoryTest {
                 "    \"type\": \"CONFERENCE\"" +
                 "  }" +
                 "}";
-        MockJestClient.configGet(mockClient, EventsRepository.EVENTS_TYPE, jsonGet);
+        MockJestClient.configGet(mockClient, jsonGet);
 
         Event event = new Event();
         event.id = "1";
@@ -185,7 +185,7 @@ public class EventsRepositoryTest {
                 "    \"type\": \"CONFERENCE\"" +
                 "  }" +
                 "}";
-        MockJestClient.configGet(mockClient, EventsRepository.EVENTS_TYPE, jsonGet);
+        MockJestClient.configGet(mockClient, jsonGet);
 
         Event event = new Event();
         event.id = "1";
@@ -218,8 +218,8 @@ public class EventsRepositoryTest {
                 "    ]" +
                 "  }" +
                 "}";
-        MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 10, "[]", searchAggreg);
-        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 0, "[]", "{}");
+        MockJestClient.configSearch(mockClient, 10, "[]", searchAggreg);
+        MockJestClient.configCount(mockClient, 0);
 
         List<CityLight> cityLightList = eventsEndPoint.allCities(null);
         Assertions.assertThat(cityLightList).hasSize(2);
@@ -298,7 +298,7 @@ public class EventsRepositoryTest {
                 "    }" +
                 "  }" +
                 "]";
-        MockJestClient.configSearch(mockClient, EventsRepository.EVENTS_TYPE, 1, searchHits, "{}");
+        MockJestClient.configSearch(mockClient, 1, searchHits, "{}");
 
         try {
             City city = eventsEndPoint.city("the_city", null);
@@ -359,7 +359,7 @@ public class EventsRepositoryTest {
                 "  }" +
                 "]";
 
-        MockJestClient.configSearch(mockClient, EventsRepository.CALENDAREVENTS_TYPE, 2, searchHits, "{}");
+        MockJestClient.configSearch(mockClient, 2, searchHits, "{}");
 
         List<CalendarEvent> calendarEventList = eventsEndPoint.getCalendarEvents("10");
         Assertions.assertThat(calendarEventList).hasSize(2);

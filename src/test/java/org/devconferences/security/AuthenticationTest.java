@@ -87,7 +87,7 @@ public class AuthenticationTest {
             when(responseUser.returnContent()).thenReturn(contentMock);
             when(mockGithub.getUser(githubResponse.accessToken, true)).thenReturn(responseUser);
             when(mockGithub.authorize("a1b2c3d4e5f67890")).thenReturn(githubResponse);
-            MockJestClient.configGet(mockClient, UsersRepository.USERS_TYPE, githubUser);
+            MockJestClient.configGet(mockClient, githubUser);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,9 @@
 package org.devconferences.jobs;
 
 import com.google.gson.*;
+import io.searchbox.client.JestResult;
+import io.searchbox.core.Index;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
@@ -14,6 +17,8 @@ import java.io.*;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 
 public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
@@ -69,7 +74,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        client.deleteAllES(CALENDAREVENTS_TYPE);
+        ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
 
         int totalCalendarEvents = 0;
 
@@ -210,7 +215,11 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                         data.description = "Pas de description.";
                     }
                     removeHTMLTagsAndAddNewlines(data, null);
-                    client.indexES(CALENDAREVENTS_TYPE, data, data.id);
+
+                    Index index = new Index.Builder(data).index(DEV_CONFERENCES_INDEX)
+                            .type(CALENDAREVENTS_TYPE).id(data.id).build();
+
+                    client.execute(index);
                     totalMeetupImport[0]++;
                 });
 

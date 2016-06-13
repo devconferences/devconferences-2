@@ -1,17 +1,21 @@
 package org.devconferences.jobs;
 
+import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
+import org.devconferences.elastic.DeveloppementESNode;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
-import org.devconferences.events.EventsRepository;
 import org.devconferences.meetup.MeetupApiClient;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,21 +27,29 @@ public class ImportCalendarEventsJobTest {
     private RuntimeJestClientAdapter mockJestClient;
     private MeetupApiClient mockMeetupClient;
 
+    @BeforeClass
+    public static void setUpOnce() {
+        DeveloppementESNode.setPortNode("0");
+    }
+
     @Before
     public void setUp() {
-        mockJestClient = MockJestClient.createMock(EventsRepository.EVENTS_TYPE);
+        mockJestClient = MockJestClient.createMock();
         mockMeetupClient = mock(MeetupApiClient.class);
         importCalendarEventsJob = new ImportCalendarEventsJob(mockJestClient, mockMeetupClient);
     }
 
     @Test
     public void testReloadData() {
+        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
         int totalImportedFiles = importCalendarEventsJob.reloadData(true);
         Assertions.assertThat(totalImportedFiles).isEqualTo(0); // 1 file ignored
     }
 
     @Test
     public void testMeetupIdsList() {
+        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
+
         // When reload Events
         ImportCalendarEventsJob.idMeetupList.clear();
 
@@ -58,6 +70,8 @@ public class ImportCalendarEventsJobTest {
 
     @Test
     public void testMeetupImport() {
+        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
+
         ESCalendarEvents calendarEvent1 = new ESCalendarEvents();
         ESCalendarEvents calendarEvent2 = new ESCalendarEvents();
         ESCalendarEvents calendarEvent3 = new ESCalendarEvents();

@@ -36,7 +36,12 @@ public final class ElasticUtils {
 
     public static RuntimeJestClient createClient() {
         if(DeveloppementESNode.portNode != null) {
-            return createClient(DeveloppementESNode.portNode);
+            // Set port to "0" disable creation of client (useful in tests)
+            if(DeveloppementESNode.portNode.equals("0")) {
+                return null;
+            } else {
+                return createClient(DeveloppementESNode.portNode);
+            }
         } else {
             return createClient(DeveloppementESNode.elasticPort);
         }
@@ -75,6 +80,8 @@ public final class ElasticUtils {
                 createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
                 createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
             }
+        } catch (NullPointerException e) {
+            LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
 
@@ -91,6 +98,8 @@ public final class ElasticUtils {
                 throw new IllegalStateException("Can't delete data from '" + type +
                         "' : " + deleteMapResult.getJsonString());
             }
+        } catch (NullPointerException e) {
+            LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
 
@@ -108,6 +117,8 @@ public final class ElasticUtils {
             if(!jestResult.isSucceeded()) {
                 throw new IllegalStateException("Can't create type '" + type + "' : " + jestResult.getErrorMessage());
             }
+        } catch (NullPointerException e) {
+            LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
 
@@ -150,6 +161,8 @@ public final class ElasticUtils {
                     throw new IllegalStateException("Index deletion failed : " + jestResult.getJsonString());
                 }
             }
+        } catch (NullPointerException e) {
+            LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
 

@@ -1,6 +1,7 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
 import org.devconferences.events.GeopointCities;
@@ -25,7 +26,7 @@ public class ImportEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        client.deleteAllES(EVENTS_TYPE);
+        ElasticUtils.deleteData(EVENTS_TYPE);
 
         return importJsonInFolder("events", Event.class, (obj, path) -> {
             if(obj instanceof Event) {

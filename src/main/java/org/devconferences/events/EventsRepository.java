@@ -3,7 +3,7 @@ package org.devconferences.events;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
-import io.searchbox.core.SearchResult;
+import io.searchbox.core.*;
 import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
@@ -76,13 +77,21 @@ public class EventsRepository {
         if(obj instanceof CalendarEvent) {
             ESCalendarEvents calendarEvent = new ESCalendarEvents((CalendarEvent) obj);
             calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
-            client.indexES(CALENDAREVENTS_TYPE, calendarEvent, calendarEvent.id);
+
+            Index index = new Index.Builder(calendarEvent).index(DEV_CONFERENCES_INDEX)
+                    .type(CALENDAREVENTS_TYPE).id(calendarEvent.id).build();
+
+            client.execute(index);
         } else if(obj instanceof Event) {
             ESEvents esEvents = new ESEvents((Event) obj);
             esEvents.name_event_suggest.input = Arrays.asList(esEvents.name.split(" "));
             esEvents.tags_event_suggest.input = esEvents.tags;
             esEvents.city_event_suggest.input = esEvents.city;
-            client.indexES(EVENTS_TYPE, esEvents, esEvents.id);
+
+            Index index = new Index.Builder(esEvents).index(DEV_CONFERENCES_INDEX)
+                    .type(EVENTS_TYPE).id(esEvents.id).build();
+
+            client.execute(index);
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
         }
@@ -92,7 +101,10 @@ public class EventsRepository {
         if (getEvent(event.id) != null) {
             throw new RuntimeException("Event already exists with same id");
         } else {
-            client.indexES(EVENTS_TYPE, event, event.id);
+            Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE)
+                    .id(event.id).build();
+
+            client.execute(index);
         }
     }
 
@@ -114,7 +126,10 @@ public class EventsRepository {
 
         JestResult jestResult = new JestResult(new Gson());
         try {
-            jestResult = client.suggestES(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false));
+            Suggest suggest = new Suggest.Builder(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false))
+                    .addIndex(DEV_CONFERENCES_INDEX).build();
+
+            jestResult = client.execute(suggest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,7 +192,15 @@ public class EventsRepository {
                 )
         );
 
-        SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
+        Search search = new Search.Builder(searchQuery.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(EVENTS_TYPE)
+                .build();
+
+        SearchResult searchResult = client.execute(search);
+        if(!searchResult.isSucceeded()) {
+            throw new RuntimeException(searchResult.getErrorMessage());
+        }
 
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
@@ -241,7 +264,15 @@ public class EventsRepository {
         city.communities = new ArrayList<>();
         city.conferences = new ArrayList<>();
 
-        SearchResult searchResult = client.searchES(EVENTS_TYPE, searchQuery.toString());
+        Search search = new Search.Builder(searchQuery.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(EVENTS_TYPE)
+                .build();
+
+        SearchResult searchResult = client.execute(search);
+        if(!searchResult.isSucceeded()) {
+            throw new RuntimeException(searchResult.getErrorMessage());
+        }
         searchResult.getHits(Event.class)
                 .stream()
                 .map(hit -> hit.source)
@@ -268,7 +299,15 @@ public class EventsRepository {
                 .aggregation(AggregationBuilders.geohashGrid("event_locations").field("gps").precision(geohashPrecision))
                 .toString();
 
-        SearchResult result = client.searchES(EVENTS_TYPE, eventLocations);
+        Search search = new Search.Builder(eventLocations)
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(EVENTS_TYPE)
+                .build();
+
+        SearchResult result = client.execute(search);
+        if(!result.isSucceeded()) {
+            throw new RuntimeException(result.getErrorMessage());
+        }
         GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
         return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
     }
@@ -279,11 +318,18 @@ public class EventsRepository {
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
                         .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon)))
-                .size(0);
+                        .lat(lat).lon(lon)));
 
-        SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
-        return result.getTotal();
+        Count search = new Count.Builder().query(eventLocations.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(CALENDAREVENTS_TYPE)
+                .build();
+
+        CountResult result = client.execute(search);
+        if(!result.isSucceeded()) {
+            throw new RuntimeException(result.getErrorMessage());
+        }
+        return result.getCount().intValue();
     }
 
     public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
@@ -297,7 +343,15 @@ public class EventsRepository {
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
                 .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
 
-        SearchResult result = client.searchES(CALENDAREVENTS_TYPE, eventLocations.toString());
+        Search search = new Search.Builder(eventLocations.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(CALENDAREVENTS_TYPE)
+                .build();
+
+        SearchResult result = client.execute(search);
+        if(!result.isSucceeded()) {
+            throw new RuntimeException(result.getErrorMessage());
+        }
         return getHitsFromSearch(result, CalendarEvent.class);
     }
 
@@ -315,7 +369,16 @@ public class EventsRepository {
     }
 
     public Event getEvent(String eventId) {
-        JestResult result = client.getES(EVENTS_TYPE, eventId);
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(EVENTS_TYPE).build();
+
+        JestResult result = client.execute(get);
+        if(!result.isSucceeded()) {
+            if(result.getResponseCode() == 404) { // Not found : that's not an error
+                return null;
+            } else {
+                throw new RuntimeException(result.getErrorMessage());
+            }
+        }
         return result.getSourceAsObject(Event.class);
     }
 
@@ -351,18 +414,26 @@ public class EventsRepository {
         // Count query
         QueryBuilder queryBuilder = getQueryBuilder(query);
 
-        searchQuery.size(0);
         if (filter == null) {
             searchQuery.query(queryBuilder);
         } else {
             searchQuery.query(filteredQuery(queryBuilder, filter));
         }
 
-        SearchResult countResult = client.searchES(typeSearch, searchQuery.toString());
+        Count count = new Count.Builder().query(searchQuery.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(typeSearch)
+                .build();
+
+        JestResult azerty = client.execute(count);
+        CountResult countResult = client.execute(count);
+        if(!countResult.isSucceeded()) {
+            throw new RuntimeException(countResult.getErrorMessage());
+        }
 
         // Search query
         // Check conditions about page and size (part 2)
-        if (perPage * (pageInt - 1) >= countResult.getTotal() && (countResult.getTotal() != 0 || pageInt != 1)) {
+        if (perPage * (pageInt - 1) >= countResult.getCount() && (countResult.getCount() != 0 || pageInt != 1)) {
             throw new RuntimeException("HTML 400 : page out of bounds");
         }
 
@@ -373,7 +444,15 @@ public class EventsRepository {
         searchQuery.from(perPage * (pageInt - 1));
         searchQuery.size(perPage);
 
-        SearchResult searchResult = client.searchES(typeSearch, searchQuery.toString());
+        Search search = new Search.Builder(searchQuery.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(typeSearch)
+                .build();
+
+        SearchResult searchResult = client.execute(search);
+        if(!searchResult.isSucceeded()) {
+            throw new RuntimeException(searchResult.getErrorMessage());
+        }
 
         // Create result of search
         PaginatedSearchResult res;
@@ -389,7 +468,7 @@ public class EventsRepository {
                 throw new RuntimeException("Unknown search type : " + typeSearch);
         }
 
-        res.totalHits = String.valueOf(countResult.getTotal());
+        res.totalHits = String.valueOf(countResult.getCount().intValue());
         res.query = query;
         res.currPage = String.valueOf(pageInt);
 
@@ -419,7 +498,9 @@ public class EventsRepository {
         Preconditions.checkNotNull(eventId, "Should not be null !");
         Preconditions.checkArgument(!eventId.equals(""));
 
-        client.deleteES(EVENTS_TYPE, eventId);
+        Delete delete = new Delete.Builder(eventId).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE).build();
+
+        client.execute(delete);
     }
 
     public List<CalendarEvent> getCalendarEvents(String page) {
@@ -435,7 +516,15 @@ public class EventsRepository {
                 .query(QueryBuilders.rangeQuery("date").gt(System.currentTimeMillis()
                 ));
 
-        SearchResult searchResult = client.searchES(CALENDAREVENTS_TYPE, searchQuery.toString());
+        Search search = new Search.Builder(searchQuery.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(CALENDAREVENTS_TYPE)
+                .build();
+
+        SearchResult searchResult = client.execute(search);
+        if(!searchResult.isSucceeded()) {
+            throw new RuntimeException(searchResult.getErrorMessage());
+        }
 
         return getHitsFromSearch(searchResult, CalendarEvent.class);
     }

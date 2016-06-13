@@ -1,6 +1,7 @@
 package org.devconferences.jobs;
 
 
+import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
@@ -21,7 +22,7 @@ public class ImportEventsJobTest {
 
     @Before
     public void setUp() {
-        mockClient = MockJestClient.createMock(EventsRepository.EVENTS_TYPE);
+        mockClient = MockJestClient.createMock();
         importEventsJob = new ImportEventsJob(mockClient);
     }
 
@@ -78,6 +79,7 @@ public class ImportEventsJobTest {
     @Test
     public void testReloadData() {
         int totalImportedFiles = importEventsJob.reloadData(true);
+        when(mockClient.execute(isA(Delete.class))).thenReturn(null);
         Assertions.assertThat(totalImportedFiles).isEqualTo(2);
     }
 

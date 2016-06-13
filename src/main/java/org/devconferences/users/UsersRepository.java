@@ -29,11 +29,15 @@ public class UsersRepository {
     }
 
     public void save(User user) {
-        client.indexES(USERS_TYPE, user, user.login);
+        Index index = new Index.Builder(user).index(DEV_CONFERENCES_INDEX)
+                .type(USERS_TYPE).id(user.login).build();
+
+        client.execute(index);
     }
 
     public User getUser(String userId) {
-        JestResult jestResult = client.getES(USERS_TYPE, userId);
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, userId).type(USERS_TYPE).build();
+        JestResult jestResult = client.execute(get);
         return jestResult.getSourceAsObject(User.class);
     }
 }
