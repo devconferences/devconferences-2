@@ -6,7 +6,9 @@ import com.google.inject.Inject;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
 import net.codestory.http.NewCookie;
+import net.codestory.http.annotations.Delete;
 import net.codestory.http.annotations.Get;
+import net.codestory.http.annotations.Post;
 import net.codestory.http.annotations.Prefix;
 import net.codestory.http.constants.Headers;
 import net.codestory.http.constants.HttpStatus;
@@ -17,6 +19,7 @@ import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicHeader;
+import org.devconferences.events.Event;
 import org.devconferences.users.UsersRepository;
 import org.devconferences.users.User;
 
@@ -120,18 +123,25 @@ public class Authentication {
     }
 
     public User getUser(Context context) {
-        net.codestory.http.security.User currentUser = context.currentUser();
-        if(currentUser != null && currentUser instanceof User) {
-            return (User) currentUser;
-        } else {
-            String accessToken = extractAccessToken(context);
-            return getUser(accessToken);
-        }
+        String accessToken = extractAccessToken(context);
+        return getUser(accessToken);
     }
 
     @Get("client-id")
     public String getClientId() {
         return githubCalls.clientId;
+    }
+
+    @Post("favourites")
+    public void addFavourite(UsersRepository.FavouriteItem item, Context context) {
+        usersRepository.addFavourite(getUser(context), item.type, item.value);
+    }
+
+    @Delete("favourites/:type/:value")
+    public void removeFavourite(String type, String value, Context context) {
+        UsersRepository.FavouriteItem.FavouriteType typeEnum =
+                UsersRepository.FavouriteItem.FavouriteType.valueOf(type);
+        usersRepository.removeFavourite(getUser(context), typeEnum, value);
     }
 
     public boolean isAuthenticated(Context context) throws IOException {
@@ -161,7 +171,7 @@ public class Authentication {
                 return null;
             }
 
-            User user = usersRepository.getUser(userFromResponse.id);
+            User user = usersRepository.getUser(userFromResponse.login);
             if (user == null) {
                 user = userFromResponse;
             }
