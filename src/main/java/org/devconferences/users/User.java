@@ -16,6 +16,15 @@ public class User implements net.codestory.http.security.User {
     public String avatarURL;
     public final List<String> roles = new ArrayList<>();
     public final List<String> events = new ArrayList<>();
+    public final Favourites favourites = new Favourites();
+
+    public class Favourites {
+        public final List<String> cities = new ArrayList<>();
+        public final List<String> tags = new ArrayList<>();
+        public final List<String> conferences = new ArrayList<>();
+        public final List<String> communities = new ArrayList<>();
+        public final List<String> upcomingEvents = new ArrayList<>();
+    }
 
     public User(String login, String id, String email, String avatarURL) {
         this.login = login;
