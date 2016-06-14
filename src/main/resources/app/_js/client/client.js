@@ -15,6 +15,42 @@ function createClient(u) {
       actualUrl = CLEVER_URL;
     });
 
+    var auth = authPriv();
+
+    function authPriv() {
+        var UNKNOWN = 0x01;
+        var PENDING = 0x02;
+        var SETTLED = 0x04;
+        var userInfo = null;
+        var status = UNKNOWN;
+
+        function user(forceUpdate) {
+            return new Promise(function(resolve, reject) {
+                if(status == UNKNOWN || forceUpdate == true) {
+                    status = PENDING;
+                    userInfo = check.then(nothing => Axios.get(`${actualUrl}/auth/connected-user`).catch(errorCallback));
+                    status = SETTLED;
+                    return resolve(userInfo);
+                } else if(status == SETTLED) {
+                    return resolve(userInfo);
+                } else if(status == PENDING) {
+                    // Wait the answer
+                    setTimeout(function(){}, 100);
+                    return user;
+                }
+            });
+        };
+        function clientId() {
+            return check.then(nothing => Axios.get(`${actualUrl}/auth/client-id`).catch(errorCallback));
+        }
+
+        return {
+            userInfo,
+            user,
+            clientId
+        };
+    };
+
     function cities(query) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/cities?q=${query}`).catch(errorCallback));
     }
@@ -87,7 +123,8 @@ function createClient(u) {
         deleteEvent,
         connectedUser,
         meetupInfo,
-        calendar
+        calendar,
+        auth
     };
 }
 

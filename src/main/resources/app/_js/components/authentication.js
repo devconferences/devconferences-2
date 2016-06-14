@@ -1,6 +1,8 @@
 var React = require('react');
 var $ = require('jquery');
 
+var DevConferencesClient = require('../client/client');
+
 var Authentication = React.createClass({
     getInitialState: function () {
         return {
@@ -8,38 +10,17 @@ var Authentication = React.createClass({
             clientId: undefined
         };
     },
+
     componentDidMount: function () {
-        var clientIdURL = '/auth/client-id';
-        $.ajax({
-            url: clientIdURL,
-            dataType: 'text',
-            cache: true,
-            success: function (data) {
-                this.setState({clientId:data});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                console.error(clientIdURL, status, err.toString());
-            }.bind(this)
+        DevConferencesClient.auth.clientId().then(result => {
+            this.setState({clientId:result.data});
         });
 
-        var connectedUserURL = '/auth/connected-user';
-        $.ajax({
-            url: connectedUserURL,
-            dataType: 'json',
-            cache: false,
-            success: function (data) {
-                console.log(data);
-                this.setState({user: data});
-            }.bind(this),
-            error: function (xhr, status, err) {
-                if(xhr.status === 404){
-                    this.setState({user : undefined});
-                }else{
-                    console.error(connectedUserURL, status, err.toString());
-                }
-            }.bind(this)
+        DevConferencesClient.auth.user().then(result => {
+            this.setState({user:result.data});
         });
     },
+
     render: function () {
         if(!this.state.clientId){
             return <div></div>;

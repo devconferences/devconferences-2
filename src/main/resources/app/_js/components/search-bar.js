@@ -3,6 +3,7 @@ var ReactDOM = require('react-dom');
 var Router = require('react-router');
 
 var DevConferencesClient = require('../client/client');
+var auth = require('./authentication');
 
 var SearchBar = React.createClass({
     // All kind of research
@@ -200,6 +201,9 @@ var SearchBar = React.createClass({
     },
 
     render: function() {
+        DevConferencesClient.auth.user().then(result => {
+            console.log(result.data);
+        });
         var suggestList = function(suggests, showSuggests) {
             var hoverSuggest = function(e) {
                 e.target.className = "hovered";
