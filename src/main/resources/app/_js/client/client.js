@@ -23,12 +23,14 @@ function createClient(u) {
         var SETTLED = 0x04;
         var userInfo = null;
         var status = UNKNOWN;
+        var listeners = [];
 
         function user(forceUpdate) {
             return new Promise(function(resolve, reject) {
                 if(status == UNKNOWN || forceUpdate == true) {
                     status = PENDING;
                     userInfo = check.then(nothing => Axios.get(`${actualUrl}/auth/connected-user`).catch(errorCallback));
+                    updateListeners();
                     status = SETTLED;
                     return resolve(userInfo);
                 } else if(status == SETTLED) {
@@ -39,15 +41,26 @@ function createClient(u) {
                     return user;
                 }
             });
-        };
+        }
         function clientId() {
             return check.then(nothing => Axios.get(`${actualUrl}/auth/client-id`).catch(errorCallback));
+        }
+        function addListener(method) {
+            listeners.push(method);
+        }
+        function updateListeners() {
+            userInfo.then(result => {
+                listeners.forEach(function(method) {
+                    method(result.data);
+                });
+            });
         }
 
         return {
             userInfo,
             user,
-            clientId
+            clientId,
+            addListener
         };
     };
 
@@ -105,6 +118,14 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/calendar?p=${page}`).catch(errorCallback));
     }
 
+    function addFavourite(typeS,valueS) {
+        return check.then(nothing => Axios.post(`${actualUrl}/auth/favourites`, {type: typeS, value: valueS}).catch(errorCallback));
+    }
+
+    function removeFavourite(type,value) {
+        return check.then(nothing => Axios.delete(`${actualUrl}/auth/favourites/${type}/${value}`).catch(errorCallback));
+    }
+
     return {
         useDevUrl() {
             return createClient(DEV_URL);
@@ -124,7 +145,9 @@ function createClient(u) {
         connectedUser,
         meetupInfo,
         calendar,
-        auth
+        auth,
+        addFavourite,
+        removeFavourite
     };
 }
 

@@ -191,6 +191,7 @@ div.event img.avatar {
     height: 2em;
     max-height: 2em;
     margin: 0px auto;
+    position: relative;
 }
 
 .search-bar-container .search-bar {
@@ -201,7 +202,8 @@ div.event img.avatar {
     z-index: 9999;
     text-align: left;
     width: 100%;
-    position: relative;
+    position: absolute;
+    top: 2.1em;
 }
 
 .search-suggests ul {
@@ -216,12 +218,43 @@ div.event img.avatar {
 
 .search-suggests li {
     padding: 0px 7px;
+    position: relative;
 }
 
 .search-suggests li.hovered {
-    background-color: #CCC;
+    background-color: #EEE;
 }
 
-.ol-zoom-extent{
+.ol-zoom-extent {
     font-family: "FontAwesome";
+}
+
+
+/* Favourite's star */
+.favourite {
+        font-family: "FontAwesome";
+}
+.favourite.favourite-user {
+    color: #FFB64E;
+}
+.favourite:hover {
+    color: #FFD599;
+    cursor: pointer;
+}
+
+.favourite::before {
+    content: '\f006';
+}
+.favourite.favourite-user::before {
+    content: '\f005';
+}
+
+.search-suggests li span:last-child,
+.search-bar-container > span {
+    position: absolute;
+    right: 0px;
+}
+.search-bar-container > span {
+    top: 0.4em;
+    right: 0.1em;
 }

@@ -25,8 +25,20 @@ var Home = React.createClass({
             calendar: {
                 query: null,
                 hits: []
-            }
+            },
+            user: null
         };
+    },
+
+    componentDidMount: function() {
+        DevConferencesClient.auth.user().then(result => {
+            this.updateUser(result.data);
+        });
+        DevConferencesClient.auth.addListener(this.updateUser);
+    },
+
+    updateUser: function(user) {
+        this.setState({user: user});
     },
 
     searchBarUpdated: function(data) {
@@ -47,7 +59,7 @@ var Home = React.createClass({
     render: function () {
         return (
             <div className="container text-center">
-                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
+                <SearchBar ref="searchBar" favourites={(this.state.user ? this.state.user.favourites : null)} onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
                 <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 

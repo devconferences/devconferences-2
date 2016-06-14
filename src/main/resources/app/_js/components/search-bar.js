@@ -4,6 +4,7 @@ var Router = require('react-router');
 
 var DevConferencesClient = require('../client/client');
 var auth = require('./authentication');
+var Favourite = require('./favourite');
 
 var SearchBar = React.createClass({
     // All kind of research
@@ -17,8 +18,10 @@ var SearchBar = React.createClass({
         return {
             page: null,
             query: null,
+            querySearch: null,
             searchType: null,
             suggests: {
+                query: null,
                 hits: []
             },
             showSuggests: false
@@ -44,6 +47,7 @@ var SearchBar = React.createClass({
                 if(result.data) {
                     if(this.refs.searchInput.value == result.data.query) {
                         this.setState({
+                            query: result.data.query,
                             suggests: result.data
                         });
                     }
@@ -53,7 +57,10 @@ var SearchBar = React.createClass({
             })
         } else {
             this.setState({
-                suggests: {}
+                suggests: {
+                    query: null,
+                    hits: []
+                }
             })
         }
     },
@@ -75,7 +82,7 @@ var SearchBar = React.createClass({
     research: function(query, page, searchType) {
         // Prepare data
         if(query == null) {
-            query = this.state.query;
+            query = this.state.querySearch;
         }
         if(!page) {
             page = this.props.page || 1;
@@ -86,10 +93,11 @@ var SearchBar = React.createClass({
             searchType = this.props.searchType || this.state.searchType || this.ALL;
         }
 
-        if(query == this.state.query && page == this.state.page && searchType == this.state.searchType) {
+        if(query == this.state.querySearch && page == this.state.page && searchType == this.state.searchType) {
             return;
         } else {
             this.setState({
+                querySearch: query,
                 query: query,
                 page: page,
                 searchType: searchType
@@ -175,15 +183,17 @@ var SearchBar = React.createClass({
 
 
     setSearchQuery: function(e) {
-        // Change searchInput value, to pass condition with the timeout
-        ReactDOM.findDOMNode(this.refs.searchInput).value = e.target.firstChild.nodeValue;
-        this.research(e.target.firstChild.nodeValue, null, null);
+        if(e.target.nodeName == "LI") {
+            // Change searchInput value, to short condition with the timeout
+            ReactDOM.findDOMNode(this.refs.searchInput).value = e.target.dataset.value;
+            this.research(e.target.dataset.value, null, null);
+        }
     },
 
-    prepareSearch: function(e) {
+    prepareSearch: function(target) {
         var value = this.refs.searchInput.value;
 
-        var searchValue = (e ? e.target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
+        var searchValue = (target ? target.value : ReactDOM.findDOMNode(this.refs.searchInput).value);
         var query = this.props.query || "";
         var page = 1;
 
@@ -196,24 +206,33 @@ var SearchBar = React.createClass({
 
     onEnterPress: function(e) {
         if(e.key == 'Enter') {
-            this.prepareSearch(e);
+            this.prepareSearch(e.target);
         }
     },
 
     render: function() {
-        DevConferencesClient.auth.user().then(result => {
-            console.log(result.data);
-        });
         var suggestList = function(suggests, showSuggests) {
             var hoverSuggest = function(e) {
-                e.target.className = "hovered";
+                if(e.target.nodeName == "LI") {
+                    e.target.className = "hovered";
+                }
             };
             var noHoverSuggest = function(e) {
-                e.target.className = "";
+                if(e.target.nodeName == "LI") {
+                    e.target.className = "";
+                }
             };
             var suggestItem = function(suggest, onClickFunc) {
+                var isFavouriteUser = function() {
+                    return ((this.props.favourites) &&
+                            (this.props.favourites.tags.indexOf(suggest.text) > -1));
+                }.bind(this);
                 return (
-                    <li key={suggest.text} onClick={this.setSearchQuery} onMouseEnter={hoverSuggest} onMouseLeave={noHoverSuggest}>{suggest.text}</li>
+                    <li key={suggest.text} data-value={suggest.text}
+                            onClick={this.setSearchQuery} onMouseOver={hoverSuggest} onMouseOut={noHoverSuggest}>
+                        {suggest.text}
+                        <Favourite favouriteUser={isFavouriteUser()} type="TAG" value={suggest.text}/>
+                    </li>
                 );
             }.bind(this);
 
@@ -229,9 +248,14 @@ var SearchBar = React.createClass({
                 );
             }
         }.bind(this);
+        var isFavouriteUser = function() {
+            return (this.props.favourites &&
+                    this.props.favourites.tags.indexOf(this.state.query) > -1);
+        }.bind(this);
         return (
             <div className="search-bar-container text-center">
                 <input type="text" className="search-bar" ref="searchInput" onKeyPress={this.onEnterPress} onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+                <Favourite favouriteUser={isFavouriteUser()} type="TAG" value={this.state.query}/>
                 {suggestList(this.state.suggests, this.state.showSuggests)}
             </div>
         );
