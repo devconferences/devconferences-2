@@ -7,6 +7,7 @@ var CityLinkList = require('./city-link-list');
 var TimelineEventList = require('./timeline-event-list');
 var SearchBar = require('./search-bar');
 var Minimap = require('./minimap');
+var FavouriteList = require('./favourite-list');
 var GoogleCalendar = require('./social/google-calendar');
 var TwitterTimeline = require('./social/twitter-timeline');
 var DevConferencesClient = require('../client/client');
@@ -61,18 +62,18 @@ var Home = React.createClass({
             <div className="container text-center">
                 <SearchBar ref="searchBar" favourites={(this.state.user ? this.state.user.favourites : null)} onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
+                <FavouriteList favourites={(this.state.user ? this.state.user.favourites : null)} />
+
                 <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 
-                <Grid>
+                <Grid className="no-fixed-container">
                     <Row>
                         <Col lg={7} className="text-center">
                             <h2>Prochains événements</h2>
 
                             <p>Les prochains événements sont répertoriés ici.</p>
 
-                            <div>
-                                <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents}/>
-                            </div>
+                            <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents}/>
                         </Col>
                         <Col lg={5} className="text-center">
                             <Minimap cities={this.state.cities} query={this.state.calendar.query}/>

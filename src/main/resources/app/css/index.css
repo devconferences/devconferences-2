@@ -258,3 +258,19 @@ div.event img.avatar {
     top: 0.4em;
     right: 0.1em;
 }
+
+.favourite-list {
+    margin: 0px auto;
+}
+
+.favourite-grid {
+    width: 100%;
+}
+.favourite-grid ul {
+    list-style-type: none;
+    padding: 0px;
+}
+
+.no-fixed-container {
+    width: 100%;
+}
