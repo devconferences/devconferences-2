@@ -6,7 +6,6 @@ import org.junit.*;
 
 import java.net.SocketTimeoutException;
 
-@Ignore
 public class RuntimeJestClientTest {
     private static RuntimeJestClient jestClient;
 
@@ -70,5 +69,10 @@ public class RuntimeJestClientTest {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void test() {
+
     }
 }

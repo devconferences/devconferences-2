@@ -3,6 +3,7 @@ package org.devconferences.security;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
+import io.searchbox.core.DocumentResult;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
 import net.codestory.http.NewCookie;
@@ -19,7 +20,6 @@ import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicHeader;
-import org.devconferences.events.Event;
 import org.devconferences.users.UsersRepository;
 import org.devconferences.users.User;
 
@@ -134,7 +134,11 @@ public class Authentication {
 
     @Post("favourites")
     public void addFavourite(UsersRepository.FavouriteItem item, Context context) {
-        usersRepository.addFavourite(getUser(context), item.type, item.value);
+        DocumentResult documentResult = usersRepository.addFavourite(getUser(context), item.type, item.value);
+
+        if(!documentResult.isSucceeded()) {
+            throw new RuntimeException(documentResult.getErrorMessage());
+        }
     }
 
     @Delete("favourites/:type/:value?filter=:filter")
@@ -142,7 +146,11 @@ public class Authentication {
         UsersRepository.FavouriteItem.FavouriteType typeEnum =
                 UsersRepository.FavouriteItem.FavouriteType.valueOf(type);
         String favourite = (filter != null ? value + "/" + filter : value);
-        usersRepository.removeFavourite(getUser(context), typeEnum, favourite);
+        DocumentResult documentResult = usersRepository.removeFavourite(getUser(context), typeEnum, favourite);
+
+        if(!documentResult.isSucceeded()) {
+            throw new RuntimeException(documentResult.getErrorMessage());
+        }
     }
 
     public boolean isAuthenticated(Context context) throws IOException {

@@ -87,10 +87,7 @@ public class MockJestClient {
         mockCountResult.setJsonObject(new JsonParser().parse(jsonCount).getAsJsonObject());
         mockCountResult.setPathToResult("count");
 
-        when(mock.execute(isA(Count.class))).then(invocationOnMock -> {
-            System.out.println(invocationOnMock);
-            return mockCountResult;
-        });
+        when(mock.execute(isA(Count.class))).thenReturn(mockCountResult);
     }
 
     public static void configSearch(RuntimeJestClientAdapter mock, int count, String hits, String aggregations) {
@@ -142,5 +139,16 @@ public class MockJestClient {
         mockGetResult.setPathToResult("_source");
 
         when(mock.execute(isA(Get.class))).thenReturn(mockGetResult);
+    }
+
+    public static void configUpdate(RuntimeJestClientAdapter mock, String content) {
+        String jsonSearch = content;
+        DocumentResult mockUpdateResult = new DocumentResult(new Gson());
+        mockUpdateResult.setJsonString(jsonSearch);
+        mockUpdateResult.setSucceeded(true);
+        mockUpdateResult.setJsonObject(new JsonParser().parse(jsonSearch).getAsJsonObject());
+        mockUpdateResult.setPathToResult("");
+
+        when(mock.execute(isA(Update.class))).thenReturn(mockUpdateResult);
     }
 }

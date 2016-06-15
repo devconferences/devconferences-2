@@ -1,7 +1,6 @@
 package org.devconferences.jobs;
 
 import com.google.gson.*;
-import io.searchbox.client.JestResult;
 import io.searchbox.core.Index;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;

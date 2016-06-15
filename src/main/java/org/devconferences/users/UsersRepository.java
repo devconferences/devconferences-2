@@ -55,7 +55,7 @@ public class UsersRepository {
         return jestResult.getSourceAsObject(User.class);
     }
 
-    public void addFavourite(User user, FavouriteItem.FavouriteType type, String value) {
+    public DocumentResult addFavourite(User user, FavouriteItem.FavouriteType type, String value) {
         List<String> listItems = getListItems(user, type);
 
         // Try to add $value in $listItems
@@ -64,10 +64,10 @@ public class UsersRepository {
             Collections.sort(listItems);
         }
 
-        DocumentResult documentResult = updateFavourites(user);
+        return updateFavourites(user);
     }
 
-    public void removeFavourite(User user, FavouriteItem.FavouriteType type, String value) {
+    public DocumentResult removeFavourite(User user, FavouriteItem.FavouriteType type, String value) {
         List<String> listItems = getListItems(user, type);
 
         // Try to remove $value from $listItems
@@ -75,7 +75,7 @@ public class UsersRepository {
             listItems.remove(value);
         }
 
-        DocumentResult documentResult = updateFavourites(user);
+        return updateFavourites(user);
     }
 
     List<String> getListItems(User user, FavouriteItem.FavouriteType type) {

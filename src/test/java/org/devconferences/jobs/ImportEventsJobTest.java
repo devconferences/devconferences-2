@@ -1,24 +1,25 @@
 package org.devconferences.jobs;
 
-
 import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
+import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
 import org.devconferences.events.Event;
-import org.devconferences.events.EventsRepository;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class ImportEventsJobTest {
     private ImportEventsJob importEventsJob;
     private RuntimeJestClientAdapter mockClient;
+
+    @BeforeClass
+    public static void setUpOnce() {
+        DeveloppementESNode.setPortNode("0");
+    }
 
     @Before
     public void setUp() {

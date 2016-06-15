@@ -1,6 +1,5 @@
 package org.devconferences.elastic;
 
-import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
@@ -11,8 +10,8 @@ import io.searchbox.indices.mapping.DeleteMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
+import org.devconferences.users.UsersRepository;
 import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,6 +129,9 @@ public final class ElasticUtils {
                 break;
             case EventsRepository.CALENDAREVENTS_TYPE:
                 mappingFile = "/elastic/calendarevents-mapping.json";
+                break;
+            case UsersRepository.USERS_TYPE:
+                mappingFile = "/elastic/users-mapping.json";
                 break;
             default:
                 throw new RuntimeException("Type " + type + " unknown");

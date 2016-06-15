@@ -3,7 +3,6 @@ package org.devconferences.jobs;
 import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
-import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
 import org.devconferences.events.CalendarEvent;
