@@ -37,31 +37,7 @@ var App = React.createClass({
                             </a>
                         </div>
                     </div>
-
                 </nav>
-
-                <div id="informations" className="text-center" data-toggle="collapse" data-target="#informationsCollapse">
-                    <p>
-                       <i>Cliquez sur le texte pour afficher plus d'informations.</i>
-                    </p>
-                    <div id="informationsCollapse" className="collapse">
-                        <p>
-                            Dev Conferences rassemble les conférences, ainsi que les communautés de développeurs dans toute la France.
-                        </p>
-                        <p>
-                            Vous êtes actuellement dans une ville, et vous voulez savoir ce qu'il s'y passe ? Cliquez sur la carte !
-                        </p>
-                        <p>
-                            Vous êtes prêts à bouger ? Effectuez une recherche sur un thème pour avoir une liste complète sur toute la France !
-                        </p>
-                        <p>
-                            Une conférence ou une communauté manque sur le site ?<br/>Un événement à venir n'est pas répertorié ?<br/>Des suggestions, des bugs à nous faire parvenir ?<br/>Visitez notre <a href="//github.com/devconferences/devconferences-2">dépôt Github</a> !
-                        </p>
-                        <p>
-                            Bonne visite !
-                        </p>
-                    </div>
-                </div>
 
                 {this.props.children}
 
