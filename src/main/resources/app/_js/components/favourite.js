@@ -17,14 +17,15 @@ var Favourite = React.createClass({
 
     onClick: function(e) {
         if(this.state.favouriteUser == false) {
-            DevConferencesClient.addFavourite(this.props.type, this.props.value).then(result => {
+            var favourite  = this.props.value + (this.props.filter ? "/" + this.props.filter: "");
+            DevConferencesClient.addFavourite(this.props.type, favourite).then(result => {
                 this.setState({
                     favouriteUser: true
                 });
                 DevConferencesClient.auth.user(true);
             })
         } else if(this.state.favouriteUser == true) {
-            DevConferencesClient.removeFavourite(this.props.type, this.props.value).then(result => {
+            DevConferencesClient.removeFavourite(this.props.type, this.props.value, this.props.filter).then(result => {
                 this.setState({
                     favouriteUser: false
                 });

@@ -137,11 +137,12 @@ public class Authentication {
         usersRepository.addFavourite(getUser(context), item.type, item.value);
     }
 
-    @Delete("favourites/:type/:value")
-    public void removeFavourite(String type, String value, Context context) {
+    @Delete("favourites/:type/:value?filter=:filter")
+    public void removeFavourite(String type, String value, String filter, Context context) {
         UsersRepository.FavouriteItem.FavouriteType typeEnum =
                 UsersRepository.FavouriteItem.FavouriteType.valueOf(type);
-        usersRepository.removeFavourite(getUser(context), typeEnum, value);
+        String favourite = (filter != null ? value + "/" + filter : value);
+        usersRepository.removeFavourite(getUser(context), typeEnum, favourite);
     }
 
     public boolean isAuthenticated(Context context) throws IOException {

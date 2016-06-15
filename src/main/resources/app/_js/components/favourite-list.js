@@ -29,7 +29,9 @@ var FavouriteList = React.createClass({
                                 </Col>
                                 <Col md={4}>
                                     <h3>Ville + filtre</h3>
-                                    {this.props.favourites.cities}
+                                    <ul>
+                                        {this.props.favourites.cities.map(tagsLink)}
+                                    </ul>
                                 </Col>
                                 <Col md={4}>
                                     <h3>Conférences</h3>
