@@ -62,8 +62,6 @@ var Home = React.createClass({
             <div className="container text-center">
                 <SearchBar ref="searchBar" favourites={(this.state.user ? this.state.user.favourites : null)} onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().ALL} allDataWhenEmpty={true}/>
 
-                <FavouriteList favourites={(this.state.user ? this.state.user.favourites : null)} />
-
                 <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 
                 <Grid className="no-fixed-container">

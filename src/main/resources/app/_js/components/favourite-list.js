@@ -14,12 +14,12 @@ var FavouriteList = React.createClass({
         }
         if(this.props.favourites) {
             return (
-                <div className="favourite-list" data-toggle="collapse" data-target="#favouriteCollapse">
+                <div className="favourite-list">
                     <div>
                         <h2>Mes favoris</h2>
                     </div>
-                    <div id="favouriteCollapse" className="collapse">
-                        <Grid className="panel panel-default favourite-grid">
+                    <div id="favouriteCollapse">
+                        <Grid className="favourite-grid">
                             <Row>
                                 <Col md={4}>
                                     <h3>Recherche</h3>

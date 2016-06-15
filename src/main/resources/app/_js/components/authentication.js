@@ -1,6 +1,7 @@
 var React = require('react');
 var $ = require('jquery');
 
+var FavouriteList = require('./favourite-list');
 var DevConferencesClient = require('../client/client');
 
 var Authentication = React.createClass({
@@ -54,7 +55,7 @@ var Authentication = React.createClass({
         var favourites = function() {
             if(user) {
                 return (
-                    <li><a href="">Mes favoris</a></li>
+                    <li><a href="" data-toggle="modal" data-target="#favouriteModal">Mes favoris</a></li>
                 );
             } else {
                 return null;
@@ -92,6 +93,18 @@ var Authentication = React.createClass({
                     {help()}
                     {disconnect()}
                 </ul>
+                <div className="modal fade" id="favouriteModal" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-body text-center">
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                                <FavouriteList favourites={(this.state.user ? this.state.user.favourites : null)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="modal fade" id="helpModal" role="dialog">
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
