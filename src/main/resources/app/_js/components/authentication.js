@@ -38,7 +38,7 @@ var Authentication = React.createClass({
                            title={title}
                            alt={title}
                            className="img-circle"
-                           height="50px" width="50px"/>
+                           />
                 </a>
             </div>
         );

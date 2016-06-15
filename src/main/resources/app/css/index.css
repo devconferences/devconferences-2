@@ -54,7 +54,12 @@ div.minimap .city {
 
 .authentication {
     position: absolute;
+    top: 9px;
     right: 10px;
+    width: 50px;
+}
+.authentication img {
+    height: 50px;
 }
 
 div.conflinks {
@@ -99,9 +104,9 @@ div.conflinks a {
     margin: 0.5em 1em;
 }
 
-.search-result div.results {
+/*.search-result div.results {
     padding: 0px 40px;
-}
+}*/
 
 .timeline-event .pre-style {
     white-space: pre-line;
@@ -273,4 +278,11 @@ div.event img.avatar {
 
 .no-fixed-container {
     width: 100%;
+}
+
+.navbar {
+    border-radius: 0px;
+}
+.navbar .container {
+    position: relative;
 }

@@ -88,7 +88,7 @@ var Event = React.createClass({
                     <Glyphicon glyph='chevron-right'></Glyphicon> {event.name}
                 </h3>
 
-                <Grid>
+                <Grid className="no-fixed-container">
                     <Row>
                         <Col md={2}>
                             <img src={event.avatar} className="avatar img-responsive"/>
