@@ -18,17 +18,25 @@ var Search = React.createClass({
         return {
             lastSearch: null,
             searchType: "events",
-            page: null
+            page: null,
+            user: null
         }
     },
 
     componentDidMount: function() {
-        // TODO Add forceUpdate function in SearchBar
-        //this.changeInput(null);
+          DevConferencesClient.auth.user().then(result => {
+              this.updateUser(result.data);
+          });
+          DevConferencesClient.auth.addListener(this.updateUser);
+    },
+
+    updateUser: function(user) {
+        this.setState({
+            user: user
+        });
     },
 
     componentWillReceiveProps: function(newProps) {
-        // TODO idem
         this.setState({
             page: newProps.page
         })
@@ -64,10 +72,10 @@ var Search = React.createClass({
             var list = [];
             if(lastSearch) {
                 if(searchType == "events") {
-                    list = lastSearch.events.hits;
+                    list = lastSearch.events.hits || [];
                 } else if(searchType == "calendar") {
-                     list = lastSearch.calendar.hits;
-                 }
+                     list = lastSearch.calendar.hits || [];
+                }
             }
             return (
                 list.map(function (event) {
@@ -152,7 +160,7 @@ var Search = React.createClass({
 
         return (
             <div className="container">
-                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page}/>
+                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                 {dataSearch(this.state.searchType, this.changeSearchType)}
                 <div className="search-result">
                     {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
