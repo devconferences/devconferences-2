@@ -396,7 +396,7 @@ public class EventsRepositoryTest {
 
         MockJestClient.configSuggest(mockClient, suggestResult);
 
-        CompletionSearch suggestDatas = eventsEndPoint.suggest("Br");
+        CompletionSearch suggestDatas = eventsEndPoint.suggest("Br", null);
         Assertions.assertThat(suggestDatas.hits).hasSize(3);
         Assertions.assertThat(suggestDatas.hits.get(0).text).matches("BreizhCamp");
         Assertions.assertThat(suggestDatas.hits.get(0).score).isEqualTo(2.0d);

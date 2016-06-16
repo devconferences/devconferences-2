@@ -205,6 +205,9 @@ public class Authentication {
     }
 
     private String extractAccessToken(Context context) {
+        if(context == null) {
+            return null;
+        }
         Cookie cookie = context.cookies().get(ACCESS_TOKEN);
         return cookie != null ? encrypter.decrypt(cookie.value()) : null;
     }

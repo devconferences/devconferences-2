@@ -8,7 +8,10 @@ import net.codestory.http.errors.NotFoundException;
 import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.events.search.CompletionSearch;
+import org.devconferences.security.Authentication;
+import org.devconferences.security.Encrypter;
 import org.devconferences.users.User;
+import org.devconferences.users.UsersRepository;
 
 import java.util.List;
 
@@ -22,10 +25,12 @@ import static org.devconferences.users.User.EVENT_MANAGER;
 @Prefix("api/v2/")
 public class EventsEndPoint {
     private final EventsRepository eventsRepository;
+    private final Authentication authentication;
 
     @Inject
     public EventsEndPoint(EventsRepository eventsRepository) {
         this.eventsRepository = eventsRepository;
+        this.authentication = new Authentication(new Encrypter(), new UsersRepository());
     }
 
     @Gets({@Get("cities?q=:query"), @Get("cities/?q=:query")})
@@ -42,8 +47,8 @@ public class EventsEndPoint {
 
     @Get("suggest?q=:query")
     @AllowOrigin("*")
-    public CompletionSearch suggest(String query) {
-        return eventsRepository.suggest(query);
+    public CompletionSearch suggest(String query, Context context) {
+        return eventsRepository.suggest(query, authentication.getUser(context));
     }
 
     @Get("search/events?q=:query&page=:page&limit=:limit")

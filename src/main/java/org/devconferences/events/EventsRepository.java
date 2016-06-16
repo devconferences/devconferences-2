@@ -15,6 +15,7 @@ import org.devconferences.events.search.PaginatedSearchResult;
 import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
+import org.devconferences.users.User;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -108,7 +109,7 @@ public class EventsRepository {
         }
     }
 
-    public CompletionSearch suggest(String query) {
+    public CompletionSearch suggest(String query, User user) {
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion(
                 SuggestBuilders.completionSuggestion("nameEventSuggest")
@@ -146,6 +147,18 @@ public class EventsRepository {
         test.nameEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
         test.tagsEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
         test.nameCalendarSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+
+        // Add favourites booster in suggestions
+        if(user != null) {
+            user.favourites.tags.forEach((tag) -> {
+                SuggestData suggestData = new SuggestData();
+                suggestData.text = tag;
+                suggestData.score = 10d;
+                if(rating.containsKey(tag) || query == null || query.equals("")) {
+                    getSuggestConsumer(suggestData, rating);
+                }
+            });
+        }
 
         // Create list of suggestions
         rating.forEach((key, value) -> {
