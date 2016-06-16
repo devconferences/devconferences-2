@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 public class AuthenticationTest {
     private final RuntimeJestClientAdapter mockClient = mock(RuntimeJestClientAdapter.class);
-    private final Authentication authentication = new Authentication(new Encrypter(), new UsersRepository(mockClient));
+    private final Authentication authentication = new Authentication(new Encrypter(), new UsersRepository(mockClient, null));
     private final Encrypter encrypter  = new Encrypter();
 
     @Test
@@ -93,7 +93,7 @@ public class AuthenticationTest {
             e.printStackTrace();
         }
 
-        Authentication authenticationWithMock = new Authentication(new Encrypter(), new UsersRepository(mockClient), mockGithub);
+        Authentication authenticationWithMock = new Authentication(new Encrypter(), new UsersRepository(mockClient, null), mockGithub);
 
         Payload payloadConnect = authenticationWithMock.oauthCallBack("a1b2c3d4e5f67890", context);
 

@@ -9,19 +9,13 @@ import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
-import org.devconferences.events.search.CalendarEventSearch;
-import org.devconferences.events.search.EventSearch;
 import org.devconferences.events.search.SimpleSearchResult;
-import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.elastic.ElasticUtils.createClient;
 
 /**
  * Created by chris on 07/06/15.
@@ -43,12 +37,12 @@ public class UsersRepository {
     private final EventsRepository eventsRepository;
 
     public UsersRepository() {
-        this(ElasticUtils.createClient());
+        this(ElasticUtils.createClient(), new EventsRepository());
     }
 
-    public UsersRepository(RuntimeJestClient client) {
+    public UsersRepository(RuntimeJestClient client, EventsRepository eventsRepository) {
         this.client = client;
-        this.eventsRepository = new EventsRepository();
+        this.eventsRepository = eventsRepository;
     }
 
     public void save(User user) {
@@ -121,7 +115,7 @@ public class UsersRepository {
     }
 
     List<String> getListItems(User user, FavouriteItem.FavouriteType type) {
-        List<String> listItems;
+        List<String> listItems = new ArrayList<>();
         switch(type) {
             case CITY:
                 listItems = user.favourites.cities;
@@ -138,8 +132,6 @@ public class UsersRepository {
             case CALENDAR:
                 listItems = user.favourites.upcomingEvents;
                 break;
-            default:
-                listItems = new ArrayList<>();
         }
         return listItems;
     }
