@@ -95,10 +95,10 @@ var City = React.createClass({
 
                     <hr />
 
-                    <EventList events={this.state.city.conferences} />
-                    <EventList events={this.state.city.communities} />
+                    <EventList events={this.state.city.conferences} favourites={(this.state.user ? this.state.user.favourites : null)} />
+                    <EventList events={this.state.city.communities} favourites={(this.state.user ? this.state.user.favourites : null)} />
 
-                    <UpcomingEventsList events={this.state.city.upcoming_events} cityName={this.state.city.name}/>
+                    <UpcomingEventsList events={this.state.city.upcoming_events} cityName={this.state.city.name} favourites={(this.state.user ? this.state.user.favourites : null)} />
                 </div>
             )
         }

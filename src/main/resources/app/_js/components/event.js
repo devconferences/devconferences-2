@@ -8,6 +8,7 @@ var MeetupLink = require('./social/meetup-link');
 var YoutubeLink = require('./social/youtube-link');
 var ParleysLink = require('./social/parleys-link');
 var Tags = require('./tags');
+var Favourite = require('./favourite');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -81,11 +82,23 @@ var Event = React.createClass({
             }
         };
         var event = this.props.event;
+
+        var type = null;
+        var isFavouriteUser = function() {
+            if(event.type == "CONFERENCE") {
+                return (this.props.favourites &&
+                        this.props.favourites.conferences.indexOf(event.id) > -1);
+            } else if(event.type == "COMMUNITY") {
+                return (this.props.favourites &&
+                        this.props.favourites.communities.indexOf(event.id) > -1);
+            }
+            return false;
+        }.bind(this);
         return (
             <div className="event">
                 <a name={event.id}></a>
                 <h3>
-                    <Glyphicon glyph='chevron-right'></Glyphicon> {event.name}
+                    <Favourite favouriteUser={isFavouriteUser()} type={event.type} value={event.id}/> {event.name}
                 </h3>
 
                 <Grid className="no-fixed-container">
