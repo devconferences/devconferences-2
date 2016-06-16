@@ -7,6 +7,7 @@ import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
+import org.devconferences.events.EventsRepository;
 import org.devconferences.meetup.MeetupApiClient;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
@@ -73,7 +74,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
+        //ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
 
         int totalCalendarEvents = 0;
 
@@ -201,6 +202,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     }
 
     private int askMeetupUpcomingEvents() {
+        EventsRepository eventsRepository = new EventsRepository();
         final int[] totalMeetupImport = {0, 0};
 
         LOGGER.info("Import events from Meetup...");
@@ -215,10 +217,8 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                     }
                     removeHTMLTagsAndAddNewlines(data, null);
 
-                    Index index = new Index.Builder(data).index(DEV_CONFERENCES_INDEX)
-                            .type(CALENDAREVENTS_TYPE).id(data.id).build();
+                    eventsRepository.indexOrUpdate(data);
 
-                    client.execute(index);
                     totalMeetupImport[0]++;
                 });
 

@@ -16,6 +16,7 @@ import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.users.User;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -72,26 +73,51 @@ public class EventsRepository {
     }
 
     public void indexOrUpdate(Object obj) {
+        String updateStringTemplate = "{" +
+                "  \"doc\": %s," +
+                "  \"detect_noop\": true," +
+                "  \"doc_as_upsert\" : true" +
+                "}";
+        Get get;
+        Update update;
         if(obj instanceof CalendarEvent) {
-            ESCalendarEvents calendarEvent = new ESCalendarEvents((CalendarEvent) obj);
-            calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
+            ESCalendarEvents esCalendarEvents = new ESCalendarEvents((CalendarEvent) obj);
+            esCalendarEvents.name_calendar_suggest.input = Arrays.asList(esCalendarEvents.name.split(" "));
 
-            Index index = new Index.Builder(calendarEvent).index(DEV_CONFERENCES_INDEX)
-                    .type(CALENDAREVENTS_TYPE).id(calendarEvent.id).build();
-
-            client.execute(index);
+            String updateString = String.format(updateStringTemplate,
+                    new Gson().toJson(esCalendarEvents));
+            update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
+                    .type(CALENDAREVENTS_TYPE).id(esCalendarEvents.id).build();
+            get = new Get.Builder(DEV_CONFERENCES_INDEX, esCalendarEvents.id).type(CALENDAREVENTS_TYPE).build();
         } else if(obj instanceof Event) {
             ESEvents esEvents = new ESEvents((Event) obj);
             esEvents.name_event_suggest.input = Arrays.asList(esEvents.name.split(" "));
             esEvents.tags_event_suggest.input = esEvents.tags;
             esEvents.city_event_suggest.input = esEvents.city;
 
-            Index index = new Index.Builder(esEvents).index(DEV_CONFERENCES_INDEX)
+            String updateString = String.format(updateStringTemplate,
+                    new Gson().toJson(esEvents));
+            update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
                     .type(EVENTS_TYPE).id(esEvents.id).build();
-
-            client.execute(index);
+            get = new Get.Builder(DEV_CONFERENCES_INDEX, esEvents.id).type(EVENTS_TYPE).build();
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
+        }
+
+        DocumentResult documentResultGet = client.execute(get);
+        DocumentResult documentResultUpdate = client.execute(update);
+
+        boolean founded = documentResultGet.getJsonObject().get("found").getAsBoolean();
+        Integer oldVersion = null;
+        if(founded) {
+            oldVersion = documentResultGet.getJsonObject().get("_version").getAsInt();
+        }
+        Integer newVersion = documentResultUpdate.getJsonObject().get("_version").getAsInt();
+
+        if(!founded) {
+            System.out.println("Document created: " + documentResultUpdate.getId());
+        } else if(!oldVersion.equals(newVersion)) {
+            System.out.println("Document udpated: " + documentResultUpdate.getId());
         }
     }
 

@@ -26,7 +26,7 @@ public class ImportEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        ElasticUtils.deleteData(EVENTS_TYPE);
+        //ElasticUtils.deleteData(EVENTS_TYPE);
 
         return importJsonInFolder("events", Event.class, (obj, path) -> {
             if(obj instanceof Event) {
