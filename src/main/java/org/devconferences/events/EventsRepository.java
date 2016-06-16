@@ -17,10 +17,7 @@ import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.users.User;
 import org.elasticsearch.common.xcontent.XContentHelper;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -542,9 +539,23 @@ public class EventsRepository {
         return getHitsFromSearch(searchResult, CalendarEvent.class);
     }
 
-    private List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
+    public List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
         return (searchResult.getHits(sourceType).stream()
                 .map((data) -> data.source).collect(Collectors.toList())
         );
+    }
+
+    public SearchResult searchByIds(String type, List<String> ids) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        IdsQueryBuilder idsQueryFilter = new IdsQueryBuilder();
+
+        ids.forEach(idsQueryFilter::addIds);
+
+        searchSourceBuilder.query(idsQueryFilter).size(ElasticUtils.MAX_SIZE);
+
+        Search search = new Search.Builder(searchSourceBuilder.toString())
+                .addIndex(DEV_CONFERENCES_INDEX).addType(type).build();
+
+        return client.execute(search);
     }
 }

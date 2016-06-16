@@ -7,12 +7,10 @@ import io.searchbox.core.DocumentResult;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
 import net.codestory.http.NewCookie;
-import net.codestory.http.annotations.Delete;
-import net.codestory.http.annotations.Get;
-import net.codestory.http.annotations.Post;
-import net.codestory.http.annotations.Prefix;
+import net.codestory.http.annotations.*;
 import net.codestory.http.constants.Headers;
 import net.codestory.http.constants.HttpStatus;
+import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
@@ -20,6 +18,7 @@ import org.apache.http.client.fluent.Form;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicHeader;
+import org.devconferences.events.search.SimpleSearchResult;
 import org.devconferences.users.UsersRepository;
 import org.devconferences.users.User;
 
@@ -130,6 +129,20 @@ public class Authentication {
     @Get("client-id")
     public String getClientId() {
         return githubCalls.clientId;
+    }
+
+    @Get("favourites/:type")
+    public SimpleSearchResult getFavouritesPerType(String type, Context context) {
+        try {
+            UsersRepository.FavouriteItem.FavouriteType typeEnum = UsersRepository.FavouriteItem.FavouriteType.valueOf(type);
+            return usersRepository.getFavourites(getUser(context), typeEnum);
+        } catch(RuntimeException e) {
+            if(e.getMessage().startsWith("HTML 400 :") || e.getMessage().startsWith("No enum constant ")) {
+                throw new BadRequestException();
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Post("favourites")
