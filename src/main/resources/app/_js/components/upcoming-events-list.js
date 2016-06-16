@@ -7,9 +7,9 @@ var UpcomingEventsList = React.createClass({
     render: function () {
         var renderTimelineEvent = function (event) {
             return (
-                <TimelineEvent key={event.id} event={event} />
+                <TimelineEvent key={event.id} event={event} favourites={this.props.favourites}/>
             );
-        };
+        }.bind(this);
         if(this.props.events.length > 0) {
             return (
                 <div>

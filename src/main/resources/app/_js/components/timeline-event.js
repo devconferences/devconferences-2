@@ -2,12 +2,14 @@ var React = require('react');
 var moment = require('moment');
 var ReactBootstrap = require('react-bootstrap');
 
+var Favourite = require('./favourite');
+
 var Glyphicon = ReactBootstrap.Glyphicon;
 
 var TimelineEvent = React.createClass({
 
     render: function() {
-        var event =this.props.event;
+        var event = this.props.event;
         var date = new Date(parseInt(event.date));
 
         var prettyDates = function(dateBegin, duration) {
@@ -95,11 +97,16 @@ var TimelineEvent = React.createClass({
             }
         };
 
+        var isFavouriteUser = function() {
+            return (this.props.favourites &&
+                    this.props.favourites.upcomingEvents.indexOf(event.id) > -1);
+        }.bind(this);
+
         return (
             <div className="timeline-event panel panel-default"  data-toggle="collapse" data-target={"#" + event.id} title="Cliquez pour afficher toutes les informations">
                 <div>
                     <h3>
-                        <Glyphicon glyph="chevron-right"></Glyphicon> {nameTitle(event.name, event.url)}
+                        <Favourite favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event.name, event.url)}
                     </h3>
                     <p>
                         {prettyDates(date, event.duration)}{organizer(event.organizer)}

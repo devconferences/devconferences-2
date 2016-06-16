@@ -81,16 +81,16 @@ var Search = React.createClass({
                 list.map(function (event) {
                     if(searchType == "events") {
                         return (
-                            <Event key={event.id} event={event} />
+                            <Event key={event.id} event={event} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                         );
                     } else if(searchType == "calendar") {
                         return (
-                            <TimelineEvent event={event} key={event.id} />
+                            <TimelineEvent event={event} key={event.id} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                         );
                     }
                 }.bind(this))
             )
-        };
+        }.bind(this);
         var dataSearch = function(searchType, changeSearchType) {
             var searchTypeUI = function() {
                 return (

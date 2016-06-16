@@ -14,9 +14,9 @@ var TimelineEventList = React.createClass({
     render: function() {
         var calendarEvent = function(event) {
             return (
-                <TimelineEvent key={event.id} event={event} />
+                <TimelineEvent key={event.id} event={event} favourites={this.props.favourites}/>
             );
-        };
+        }.bind(this);
         var moreUpcomingEvents = function(totalPage, moreUpcomingEventsCall) {
             if(totalPage > 1) {
                 return (

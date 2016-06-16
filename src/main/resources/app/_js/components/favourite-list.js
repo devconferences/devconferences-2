@@ -1,15 +1,24 @@
 var React = require('react');
 var ReactBootstrap = require('react-bootstrap');
+var Router = require('react-router');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
+var Link = Router.Link;
 
 var FavouriteList = React.createClass({
     render: function () {
         var tagsLink = function(tag) {
+            var linkToURL = "/search/" + tag;
             return (
-                <li key={tag}>{tag}</li>
+                <li key={tag}><Link to={linkToURL} data-dismiss="modal">{tag}</Link></li>
+            );
+        };
+        var cityLink = function(city) {
+            var linkToURL = "/city/" + city;
+            return (
+                <li key={city}><Link to={linkToURL} data-dismiss="modal">{city}</Link></li>
             );
         }
         if(this.props.favourites) {
@@ -18,7 +27,7 @@ var FavouriteList = React.createClass({
                     <div>
                         <h2>Mes favoris</h2>
                     </div>
-                    <div id="favouriteCollapse">
+                    <div>
                         <Grid className="favourite-grid">
                             <Row>
                                 <Col md={4}>
@@ -30,7 +39,7 @@ var FavouriteList = React.createClass({
                                 <Col md={4}>
                                     <h3>Ville + filtre</h3>
                                     <ul>
-                                        {this.props.favourites.cities.map(tagsLink)}
+                                        {this.props.favourites.cities.map(cityLink)}
                                     </ul>
                                 </Col>
                                 <Col md={4}>

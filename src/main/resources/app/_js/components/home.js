@@ -71,7 +71,7 @@ var Home = React.createClass({
 
                             <p>Les prochains événements sont répertoriés ici.</p>
 
-                            <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents}/>
+                            <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                         </Col>
                         <Col lg={5} className="text-center">
                             <Minimap cities={this.state.cities} query={this.state.calendar.query}/>
