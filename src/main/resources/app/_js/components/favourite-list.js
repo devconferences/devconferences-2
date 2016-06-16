@@ -12,13 +12,13 @@ var FavouriteList = React.createClass({
         var tagsLink = function(tag) {
             var linkToURL = "/search/" + tag;
             return (
-                <li key={tag}><Link to={linkToURL} data-dismiss="modal">{tag}</Link></li>
+                <li key={tag}><Link to={linkToURL}>{tag}</Link></li>
             );
         };
         var cityLink = function(city) {
             var linkToURL = "/city/" + city;
             return (
-                <li key={city}><Link to={linkToURL} data-dismiss="modal">{city}</Link></li>
+                <li key={city}><Link to={linkToURL}>{city}</Link></li>
             );
         }
         if(this.props.favourites) {
@@ -43,13 +43,13 @@ var FavouriteList = React.createClass({
                                     </ul>
                                 </Col>
                                 <Col md={4}>
-                                    <h3>Conférences</h3>
+                                    <h3><Link to="/favourites/conference">Conférences</Link></h3>
                                     {/*this.props.favourites.conferences*/}
 
-                                    <h3>Communautés</h3>
+                                    <h3><Link to="/favourites/community">Communautés</Link></h3>
                                     {/*this.props.favourites.communities*/}
 
-                                    <h3>Événements</h3>
+                                    <h3><Link to="/favourites/calendar">Événements</Link></h3>
                                     {/*this.props.favourites.upcomingEvents*/}
                                 </Col>
                             </Row>

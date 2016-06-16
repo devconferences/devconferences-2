@@ -7,6 +7,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 var Home = require('./components/home');
 var City = require('./components/city');
 var Search = require('./components/search');
+var MyFavourites = require('./components/my-favourites');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 var Authentication = require('./components/authentication');
@@ -79,6 +80,7 @@ var routes = (
         <IndexRoute component={Home}/>
         <Route path="/city/:id" component={City}/>
         <Route path="/city/:id/:query" component={City}/>
+        <Route path="/favourites/:type" component={MyFavourites}/>
         <Route path="/search" component={Search}/>
         <Route path="/search/:query" component={Search}/>
         <Route path="/search/:query/:page" component={Search}/>

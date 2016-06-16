@@ -122,6 +122,10 @@ function createClient(u) {
         return check.then(nothing => Axios.post(`${actualUrl}/auth/favourites`, {type: typeS, value: valueS}).catch(errorCallback));
     }
 
+    function getFavourites(type) {
+        return check.then(nothing => Axios.get(`${actualUrl}/auth/favourites/${type.toUpperCase()}`).catch(errorCallback));
+    }
+
     function removeFavourite(type,value,filter) {
         if(filter) {
                 return check.then(nothing => Axios.delete(`${actualUrl}/auth/favourites/${type}/${value}?filter=${filter}`).catch(errorCallback));
@@ -152,6 +156,7 @@ function createClient(u) {
         calendar,
         auth,
         addFavourite,
+        getFavourites,
         removeFavourite
     };
 }
