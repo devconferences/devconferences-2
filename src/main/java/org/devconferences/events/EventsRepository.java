@@ -16,6 +16,7 @@ import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.users.User;
+import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.*;
@@ -80,6 +81,10 @@ public class EventsRepository {
                 "}";
         Get get;
         Update update;
+        Percolate percolate;
+        String message;
+
+        // Prepare queries (get, update, percolate, depends of class)
         if(obj instanceof CalendarEvent) {
             ESCalendarEvents esCalendarEvents = new ESCalendarEvents((CalendarEvent) obj);
             esCalendarEvents.name_calendar_suggest.input = Arrays.asList(esCalendarEvents.name.split(" "));
@@ -89,6 +94,7 @@ public class EventsRepository {
             update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
                     .type(CALENDAREVENTS_TYPE).id(esCalendarEvents.id).build();
             get = new Get.Builder(DEV_CONFERENCES_INDEX, esCalendarEvents.id).type(CALENDAREVENTS_TYPE).build();
+            percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, CALENDAREVENTS_TYPE, updateString).build();
         } else if(obj instanceof Event) {
             ESEvents esEvents = new ESEvents((Event) obj);
             esEvents.name_event_suggest.input = Arrays.asList(esEvents.name.split(" "));
@@ -100,6 +106,7 @@ public class EventsRepository {
             update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
                     .type(EVENTS_TYPE).id(esEvents.id).build();
             get = new Get.Builder(DEV_CONFERENCES_INDEX, esEvents.id).type(EVENTS_TYPE).build();
+            percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, EVENTS_TYPE, updateString).build();
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
         }
@@ -115,10 +122,31 @@ public class EventsRepository {
         Integer newVersion = documentResultUpdate.getJsonObject().get("_version").getAsInt();
 
         if(!founded) {
-            System.out.println("Document created: " + documentResultUpdate.getId());
+            message = "Document created: " + documentResultUpdate.getId();
+
         } else if(!oldVersion.equals(newVersion)) {
-            System.out.println("Document udpated: " + documentResultUpdate.getId());
+           message = "Document udpated: " + documentResultUpdate.getId();
+
+        } else {
+            // neither update nor creation => no more actions
+            return;
         }
+
+        // Find percolators, to notify owners
+        JestResult jestResult = client.execute(percolate);
+
+        List<String> matchedPercolators = getMatchesPercolators(jestResult);
+
+        System.out.println(message);
+        System.out.println(matchedPercolators);
+    }
+
+    private List<String> getMatchesPercolators(JestResult jestResult) {
+        List<String> result = new ArrayList<>();
+        jestResult.getJsonObject().get("matches").getAsJsonArray().forEach(jsonElement ->
+                result.add(jsonElement.getAsJsonObject().get("_id").getAsString()));
+
+        return result;
     }
 
     public void createEvent(Event event) {
