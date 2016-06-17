@@ -136,9 +136,11 @@ public class EventsRepository {
         JestResult jestResult = client.execute(percolate);
 
         List<String> matchedPercolators = getMatchesPercolators(jestResult);
+        List<String> ownersPercolators = getPercolatorsOwners(matchedPercolators);
 
         System.out.println(message);
         System.out.println(matchedPercolators);
+        System.out.println(ownersPercolators);
     }
 
     private List<String> getMatchesPercolators(JestResult jestResult) {
@@ -147,6 +149,17 @@ public class EventsRepository {
                 result.add(jsonElement.getAsJsonObject().get("_id").getAsString()));
 
         return result;
+    }
+
+    private List<String> getPercolatorsOwners(List<String> percolatorsIds) {
+        Set<String> owners = new HashSet<>();
+
+        percolatorsIds.forEach(id -> {
+            String[] values = id.split("_", 2);
+            owners.add(values[0]);
+        });
+
+        return owners.stream().collect(Collectors.toList());
     }
 
     public void createEvent(Event event) {
