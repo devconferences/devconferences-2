@@ -2,6 +2,7 @@ var React = require('react');
 var $ = require('jquery');
 
 var FavouriteList = require('./favourite-list');
+var NotificationList = require('./notification-list');
 var DevConferencesClient = require('../client/client');
 
 var Authentication = React.createClass({
@@ -62,6 +63,27 @@ var Authentication = React.createClass({
             }
         }.bind(this);
 
+        var notifications = function() {
+            if(user) {
+                var text = function() {
+                    if(user.messages.length > 0) {
+                        return (
+                            <b>Notifications ({user.messages.length})</b>
+                        );
+                    } else {
+                        return (
+                            <span>Notifications</span>
+                        );
+                    }
+                }.bind(this);
+                return (
+                    <li><a href="" data-toggle="modal" data-target="#notificationsModal">{text()}</a></li>
+                );
+            } else {
+                return null;
+            }
+        }.bind(this);
+
         var help = function() {
             return (
                 <li><a href="" data-toggle="modal" data-target="#helpModal">Aide</a></li>
@@ -88,6 +110,7 @@ var Authentication = React.createClass({
                 </a>
                 <ul className="dropdown-menu dropdown-menu-right">
                     {favourites()}
+                    {notifications()}
                     {separe()}
                     {connect()}
                     {help()}
@@ -101,6 +124,21 @@ var Authentication = React.createClass({
                                   <span aria-hidden="true">&times;</span>
                                 </button>
                                 <FavouriteList favourites={(this.state.user ? this.state.user.favourites : null)} />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="modal fade" id="notificationsModal" role="dialog">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header text-center">
+                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h2>Mes notifications</h2>
+                            </div>
+                            <div className="modal-body">
+                                <NotificationList messages={(this.state.user ? this.state.user.messages : [])} />
                             </div>
                         </div>
                     </div>
