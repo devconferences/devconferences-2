@@ -166,6 +166,15 @@ public class Authentication {
         }
     }
 
+    @Delete("messages/:id")
+    public void deletMessage(String id, Context context) {
+        DocumentResult documentResult = usersRepository.deleteMessage(getUser(context), id);
+
+        if(!documentResult.isSucceeded()) {
+            throw new RuntimeException(documentResult.getErrorMessage());
+        }
+    }
+
     public boolean isAuthenticated(Context context) throws IOException {
         String accessToken = extractAccessToken(context);
         if (accessToken == null) {

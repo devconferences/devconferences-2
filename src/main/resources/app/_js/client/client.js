@@ -135,6 +135,10 @@ function createClient(u) {
 
     }
 
+    function deleteMessage(id) {
+        return check.then(nothing => Axios.delete(`${actualUrl}/auth/messages/${id}`).catch(errorCallback));
+    }
+
     return {
         useDevUrl() {
             return createClient(DEV_URL);
@@ -157,7 +161,8 @@ function createClient(u) {
         auth,
         addFavourite,
         getFavourites,
-        removeFavourite
+        removeFavourite,
+        deleteMessage
     };
 }
 

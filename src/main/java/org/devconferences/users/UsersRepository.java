@@ -17,6 +17,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 
@@ -196,10 +197,19 @@ public class UsersRepository {
         return client.execute(update);
     }
 
-    public void addMessage(User user, User.Message message) {
+    public DocumentResult addMessage(User user, User.Message message) {
         user.messages.add(message);
 
-        updateMessages(user);
+        return updateMessages(user);
+    }
+
+    public DocumentResult deleteMessage(User user, String id) {
+        // Remove messages with matches id
+        user.messages.stream().filter(message -> message.id.equals(id))
+                .collect(Collectors.toList())
+                .forEach(user.messages::remove);
+
+        return updateMessages(user);
     }
 
     DocumentResult updateMessages(User user) {

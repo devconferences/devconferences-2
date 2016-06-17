@@ -19,8 +19,13 @@ var Authentication = React.createClass({
         });
 
         DevConferencesClient.auth.user().then(result => {
-            this.setState({user:result.data});
+            this.updateUser(result.data);
         });
+        DevConferencesClient.auth.addListener(this.updateUser);
+    },
+
+    updateUser: function(user) {
+        this.setState({user: user});
     },
 
     render: function () {

@@ -28,8 +28,29 @@ public class User implements net.codestory.http.security.User {
     }
 
     public class Message {
+        public String id;
         public Long date;
         public String text;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Message message = (Message) o;
+
+            if (!id.equals(message.id)) return false;
+            if (!date.equals(message.date)) return false;
+            return text.equals(message.text);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = id.hashCode();
+            result = 31 * result + date.hashCode();
+            result = 31 * result + text.hashCode();
+            return result;
+        }
     }
 
     public User(String login, String id, String email, String avatarURL) {

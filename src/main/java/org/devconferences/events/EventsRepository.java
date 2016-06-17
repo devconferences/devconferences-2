@@ -65,6 +65,7 @@ public class EventsRepository {
     private static final double GEO_DISTANCE = 20d;
 
     private final RuntimeJestClient client;
+    private int updateCounter;
 
     public EventsRepository() {
         this(createClient());
@@ -72,6 +73,7 @@ public class EventsRepository {
 
     public EventsRepository(RuntimeJestClient client) {
         this.client = client;
+        this.updateCounter = 1;
     }
 
     public void indexOrUpdate(Object obj) {
@@ -141,7 +143,7 @@ public class EventsRepository {
         final User.Message message;
         if(users.size() > 0) {
             message = users.get(0).new Message();
-            setupMessage(message, obj, messageTextTemplate);
+            setupMessage(message, obj, messageTextTemplate, (this.updateCounter)++);
         } else {
             // No user to notify => no more action
             return;
@@ -154,8 +156,9 @@ public class EventsRepository {
 
     }
 
-    private void setupMessage(User.Message message, Object obj, String messageTextTemplate) {
+    private void setupMessage(User.Message message, Object obj, String messageTextTemplate, int count) {
         message.date = System.currentTimeMillis();
+        message.id = message.date + "." + count;
 
         String formatParam1 = "Quelque chose";
         String formatParam2 = "mais je ne sais pas quoi.";
