@@ -10,6 +10,8 @@ import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.events.search.SimpleSearchResult;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,6 +100,21 @@ public class UsersRepository {
         if(!listItems.contains(value)) {
             listItems.add(value);
             Collections.sort(listItems);
+
+            // Add percolate query
+            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+            searchSourceBuilder.query(QueryBuilders.queryStringQuery(value));
+            if(type == FavouriteItem.FavouriteType.TAG) {
+                Index index = new Index.Builder(
+                        searchSourceBuilder.toString()
+                ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(user.name() + "_" + value).build();
+
+                DocumentResult documentResult = client.execute(index);
+                if(!documentResult.isSucceeded()) {
+                    throw new RuntimeException("Impossible to create percolator " + user.name() + "_" + value + "\n" +
+                            documentResult.getErrorMessage());
+                }
+            }
         }
 
         return updateFavourites(user);
@@ -109,6 +126,18 @@ public class UsersRepository {
         // Try to remove $value from $listItems
         if(listItems.contains(value)) {
             listItems.remove(value);
+
+            // Remove percolate query
+            if(type == FavouriteItem.FavouriteType.TAG) {
+                Delete delete = new Delete.Builder(user.name() + "_" + value)
+                        .index(DEV_CONFERENCES_INDEX).type(".percolator").id(user.name() + "_" + value).build();
+
+                DocumentResult documentResult = client.execute(delete);
+                if(!documentResult.isSucceeded()) {
+                    throw new RuntimeException("Impossible to remove percolator " + user.name() + "_" + value + "\n" +
+                            documentResult.getErrorMessage());
+                }
+            }
         }
 
         return updateFavourites(user);
