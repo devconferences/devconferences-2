@@ -83,7 +83,7 @@ public class EventsRepository {
         Get get;
         Update update;
         Percolate percolate;
-        String message;
+        String messageTextTemplate;
 
         // Prepare queries (get, update, percolate, depends of class)
         if(obj instanceof CalendarEvent) {
@@ -123,11 +123,9 @@ public class EventsRepository {
         Integer newVersion = documentResultUpdate.getJsonObject().get("_version").getAsInt();
 
         if(!founded) {
-            message = "Document created: " + documentResultUpdate.getId();
-
+            messageTextTemplate = "%s pouvant vous intéresser a été créé(e) : %s";
         } else if(!oldVersion.equals(newVersion)) {
-           message = "Document udpated: " + documentResultUpdate.getId();
-
+            messageTextTemplate = "%s pouvant vous intéresser a été mis(e) à jour : %s";
         } else {
             // neither update nor creation => no more actions
             return;
@@ -140,14 +138,47 @@ public class EventsRepository {
         List<String> matchedPercolators = getMatchesPercolators(jestResult);
         List<String> ownersPercolators = getPercolatorsOwners(matchedPercolators);
         List<User> users = usersRepository.getUsers(ownersPercolators);
+        final User.Message message;
+        if(users.size() > 0) {
+            message = users.get(0).new Message();
+            setupMessage(message, obj, messageTextTemplate);
+        } else {
+            // No user to notify => no more action
+            return;
+        }
 
-        System.out.println(message);
-        System.out.println(matchedPercolators);
-        System.out.println(ownersPercolators);
-        System.out.println(users);
+        System.out.println(message.text);
         users.forEach(user -> {
-            System.out.println(user.name());
+            usersRepository.addMessage(user, message);
         });
+
+    }
+
+    private void setupMessage(User.Message message, Object obj, String messageTextTemplate) {
+        message.date = System.currentTimeMillis();
+
+        String formatParam1 = "Quelque chose";
+        String formatParam2 = "mais je ne sais pas quoi.";
+
+        // Setup message text
+        if(obj instanceof Event) {
+            Event event = (Event) obj;
+            switch (event.type) {
+                case CONFERENCE:
+                    formatParam1 = "Une conférence";
+                    break;
+                case COMMUNITY:
+                    formatParam1 = "Une communauté";
+                    break;
+            }
+            formatParam2 = event.name;
+        } else if(obj instanceof CalendarEvent) {
+            CalendarEvent calendarEvent = (CalendarEvent) obj;
+            formatParam1 = "Un événement";
+            formatParam2 = calendarEvent.name;
+        }
+
+        message.text = String.format(messageTextTemplate, formatParam1, formatParam2);
     }
 
     private List<String> getMatchesPercolators(JestResult jestResult) {

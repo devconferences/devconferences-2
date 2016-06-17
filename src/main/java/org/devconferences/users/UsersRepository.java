@@ -195,4 +195,24 @@ public class UsersRepository {
 
         return client.execute(update);
     }
+
+    public void addMessage(User user, User.Message message) {
+        user.messages.add(message);
+
+        updateMessages(user);
+    }
+
+    DocumentResult updateMessages(User user) {
+        String updateStringTemplate = "{" +
+                "  \"doc\": {" +
+                "    \"messages\": %s" +
+                "  }" +
+                "}";
+        String updateString = String.format(updateStringTemplate, new Gson().toJson(user.messages));
+
+        Update update = new Update.Builder(updateString)
+                .index(DEV_CONFERENCES_INDEX).type(USERS_TYPE).id(user.login).build();
+
+        return client.execute(update);
+    }
 }
