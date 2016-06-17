@@ -17,8 +17,6 @@ import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
-import org.elasticsearch.action.percolate.PercolateResponse;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -54,6 +52,75 @@ final class SuggestResponse {
 
     public class SuggestDataList {
         public List<SuggestData> options;
+    }
+}
+
+final class NotificationText {
+    public enum What {
+        CALENDAR("Un événement", false),
+        CONFERENCE("Une conférence", true),
+        COMMUNITY("Une comunauté", true);
+
+        private final String text;
+        private final boolean isFeminine;
+
+        What(String text, boolean isFeminine) {
+            this.text = text;
+            this.isFeminine = isFeminine;
+        }
+
+        public String getText() {
+            return this.text;
+        }
+
+        public boolean isFeminine() {
+            return this.isFeminine;
+        }
+    }
+
+    public enum Why {
+        SEARCH("pouvant vous intéresser"),
+        FAVOURITE("favori%s", "te"),
+        CITY("dans une ville favorite");
+
+        private final String textMasc;
+        private final String textFem;
+
+        Why(String text) {
+            this.textMasc = text;
+            this.textFem = text;
+        }
+
+        Why(String text, String feminineAdd) {
+            this.textMasc = String.format(text, "");
+            this.textFem = String.format(text, feminineAdd);
+        }
+
+        public String getText(boolean isFeminine) {
+            return isFeminine ? this.textFem : this.textMasc;
+        }
+    }
+
+    public enum Action {
+        CREATION("a été créé%s", "e"),
+        UPDATE("a été mis%s à jour", "e");
+
+        private final String textMasc;
+        private final String textFem;
+
+        Action(String text) {
+            this.textMasc = text;
+            this.textFem = text;
+        }
+
+        Action(String text, String feminineAdd) {
+            this.textMasc = String.format(text, "");
+            this.textFem = String.format(text, feminineAdd);
+        }
+
+        public String getText(boolean isFeminine) {
+            return isFeminine ? this.textFem : this.textMasc;
+        }
     }
 }
 
@@ -124,10 +191,11 @@ public class EventsRepository {
         }
         Integer newVersion = documentResultUpdate.getJsonObject().get("_version").getAsInt();
 
+        NotificationText.Action action;
         if(!founded) {
-            messageTextTemplate = "%s pouvant vous intéresser a été créé(e) : %s";
+            action = NotificationText.Action.CREATION;
         } else if(!oldVersion.equals(newVersion)) {
-            messageTextTemplate = "%s pouvant vous intéresser a été mis(e) à jour : %s";
+            action = NotificationText.Action.UPDATE;
         } else {
             // neither update nor creation => no more actions
             return;
@@ -138,50 +206,72 @@ public class EventsRepository {
         JestResult jestResult = client.execute(percolate);
 
         List<String> matchedPercolators = getMatchesPercolators(jestResult);
-        List<String> ownersPercolators = getPercolatorsOwners(matchedPercolators);
+        System.out.println(matchedPercolators);
+        Map<String, UsersRepository.FavouriteItem.FavouriteType> ownersPercolators = getPercolatorsOwners(matchedPercolators);
         List<User> users = usersRepository.getUsers(ownersPercolators);
         final User.Message message;
         if(users.size() > 0) {
             message = users.get(0).new Message();
-            setupMessage(message, obj, messageTextTemplate, (this.updateCounter)++);
         } else {
             // No user to notify => no more action
             return;
         }
 
+        // Logging
+        setupMessage(message, obj, action, UsersRepository.FavouriteItem.FavouriteType.TAG, (this.updateCounter));
         System.out.println(message.text);
+
         users.forEach(user -> {
+            setupMessage(message, obj, action, ownersPercolators.get(user.name()), (this.updateCounter)++);
             usersRepository.addMessage(user, message);
         });
 
     }
 
-    private void setupMessage(User.Message message, Object obj, String messageTextTemplate, int count) {
+    private void setupMessage(User.Message message, Object obj, NotificationText.Action action, UsersRepository.FavouriteItem.FavouriteType type, int count) {
         message.date = System.currentTimeMillis();
         message.id = message.date + "." + count;
 
-        String formatParam1 = "Quelque chose";
-        String formatParam2 = "mais je ne sais pas quoi.";
+        NotificationText.What objType = null;
+        NotificationText.Why favType = null;
+        String objName;
 
         // Setup message text
         if(obj instanceof Event) {
             Event event = (Event) obj;
             switch (event.type) {
                 case CONFERENCE:
-                    formatParam1 = "Une conférence";
+                    objType = NotificationText.What.CONFERENCE;
                     break;
                 case COMMUNITY:
-                    formatParam1 = "Une communauté";
+                    objType = NotificationText.What.COMMUNITY;
                     break;
             }
-            formatParam2 = event.name;
+            objName = event.name;
         } else if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
-            formatParam1 = "Un événement";
-            formatParam2 = calendarEvent.name;
+            objType = NotificationText.What.CALENDAR;
+            objName = calendarEvent.name;
+        } else {
+            throw new RuntimeException("Unknown class : " + obj.getClass().getName());
         }
 
-        message.text = String.format(messageTextTemplate, formatParam1, formatParam2);
+        switch (type) {
+            case CITY:
+                favType = NotificationText.Why.CITY;
+                break;
+            case TAG:
+                favType = NotificationText.Why.SEARCH;
+                break;
+            case CONFERENCE:
+            case COMMUNITY:
+            case CALENDAR:
+                favType = NotificationText.Why.FAVOURITE;
+                break;
+        }
+
+        message.text = String.format("%s %s %s : %s", objType.getText(), favType.getText(objType.isFeminine()),
+                action.getText(objType.isFeminine()), objName);
     }
 
     private List<String> getMatchesPercolators(JestResult jestResult) {
@@ -192,15 +282,23 @@ public class EventsRepository {
         return result;
     }
 
-    private List<String> getPercolatorsOwners(List<String> percolatorsIds) {
-        Set<String> owners = new HashSet<>();
+    private Map<String, UsersRepository.FavouriteItem.FavouriteType> getPercolatorsOwners(List<String> percolatorsIds) {
+        Map<String, UsersRepository.FavouriteItem.FavouriteType> owners = new HashMap<>();
 
         percolatorsIds.forEach(id -> {
-            String[] values = id.split("_", 2);
-            owners.add(values[0]);
+            String[] values = id.split("_", 3);
+            UsersRepository.FavouriteItem.FavouriteType favType = UsersRepository.FavouriteItem.FavouriteType.valueOf(values[1]);
+            if(!owners.containsKey(values[0])) {
+                owners.put(values[0], favType);
+            } else {
+                System.out.println(favType + " <-> " + owners.get(values[0]) + " ==> " + favType.compareTo(owners.get(values[0])));
+                if (favType.compareTo(owners.get(values[0])) > 0) {
+                    owners.replace(values[0], favType);
+                }
+            }
         });
 
-        return owners.stream().collect(Collectors.toList());
+        return owners;
     }
 
     public void createEvent(Event event) {

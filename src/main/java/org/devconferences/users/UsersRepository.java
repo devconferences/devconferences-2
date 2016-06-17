@@ -13,13 +13,13 @@ import org.devconferences.events.GeopointCities;
 import org.devconferences.events.search.SimpleSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.IdsQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
@@ -41,7 +41,7 @@ public class UsersRepository {
         public String value;
 
         public enum FavouriteType {
-            CITY, TAG, CONFERENCE, COMMUNITY, CALENDAR
+           TAG, CITY, CONFERENCE, COMMUNITY, CALENDAR
         }
     }
     public static final String USERS_TYPE = "users";
@@ -104,11 +104,11 @@ public class UsersRepository {
         return jestResult.getSourceAsObject(User.class);
     }
 
-    public List<User> getUsers(List<String> userIds) {
+    public List<User> getUsers(Map<String, FavouriteItem.FavouriteType> userIds) {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         IdsQueryBuilder idsQueryBuilder = QueryBuilders.idsQuery();
 
-        userIds.forEach(idsQueryBuilder::addIds);
+        userIds.keySet().forEach(idsQueryBuilder::addIds);
 
         searchSourceBuilder.query(idsQueryBuilder).size(ElasticUtils.MAX_SIZE);
 
@@ -158,7 +158,7 @@ public class UsersRepository {
                 case CALENDAR:
                     String typeES = (type == CALENDAR) ? EventsRepository.CALENDAREVENTS_TYPE : EventsRepository.EVENTS_TYPE;
                     indexes.add(new Index.Builder(
-                            new SearchSourceBuilder().query(QueryBuilders.idsQuery(typeES).addIds(value)).toString()
+                            new SearchSourceBuilder().query(QueryBuilders.termQuery("id", value)).toString()
                     ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
                     break;
             }
