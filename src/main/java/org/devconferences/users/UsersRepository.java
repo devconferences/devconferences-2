@@ -10,6 +10,7 @@ import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.events.search.SimpleSearchResult;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -91,6 +92,22 @@ public class UsersRepository {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, userId).type(USERS_TYPE).build();
         JestResult jestResult = client.execute(get);
         return jestResult.getSourceAsObject(User.class);
+    }
+
+    public List<User> getUsers(List<String> userIds) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        IdsQueryBuilder idsQueryBuilder = QueryBuilders.idsQuery();
+
+        userIds.forEach(idsQueryBuilder::addIds);
+
+        searchSourceBuilder.query(idsQueryBuilder).size(ElasticUtils.MAX_SIZE);
+
+        Search search = new Search.Builder(searchSourceBuilder.toString())
+                .addIndex(DEV_CONFERENCES_INDEX).addType(USERS_TYPE).build();
+
+        SearchResult searchResult = client.execute(search);
+
+        return EventsRepository.getHitsFromSearch(searchResult, User.class);
     }
 
     public DocumentResult addFavourite(User user, FavouriteItem.FavouriteType type, String value) {

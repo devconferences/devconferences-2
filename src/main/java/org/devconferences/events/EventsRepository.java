@@ -16,6 +16,7 @@ import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.CompletionSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.users.User;
+import org.devconferences.users.UsersRepository;
 import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.xcontent.XContentHelper;
@@ -63,7 +64,7 @@ public class EventsRepository {
 
     private static final double GEO_DISTANCE = 20d;
 
-    public final RuntimeJestClient client;
+    private final RuntimeJestClient client;
 
     public EventsRepository() {
         this(createClient());
@@ -133,14 +134,20 @@ public class EventsRepository {
         }
 
         // Find percolators, to notify owners
+        UsersRepository usersRepository = new UsersRepository();
         JestResult jestResult = client.execute(percolate);
 
         List<String> matchedPercolators = getMatchesPercolators(jestResult);
         List<String> ownersPercolators = getPercolatorsOwners(matchedPercolators);
+        List<User> users = usersRepository.getUsers(ownersPercolators);
 
         System.out.println(message);
         System.out.println(matchedPercolators);
         System.out.println(ownersPercolators);
+        System.out.println(users);
+        users.forEach(user -> {
+            System.out.println(user.name());
+        });
     }
 
     private List<String> getMatchesPercolators(JestResult jestResult) {
@@ -606,7 +613,7 @@ public class EventsRepository {
         return getHitsFromSearch(searchResult, CalendarEvent.class);
     }
 
-    public List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
+    public static List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
         return (searchResult.getHits(sourceType).stream()
                 .map((data) -> data.source).collect(Collectors.toList())
         );
