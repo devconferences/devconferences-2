@@ -78,6 +78,7 @@ public final class ElasticUtils {
                 }
                 createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
                 createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
+                createType(UsersRepository.USERS_TYPE, "/elastic/users-mapping.json");
             }
         } catch (NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");

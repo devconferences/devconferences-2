@@ -9,8 +9,11 @@ import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
+import org.devconferences.events.GeopointCities;
 import org.devconferences.events.search.SimpleSearchResult;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.IdsQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -20,6 +23,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
+import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CALENDAR;
+import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CITY;
+import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
+import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 /**
  * Created by chris on 07/06/15.
@@ -120,19 +129,46 @@ public class UsersRepository {
             Collections.sort(listItems);
 
             // Add percolate query
-            SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-            searchSourceBuilder.query(QueryBuilders.queryStringQuery(value));
-            if(type == FavouriteItem.FavouriteType.TAG) {
-                Index index = new Index.Builder(
-                        searchSourceBuilder.toString()
-                ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(user.name() + "_" + value).build();
-
+            List<Index> indexes = new ArrayList<>();
+            String percolatorId =  user.name() + "_" + type.name() + "_" + value;
+            switch(type) {
+                case CITY:
+                    // 2 searches : conference/commu with city term + calendar with geosearch (if gps of city is defined)
+                    GeoPoint geoPoint = GeopointCities.getInstance().getLocation(value);
+                    indexes.add(new Index.Builder(
+                            new SearchSourceBuilder().query(QueryBuilders.termQuery("city", value)).toString()
+                    ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
+                    if(geoPoint != null) {
+                        indexes.add(
+                                new Index.Builder(new SearchSourceBuilder()
+                                        .query(filteredQuery(matchAllQuery(),
+                                                geoDistanceFilter("location.gps")
+                                                        .distance(20d, KILOMETERS)
+                                                        .lat(geoPoint.lat()).lon(geoPoint.lon()))).toString()
+                        ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId + "_geo").build());
+                    }
+                    break;
+                case TAG:
+                    indexes.add(new Index.Builder(
+                            new SearchSourceBuilder().query(QueryBuilders.queryStringQuery(value)).toString()
+                    ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
+                    break;
+                case CONFERENCE:
+                case COMMUNITY:
+                case CALENDAR:
+                    String typeES = (type == CALENDAR) ? EventsRepository.CALENDAREVENTS_TYPE : EventsRepository.EVENTS_TYPE;
+                    indexes.add(new Index.Builder(
+                            new SearchSourceBuilder().query(QueryBuilders.idsQuery(typeES).addIds(value)).toString()
+                    ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
+                    break;
+            }
+            indexes.forEach(index -> {
                 DocumentResult documentResult = client.execute(index);
                 if(!documentResult.isSucceeded()) {
-                    throw new RuntimeException("Impossible to create percolator " + user.name() + "_" + value + "\n" +
+                    throw new RuntimeException("Impossible to create percolator " + index.getId() + "\n" +
                             documentResult.getErrorMessage());
                 }
-            }
+            });
         }
 
         return updateFavourites(user);
@@ -146,13 +182,23 @@ public class UsersRepository {
             listItems.remove(value);
 
             // Remove percolate query
-            if(type == FavouriteItem.FavouriteType.TAG) {
-                Delete delete = new Delete.Builder(user.name() + "_" + value)
-                        .index(DEV_CONFERENCES_INDEX).type(".percolator").id(user.name() + "_" + value).build();
+            String percolatorId =  user.name() + "_" + type.name() + "_" + value;
+            Delete delete = new Delete.Builder(percolatorId)
+                    .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
 
-                DocumentResult documentResult = client.execute(delete);
+            DocumentResult documentResult = client.execute(delete);
+            if(!documentResult.isSucceeded()) {
+                throw new RuntimeException("Impossible to remove percolator " + percolatorId + "\n" +
+                        documentResult.getErrorMessage());
+            }
+            // Remove also geosearch if type is CITY
+            if(type == CITY) {
+                delete = new Delete.Builder(percolatorId + "_geo")
+                        .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
+
+                documentResult = client.execute(delete);
                 if(!documentResult.isSucceeded()) {
-                    throw new RuntimeException("Impossible to remove percolator " + user.name() + "_" + value + "\n" +
+                    throw new RuntimeException("Impossible to remove percolator " + percolatorId + "_geo" + "\n" +
                             documentResult.getErrorMessage());
                 }
             }
