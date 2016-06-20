@@ -11,6 +11,8 @@ var MyFavourites = require('./components/my-favourites');
 var NotFound = require('./components/not-found');
 var BreizhcampTeaser = require('./components/breizhcamp-teaser');
 var Authentication = require('./components/authentication');
+var CalendarPage = require('./components/calendar-page');
+var EventPage = require('./components/event-page');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -78,8 +80,10 @@ var App = React.createClass({
 var routes = (
     <Route path="/" component={App}>
         <IndexRoute component={Home}/>
+        <Route path="/calendar/:id" component={CalendarPage}/>
         <Route path="/city/:id" component={City}/>
         <Route path="/city/:id/:query" component={City}/>
+        <Route path="/event/:id" component={EventPage}/>
         <Route path="/favourites/:type" component={MyFavourites}/>
         <Route path="/search" component={Search}/>
         <Route path="/search/:query" component={Search}/>

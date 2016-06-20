@@ -604,6 +604,20 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
+    public CalendarEvent getCalendarEvent(String eventId) {
+        Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(CALENDAREVENTS_TYPE).build();
+
+        JestResult result = client.execute(get);
+        if(!result.isSucceeded()) {
+            if(result.getResponseCode() == 404) { // Not found : that's not an error
+                return null;
+            } else {
+                throw new RuntimeException(result.getErrorMessage());
+            }
+        }
+        return result.getSourceAsObject(CalendarEvent.class);
+    }
+
 
     public EventSearch searchEvents(String query, String page, String limit) {
         return (EventSearch) search(query, page, EVENTS_TYPE, null, null, limit);

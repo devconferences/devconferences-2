@@ -89,6 +89,12 @@ public class EventsEndPoint {
         return NotFoundException.notFoundIfNull(eventsRepository.getEvent(id));
     }
 
+    @Get("calendar/:id")
+    @AllowOrigin("*")
+    public CalendarEvent getCalendarEvent(String id) {
+        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEvent(id));
+    }
+
     @Post("events/")
     @AllowOrigin("*")
     public void createEvent(Event event){

@@ -80,8 +80,12 @@ function createClient(u) {
         return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/search/calendar?q=${q}&page=${p}&limit=${limit}`).catch(errorCallback));
     }
 
-    function event(id) {
-        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/events/${id}`).catch(errorCallback));
+    function getEvent(id) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/events/${id}`));
+    }
+
+    function getUpcomingEvent(id) {
+        return check.then(nothing => Axios.get(`${actualUrl}/${apiRoot}/calendar/${id}`));
     }
 
     function suggest(query) {
@@ -148,7 +152,8 @@ function createClient(u) {
         },
         cities,
         city,
-        event,
+        getEvent,
+        getUpcomingEvent,
         suggest,
         searchEvents,
         searchCalendar,
