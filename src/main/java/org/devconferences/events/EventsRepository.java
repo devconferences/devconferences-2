@@ -8,6 +8,7 @@ import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
+import io.searchbox.indices.Refresh;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -151,7 +152,12 @@ public class EventsRepository {
         this.usersRepository = usersRepository;
     }
 
-    public void indexOrUpdate(Object obj) {
+
+    /**
+     *
+     * @return true if the document was updated
+     */
+    public boolean indexOrUpdate(Object obj) {
         String updateStringTemplate = "{" +
                 "  \"doc\": %s," +
                 "  \"detect_noop\": true," +
@@ -206,7 +212,7 @@ public class EventsRepository {
             action = NotificationText.Action.UPDATE;
         } else {
             // neither update nor creation => no more actions
-            return;
+            return false;
         }
 
         // Find percolators, to notify owners
@@ -220,7 +226,7 @@ public class EventsRepository {
             message = users.get(0).new Message();
         } else {
             // No user to notify => no more action
-            return;
+            return true;
         }
 
         users.forEach(user -> {
@@ -228,6 +234,7 @@ public class EventsRepository {
             usersRepository.addMessage(user, message);
         });
 
+        return true;
     }
 
     private void setupMessage(User.Message message, Object obj, NotificationText.Action action, UsersRepository.FavouriteItem.FavouriteType type, int count) {

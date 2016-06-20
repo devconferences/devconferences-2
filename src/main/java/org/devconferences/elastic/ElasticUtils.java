@@ -90,19 +90,6 @@ public final class ElasticUtils {
         return client.execute(indicesExists);
     }
 
-    private static void deleteType(String type) {
-        try (RuntimeJestClient client = createClient();) {
-            DeleteMapping deleteMap = new DeleteMapping.Builder(DEV_CONFERENCES_INDEX, type).build();
-            JestResult deleteMapResult = client.execute(deleteMap);
-            if(!deleteMapResult.isSucceeded()) {
-                throw new IllegalStateException("Can't delete data from '" + type +
-                        "' : " + deleteMapResult.getJsonString());
-            }
-        } catch (NullPointerException e) {
-            LOGGER.warn("No RuntimeJestClient have been created !");
-        }
-    }
-
     private static void createType(String type, String mappingFilePath) {
         try (RuntimeJestClient client = createClient();) {
             String mappingFile;
@@ -120,35 +107,6 @@ public final class ElasticUtils {
         } catch (NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }
-    }
-
-    public static void deleteData(String type) {
-        String mappingFile;
-        switch (type) {
-            case EventsRepository.EVENTS_TYPE:
-                mappingFile = "/elastic/events-mapping.json";
-                break;
-            case EventsRepository.CALENDAREVENTS_TYPE:
-                mappingFile = "/elastic/calendarevents-mapping.json";
-                break;
-            case UsersRepository.USERS_TYPE:
-                mappingFile = "/elastic/users-mapping.json";
-                break;
-            default:
-                throw new RuntimeException("Type " + type + " unknown");
-        }
-        deleteDataJob(type, mappingFile);
-    }
-
-    private static void deleteDataJob(String type, String mappingFile) {
-        LOGGER.info("Delete data from '" + type + "' type...");
-        // Need to delete type then re-create it...
-        try {
-            deleteType(type);
-        } catch(IllegalStateException e) {
-            LOGGER.warn("Type '" + type + "' doesn't exist !\n" + e);
-        }
-        createType(type, mappingFile);
     }
 
     public static void deleteIndex() {

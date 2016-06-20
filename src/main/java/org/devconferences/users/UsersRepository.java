@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.inject.Singleton;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
+import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;

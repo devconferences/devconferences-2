@@ -2,6 +2,7 @@ package org.devconferences.jobs;
 
 import com.google.gson.*;
 import io.searchbox.core.Count;
+import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -57,6 +58,10 @@ public abstract class AbstractImportJSONJob {
     protected int importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
         EventsRepository eventsRepository = new EventsRepository(client);
 
+        // Refresh ES on every document update (assume update are only when start server...)
+        // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
+        final Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+
         final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import data (" + classInfo.getSimpleName() + ")...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
@@ -64,11 +69,14 @@ public abstract class AbstractImportJSONJob {
                     .fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
             Object object2 = forEachFunc.apply(object, path);
             if(object2 != null) {
-                eventsRepository.indexOrUpdate(classInfo.cast(object));
-                totalEvents[0]++;
+                boolean isUpdated = eventsRepository.indexOrUpdate(classInfo.cast(object));
+                if(isUpdated) {
+                    client.execute(refresh);
+                    totalEvents[0]++;
+                }
             }
         });
-        LOGGER.info(totalEvents[0] + " files imported !");
+        LOGGER.info(totalEvents[0] + " document(s) updated !");
 
         return totalEvents[0];
     }

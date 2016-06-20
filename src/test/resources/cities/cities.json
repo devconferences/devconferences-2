@@ -7,6 +7,10 @@
         {
             "name": "the_city2",
             "location": "47.4800,-0.5400"
+        },
+        {
+            "name": "City 2",
+            "location": "44.0500,5.4500"
         }
     ]
 }

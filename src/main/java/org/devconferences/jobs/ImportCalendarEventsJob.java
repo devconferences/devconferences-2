@@ -2,6 +2,7 @@ package org.devconferences.jobs;
 
 import com.google.gson.*;
 import io.searchbox.core.Index;
+import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -218,9 +219,17 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                     }
                     removeHTMLTagsAndAddNewlines(data, null);
 
-                    eventsRepository.indexOrUpdate(data);
+                    boolean isUpdated = eventsRepository.indexOrUpdate(data);
 
-                    totalMeetupImport[0]++;
+                    if(isUpdated) {
+                        // Refresh ES on every document update (assume update are only when start server...)
+                        // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
+                        Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+                        client.execute(refresh);
+
+                        totalMeetupImport[0]++;
+                    }
+
                 });
 
                 totalMeetupImport[1]++;
@@ -231,7 +240,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                 throw new RuntimeException(e);
             }
         });
-        LOGGER.info(totalMeetupImport[0] + " events imported from Meetup !");
+        LOGGER.info(totalMeetupImport[0] + " document(s) updated from Meetup !");
 
         return totalMeetupImport[0];
     }

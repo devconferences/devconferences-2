@@ -1,5 +1,6 @@
 package org.devconferences.events;
 
+import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.*;
 import org.devconferences.events.search.CalendarEventSearch;
@@ -17,6 +18,8 @@ import org.junit.Test;
 import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.UUID;
+
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 
 public class EventsRepositoryTest {
     private static EventsRepository eventsRepository;
@@ -81,11 +84,11 @@ public class EventsRepositoryTest {
         eventsRepository.indexOrUpdate(calendarEvent1);
         eventsRepository.indexOrUpdate(calendarEvent2);
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+        // Refresh ES on every document update (assume update are only when start server...)
+        // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
+        Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+        ElasticUtils.createClient().execute(refresh);
     }
 
     @AfterClass

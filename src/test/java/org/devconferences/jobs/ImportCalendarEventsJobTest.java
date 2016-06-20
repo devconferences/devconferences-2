@@ -28,12 +28,6 @@ public class ImportCalendarEventsJobTest {
     public static void classSetUp() {
         DeveloppementESNode.createDevNode("9250");
         ElasticUtils.createIndex();
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     @AfterClass
