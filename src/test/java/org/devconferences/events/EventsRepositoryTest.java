@@ -1,11 +1,13 @@
 package org.devconferences.events;
 
+import com.google.gson.Gson;
 import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.*;
 import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.events.search.CompletionSearch;
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.internal.InternalNode;
@@ -73,12 +75,16 @@ public class EventsRepositoryTest {
         calendarEvent1.name = "Lorem : 42e ipsum";
         calendarEvent1.description = "an awesome conf";
         calendarEvent1.url = "http://www.example.com";
+        calendarEvent1.location = calendarEvent1.new Location();
+        calendarEvent1.location.gps = new GeoPoint(44.0500,5.4500);
         calendarEvent1.date = 2065938828000L;
         CalendarEvent calendarEvent2 = new CalendarEvent();
         calendarEvent2.id = "2";
         calendarEvent2.name = "26e Cigale 42";
         calendarEvent2.description = "Event 2";
         calendarEvent2.url = "http://www.example2.com";
+        calendarEvent2.location = calendarEvent1.new Location();
+        calendarEvent2.location.gps = new GeoPoint(88.0500,-45.4500);
         calendarEvent2.date = 2065938828000L;
 
         eventsRepository.indexOrUpdate(calendarEvent1);
@@ -187,6 +193,15 @@ public class EventsRepositoryTest {
         Assertions.assertThat(city.conferences.get(0).type).isEqualTo(Event.Type.CONFERENCE);
         Assertions.assertThat(city.conferences.get(1).type).isEqualTo(Event.Type.CONFERENCE);
         Assertions.assertThat(city.conferences.get(2).type).isEqualTo(Event.Type.CONFERENCE);
+        Assertions.assertThat(city.upcoming_events).hasSize(0);
+
+        // With geosearch of CalendarEvent
+        city = eventsEndPoint.city("City 2", null);
+        System.err.println(new Gson().toJson(city));
+        Assertions.assertThat(city.conferences).hasSize(1);
+        Assertions.assertThat(city.communities).hasSize(0);
+        Assertions.assertThat(city.upcoming_events).hasSize(1);
+        Assertions.assertThat(city.upcoming_events.get(0).id).matches("1");
     }
 
     @Test

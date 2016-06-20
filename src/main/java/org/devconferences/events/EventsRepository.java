@@ -8,7 +8,6 @@ import io.searchbox.core.search.aggregation.Bucket;
 import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
-import io.searchbox.indices.Refresh;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -166,7 +165,6 @@ public class EventsRepository {
         Get get;
         Update update;
         Percolate percolate;
-        String messageTextTemplate;
 
         // Prepare queries (get, update, percolate, depends of class)
         if(obj instanceof CalendarEvent) {
