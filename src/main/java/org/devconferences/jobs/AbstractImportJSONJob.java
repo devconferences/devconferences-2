@@ -6,6 +6,7 @@ import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.EventsRepository;
+import org.devconferences.users.UsersRepository;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;

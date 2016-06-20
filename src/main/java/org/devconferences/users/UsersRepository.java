@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
+import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CALENDAR;
 import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CITY;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
@@ -50,7 +51,8 @@ public class UsersRepository {
     private final EventsRepository eventsRepository;
 
     public UsersRepository() {
-        this(ElasticUtils.createClient(), new EventsRepository());
+        this.client = createClient();
+        this.eventsRepository = new EventsRepository(createClient(), this);
     }
 
     public UsersRepository(RuntimeJestClient client, EventsRepository eventsRepository) {

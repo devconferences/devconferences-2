@@ -1,32 +1,57 @@
 package org.devconferences.users;
 
 import org.assertj.core.api.Assertions;
-import org.devconferences.elastic.MockJestClient;
-import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.elastic.RuntimeJestClientAdapter;
+import org.devconferences.elastic.*;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.events.search.SimpleSearchResult;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.mockito.Mockito.mock;
-
 public class UserRepositoryTest {
-    private RuntimeJestClientAdapter mockClient;
-    private UsersRepository usersRepository;
-    private EventsRepository eventsRepository;
-    private User user;
+    private static UsersRepository usersRepository;
+    private static EventsRepository eventsRepository;
+    private static User user;
 
-    @Before
-    public void setUp() {
-        mockClient = mock(RuntimeJestClientAdapter.class);
+    @BeforeClass
+    public static void classSetUp() {
+        DeveloppementESNode.createDevNode("9250");
+        ElasticUtils.createIndex();
 
-        eventsRepository = new EventsRepository(mockClient);
-        usersRepository = new UsersRepository(mockClient, eventsRepository);
+        eventsRepository = new EventsRepository();
+        usersRepository = new UsersRepository(ElasticUtils.createClient(), eventsRepository);
         user = new User("abc1234", "1243012.0", "foo@devconferences.org", "/img/no_logo.png");
+
+        CalendarEvent calendarEvent1 = new CalendarEvent();
+        calendarEvent1.id = "1";
+        calendarEvent1.name = "Event 1";
+        calendarEvent1.description = "Event 1 - In Favourite";
+        calendarEvent1.url = "http://www.example1.com";
+        calendarEvent1.date = 2065938828000L;
+        CalendarEvent calendarEvent2 = new CalendarEvent();
+        calendarEvent2.id = "2";
+        calendarEvent2.name = "Event 2";
+        calendarEvent2.description = "Event 2 - In Favourite";
+        calendarEvent2.url = "http://www.example2.com";
+        calendarEvent2.date = 2065938828000L;
+
+        eventsRepository.indexOrUpdate(calendarEvent1);
+        eventsRepository.indexOrUpdate(calendarEvent2);
+
+        usersRepository.save(user);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
+    @AfterClass
+    public static void tearDownOne() {
+        ElasticUtils.deleteIndex();
+    }
 
     @Test
     public void testGetListItems() {
@@ -59,40 +84,24 @@ public class UserRepositoryTest {
 
         // remove favourite
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.TAG, "Ruben");
-
         Assertions.assertThat(user.favourites.tags.size()).isEqualTo(0);
 
-        // Get favourite for a type
-        String searchByIds = "[" +
-                "  {" +
-                "    \"_index\" : \"dev-conferences\"," +
-                "    \"_type\" : \"calendarevents\"," +
-                "    \"_id\" : \"1\"," +
-                "    \"_source\" : {" +
-                "        \"id\" : \"1\"," +
-                "        \"name\" : \"Event 1 - In Favourite\"," +
-                "        \"description\" : \"Event 1\"," +
-                "        \"url\" : \"http://www.example.com\"" +
-                "    }" +
-                "  }," +
-                "  {" +
-                "    \"_index\" : \"dev-conferences\"," +
-                "    \"_type\" : \"calendarevents\"," +
-                "    \"_id\" : \"2\"," +
-                "    \"_source\" : {" +
-                "        \"id\" : \"2\"," +
-                "        \"name\" : \"Event 2\"," +
-                "        \"description\" : \"Event 2- In favourite\"," +
-                "        \"url\" : \"http://www.example2.com\"" +
-                "    }" +
-                "  }" +
-                "]";
-        MockJestClient.configSearch(mockClient, 2, searchByIds, "{}");
+
+        // Search cCalendarEvents which match with a favourite
+        usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CALENDAR, "1");
+        usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CALENDAR, "2");
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         SimpleSearchResult simpleSearchResult = usersRepository.getFavourites(user, UsersRepository.FavouriteItem.FavouriteType.CALENDAR);
         Assertions.assertThat(simpleSearchResult.query).matches("favourites/CALENDAR");
         Assertions.assertThat(simpleSearchResult.hits.size()).isEqualTo(2);
         Assertions.assertThat(simpleSearchResult.hits.get(0)).isInstanceOf(CalendarEvent.class);
-        Assertions.assertThat(((CalendarEvent) simpleSearchResult.hits.get(0)).name).isEqualTo("Event 1 - In Favourite");
+        Assertions.assertThat(((CalendarEvent) simpleSearchResult.hits.get(0)).name).isEqualTo("Event 1");
 
         // Other types
         simpleSearchResult = usersRepository.getFavourites(user, UsersRepository.FavouriteItem.FavouriteType.CONFERENCE);

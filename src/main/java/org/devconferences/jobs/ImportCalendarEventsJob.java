@@ -211,6 +211,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             try {
                 List<ESCalendarEvents> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
 
+
                 listCalendarEvent.forEach(data -> {
                     if(data.description == null) {
                         data.description = "Pas de description.";

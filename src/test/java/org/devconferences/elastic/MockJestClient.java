@@ -134,7 +134,7 @@ public class MockJestClient {
         when(mock.execute(isA(Update.class))).thenReturn(mockUpdateResult);
     }
 
-    private static void configJestResult(JestResult mockJestResult, String jsonString, boolean isSucceeded, String pathToResult) {
+    public static void configJestResult(JestResult mockJestResult, String jsonString, boolean isSucceeded, String pathToResult) {
         mockJestResult.setJsonString(jsonString);
         mockJestResult.setSucceeded(isSucceeded);
         mockJestResult.setJsonObject(new JsonParser().parse(jsonString).getAsJsonObject());

@@ -1,20 +1,18 @@
 package org.devconferences.jobs;
 
-import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
-import org.devconferences.elastic.MockJestClient;
-import org.devconferences.elastic.RuntimeJestClientAdapter;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
 import org.devconferences.meetup.MeetupApiClient;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
-import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,36 +21,44 @@ import static org.mockito.Mockito.when;
  */
 public class ImportCalendarEventsJobTest {
     private ImportCalendarEventsJob importCalendarEventsJob;
-    private RuntimeJestClientAdapter mockJestClient;
+    private ImportEventsJob importEventsJob;
     private MeetupApiClient mockMeetupClient;
 
     @BeforeClass
-    public static void setUpOnce() {
-        DeveloppementESNode.setPortNode("0");
+    public static void classSetUp() {
+        DeveloppementESNode.createDevNode("9250");
+        ElasticUtils.createIndex();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public static void tearDownOne() {
+        ElasticUtils.deleteIndex();
     }
 
     @Before
     public void setUp() {
-        mockJestClient = MockJestClient.createMock();
         mockMeetupClient = mock(MeetupApiClient.class);
-        importCalendarEventsJob = new ImportCalendarEventsJob(mockJestClient, mockMeetupClient);
+        importCalendarEventsJob = new ImportCalendarEventsJob(ElasticUtils.createClient(), mockMeetupClient);
+        importEventsJob = new ImportEventsJob();
     }
 
     @Test
     public void testReloadData() {
-        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
         int totalImportedFiles = importCalendarEventsJob.reloadData(true);
         Assertions.assertThat(totalImportedFiles).isEqualTo(0); // 1 file ignored
     }
 
     @Test
     public void testMeetupIdsList() {
-        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
-
         // When reload Events
         ImportCalendarEventsJob.idMeetupList.clear();
 
-        ImportEventsJob importEventsJob = new ImportEventsJob(mockJestClient);
         importEventsJob.reloadData(true);
         importCalendarEventsJob.reloadData(true);
 
@@ -69,11 +75,15 @@ public class ImportCalendarEventsJobTest {
 
     @Test
     public void testMeetupImport() {
-        when(mockJestClient.execute(isA(Delete.class))).thenReturn(null);
-
         ESCalendarEvents calendarEvent1 = new ESCalendarEvents();
+        calendarEvent1.id = "1562462143";
+        calendarEvent1.name = "Event 1";
         ESCalendarEvents calendarEvent2 = new ESCalendarEvents();
+        calendarEvent2.id = "1562462144";
+        calendarEvent2.name = "Event 2";
         ESCalendarEvents calendarEvent3 = new ESCalendarEvents();
+        calendarEvent3.id = "1562462145";
+        calendarEvent3.name = "Event 3";
         ArrayList<ESCalendarEvents> calendarEventAaaa = new ArrayList<>();
         calendarEventAaaa.add(calendarEvent1);
         ArrayList<ESCalendarEvents> calendarEventBbbb = new ArrayList<>();

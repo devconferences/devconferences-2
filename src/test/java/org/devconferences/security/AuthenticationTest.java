@@ -50,6 +50,7 @@ public class AuthenticationTest {
 
     @Test
     public void testConnect() {
+        DeveloppementESNode.deleteDevNode();
         DeveloppementESNode.setPortNode("9450");
         GithubCalls mockGithub = mock(GithubCalls.class);
         Response responseUser = mock(Response.class);

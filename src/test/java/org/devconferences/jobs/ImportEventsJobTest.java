@@ -1,30 +1,37 @@
 package org.devconferences.jobs;
 
-import io.searchbox.core.Delete;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
-import org.devconferences.elastic.MockJestClient;
-import org.devconferences.elastic.RuntimeJestClientAdapter;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.Event;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.mockito.Mockito.*;
-
 public class ImportEventsJobTest {
     private ImportEventsJob importEventsJob;
-    private RuntimeJestClientAdapter mockClient;
 
     @BeforeClass
-    public static void setUpOnce() {
-        DeveloppementESNode.setPortNode("0");
+    public static void classSetUp() {
+        DeveloppementESNode.createDevNode("9250");
+        ElasticUtils.createIndex();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public static void tearDownOne() {
+        ElasticUtils.deleteIndex();
     }
 
     @Before
     public void setUp() {
-        mockClient = MockJestClient.createMock();
-        importEventsJob = new ImportEventsJob(mockClient);
+        importEventsJob = new ImportEventsJob();
     }
 
     @Test
@@ -80,7 +87,6 @@ public class ImportEventsJobTest {
     @Test
     public void testReloadData() {
         int totalImportedFiles = importEventsJob.reloadData(true);
-        when(mockClient.execute(isA(Delete.class))).thenReturn(null);
         Assertions.assertThat(totalImportedFiles).isEqualTo(2);
     }
 

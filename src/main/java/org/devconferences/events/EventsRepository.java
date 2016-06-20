@@ -133,14 +133,22 @@ public class EventsRepository {
 
     private final RuntimeJestClient client;
     private int updateCounter;
+    private final UsersRepository usersRepository;
 
     public EventsRepository() {
-        this(createClient());
+        this(createClient(), new UsersRepository());
     }
 
     public EventsRepository(RuntimeJestClient client) {
         this.client = client;
         this.updateCounter = 1;
+        this.usersRepository = new UsersRepository();
+    }
+
+    public EventsRepository(RuntimeJestClient client, UsersRepository usersRepository) {
+        this.client = client;
+        this.updateCounter = 1;
+        this.usersRepository = usersRepository;
     }
 
     public void indexOrUpdate(Object obj) {
@@ -202,11 +210,9 @@ public class EventsRepository {
         }
 
         // Find percolators, to notify owners
-        UsersRepository usersRepository = new UsersRepository();
         JestResult jestResult = client.execute(percolate);
 
         List<String> matchedPercolators = getMatchesPercolators(jestResult);
-        System.out.println(matchedPercolators);
         Map<String, UsersRepository.FavouriteItem.FavouriteType> ownersPercolators = getPercolatorsOwners(matchedPercolators);
         List<User> users = usersRepository.getUsers(ownersPercolators);
         final User.Message message;
@@ -216,10 +222,6 @@ public class EventsRepository {
             // No user to notify => no more action
             return;
         }
-
-        // Logging
-        setupMessage(message, obj, action, UsersRepository.FavouriteItem.FavouriteType.TAG, (this.updateCounter));
-        System.out.println(message.text);
 
         users.forEach(user -> {
             setupMessage(message, obj, action, ownersPercolators.get(user.name()), (this.updateCounter)++);
@@ -291,7 +293,6 @@ public class EventsRepository {
             if(!owners.containsKey(values[0])) {
                 owners.put(values[0], favType);
             } else {
-                System.out.println(favType + " <-> " + owners.get(values[0]) + " ==> " + favType.compareTo(owners.get(values[0])));
                 if (favType.compareTo(owners.get(values[0])) > 0) {
                     owners.replace(values[0], favType);
                 }
