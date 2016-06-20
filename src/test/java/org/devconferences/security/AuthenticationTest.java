@@ -58,7 +58,7 @@ public class AuthenticationTest {
         Context context = mock(Context.class);
         Cookie cookie = mock(Cookie.class);
         Cookies cookies = mock(Cookies.class);
-        Authentication.GitHubAuthenticationResponse githubResponse = authentication.new GitHubAuthenticationResponse();
+        GitHubAuthenticationResponse githubResponse = new GitHubAuthenticationResponse();
         githubResponse.accessToken = "azoekmv646ZEKMKL51aze";
         String githubUser = "{" +
                 "  \"login\": \"user123\"," +

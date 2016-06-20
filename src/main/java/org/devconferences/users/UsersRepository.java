@@ -237,12 +237,16 @@ public class UsersRepository {
                 "    \"favourites\": %s" +
                 "  }" +
                 "}";
+
         String updateString = String.format(updateStringTemplate, new Gson().toJson(user.favourites));
 
         Update update = new Update.Builder(updateString)
                 .index(DEV_CONFERENCES_INDEX).type(USERS_TYPE).id(user.login).build();
 
-        return client.execute(update);
+        DocumentResult result = client.execute(update);
+
+        return result;
+
     }
 
     public DocumentResult addMessage(User user, User.Message message) {

@@ -1,18 +1,34 @@
 package org.devconferences.users;
 
+import net.codestory.http.Context;
+import net.codestory.http.Cookie;
+import net.codestory.http.Cookies;
+import org.apache.http.client.fluent.Content;
+import org.apache.http.client.fluent.Response;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.*;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.events.search.SimpleSearchResult;
+import org.devconferences.security.Authentication;
+import org.devconferences.security.Encrypter;
+import org.devconferences.security.GitHubAuthenticationResponse;
+import org.devconferences.security.GithubCalls;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class UserRepositoryTest {
     private static UsersRepository usersRepository;
     private static EventsRepository eventsRepository;
+    private static Authentication authentication;
     private static User user;
+    private static Context contextMock;
 
     @BeforeClass
     public static void classSetUp() {
@@ -21,6 +37,7 @@ public class UserRepositoryTest {
 
         eventsRepository = new EventsRepository();
         usersRepository = new UsersRepository(ElasticUtils.createClient(), eventsRepository);
+        authentication = new Authentication(new Encrypter(), usersRepository, configGithubCalls());
         user = new User("abc1234", "1243012.0", "foo@devconferences.org", "/img/no_logo.png");
 
         CalendarEvent calendarEvent1 = new CalendarEvent();
@@ -41,11 +58,63 @@ public class UserRepositoryTest {
 
         usersRepository.save(user);
 
+        contextMock = configContext();
+
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    private static GithubCalls configGithubCalls() {
+        GithubCalls mockGithub = mock(GithubCalls.class);
+        Response responseUser = mock(Response.class);
+        Content contentMock = mock(Content.class);
+        Context context = mock(Context.class);
+        Cookie cookie = mock(Cookie.class);
+        Cookies cookies = mock(Cookies.class);
+        GitHubAuthenticationResponse githubResponse = new GitHubAuthenticationResponse();
+        githubResponse.accessToken = "azoekmv646ZEKMKL51aze";
+        String githubUser = "{" +
+                "  \"login\": \"abc1234\"," +
+                "  \"id\": 1243012," +
+                "  \"avatar_url\": \"/img/no_logo.png\"," +
+                "  \"email\": \"foo@devconferences.org\"" +
+                "}";
+
+        when(context.cookies()).thenReturn(cookies);
+        when(cookies.get("access_token")).thenReturn(cookie);
+        when(cookie.name()).thenReturn("access_token");
+        when(cookie.value()).thenReturn(new Encrypter().encrypt(githubResponse.accessToken));
+
+        // Try to authorize connection
+        try {
+            when(contentMock.asString()).thenReturn(githubUser);
+            when(responseUser.returnContent()).thenReturn(contentMock);
+            when(mockGithub.getUser(githubResponse.accessToken, true)).thenReturn(responseUser);
+            when(mockGithub.authorize("a1b2c3d4e5f67890")).thenReturn(githubResponse);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return mockGithub;
+    }
+
+    private static Context configContext() {
+        Context context = mock(Context.class);
+        Cookies cookies = mock(Cookies.class);
+        Cookie cookie = mock(Cookie.class);
+
+        String accessToken = "azoekmv646ZEKMKL51aze";
+        when(context.cookies()).thenReturn(cookies);
+
+        when(cookies.get("access_token")).thenReturn(cookie);
+        when(cookie.name()).thenReturn("access_token");
+        when(cookie.value()).thenReturn(new Encrypter().encrypt(accessToken));
+
+        return context;
     }
 
     @AfterClass
@@ -77,14 +146,34 @@ public class UserRepositoryTest {
         Assertions.assertThat(user.favourites.tags.size()).isEqualTo(0);
 
         // Add favourite
-        usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.TAG, "Ruben");
+        UsersRepository.FavouriteItem favourite = new UsersRepository.FavouriteItem();
+        favourite.type = UsersRepository.FavouriteItem.FavouriteType.TAG;
+        favourite.value = "Ruben";
+        authentication.addFavourite(favourite, contextMock);
 
-        Assertions.assertThat(user.favourites.tags.size()).isEqualTo(1);
-        Assertions.assertThat(user.favourites.tags.get(0)).matches("Ruben");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        User user1 = authentication.getUser(contextMock);
+        Assertions.assertThat(user1.favourites.tags.size()).isEqualTo(1);
+        Assertions.assertThat(user1.favourites.tags.get(0)).matches("Ruben");
+        Assertions.assertThat(authentication.getFavouritesPerType("CONFERENCE", contextMock).hits).hasSize(0);
+        Assertions.assertThat(authentication.getFavouritesPerType("COMMUNITY", contextMock).hits).hasSize(0);
 
         // remove favourite
-        usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.TAG, "Ruben");
-        Assertions.assertThat(user.favourites.tags.size()).isEqualTo(0);
+        authentication.removeFavourite(favourite.type.toString(), favourite.value, null, contextMock);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        user1 = authentication.getUser(contextMock);
+        Assertions.assertThat(user1.favourites.tags.size()).isEqualTo(0);
 
 
         // Search cCalendarEvents which match with a favourite
