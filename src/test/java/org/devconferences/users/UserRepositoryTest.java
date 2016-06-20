@@ -331,6 +331,14 @@ public class UserRepositoryTest {
         Assertions.assertThat(user1.messages.get(3).text).matches("Une comunauté dans une ville favorite a été créée : Event 7");
         Assertions.assertThat(user1.messages.get(4).text).matches("Un événement favori a été mis à jour : Event 1");
 
+        // Read messages
+        user1.messages.forEach(message -> {
+            authentication.deletMessage(message.id, contextMock);
+            client.execute(refresh);
+        });
+
+        Assertions.assertThat(authentication.getUser(contextMock).messages).hasSize(0);
+
         // TearDown
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CALENDAR, "1");
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.COMMUNITY, "3");
