@@ -31,6 +31,7 @@ public class User implements net.codestory.http.security.User {
         public String id;
         public Long date;
         public String text;
+        public String link;
 
         @Override
         public boolean equals(Object o) {
@@ -41,6 +42,7 @@ public class User implements net.codestory.http.security.User {
 
             if (!id.equals(message.id)) return false;
             if (!date.equals(message.date)) return false;
+            if (!link.equals(message.link)) return false;
             return text.equals(message.text);
         }
 
@@ -49,6 +51,7 @@ public class User implements net.codestory.http.security.User {
             int result = id.hashCode();
             result = 31 * result + date.hashCode();
             result = 31 * result + text.hashCode();
+            result = 31 * result + link.hashCode();
             return result;
         }
     }

@@ -255,10 +255,12 @@ public class EventsRepository {
                     break;
             }
             objName = event.name;
+            message.link = "/event/" + event.id;
         } else if(obj instanceof CalendarEvent) {
             CalendarEvent calendarEvent = (CalendarEvent) obj;
             objType = NotificationText.What.CALENDAR;
             objName = calendarEvent.name;
+            message.link = "/calendar/" + calendarEvent.id;
         } else {
             throw new RuntimeException("Unknown class : " + obj.getClass().getName());
         }
