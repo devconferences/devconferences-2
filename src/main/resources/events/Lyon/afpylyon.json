@@ -3,7 +3,7 @@
     "name": "AFPY Lyon",
     "avatar": "http://www.afpy.org/logo.png",
     "description": "Antenne lyonnaise de l'AFPY (Association Francophone Python). Nous nous réunissons chaque mois pour un apéro Python, au cours duquel un participant effectue une présentation.",
-    "website": "http://www.afpy.org/",
+    "url": "http://www.afpy.org/",
     "twitter": "alain_afpy",
     "type": "COMMUNITY"
 }

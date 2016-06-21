@@ -19,10 +19,10 @@ var Event = React.createClass({
 
     render: function () {
         var renderWebsite = function (event) {
-            if (event.website) {
+            if (event.url) {
                 return (
                     <p>
-                        <WebsiteLink url={event.website} />
+                        <WebsiteLink url={event.url} />
                     </p>
                 )
             }

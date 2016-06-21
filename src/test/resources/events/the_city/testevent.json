@@ -1,7 +1,7 @@
 {
     "id": "testevent",
     "name": "Event pour Test",
-    "website": "http://www.event-test.com",
+    "url": "http://www.event-test.com",
     "description": "Event pour Test.",
     "type": "COMMUNITY",
     "meetup": "lskfpfs1265"

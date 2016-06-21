@@ -3,7 +3,7 @@
     "name": "DevFest Nantes",
     "avatar": "http://www.devfest.info/images/gdgbig.png",
     "description": "Il s’agit d’une journée complète de conférences sur Android, Dart, AppEngine, Angular JS, Chrome, HTML5, Google Drive, Go, GWT... Une occasion unique de partager et d’échanger autour des technologies du Web et du Cloud. Cet évènement a regroupé plus de 500 participants en 2014 à Nantes.",
-    "website": "http://devfest.gdgnantes.com",
+    "url": "http://devfest.gdgnantes.com",
     "twitter": "gdgnantes",
     "type": "CONFERENCE"
 }

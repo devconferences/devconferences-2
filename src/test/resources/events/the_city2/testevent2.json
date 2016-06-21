@@ -1,7 +1,7 @@
 {
     "id": "testevent2",
     "name": "Event 2 pour Test",
-    "website": "http://www.event2-test.com",
+    "url": "http://www.event2-test.com",
     "description": "Event 2 pour Test.",
     "type": "COMMUNITY"
 }

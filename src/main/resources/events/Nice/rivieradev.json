@@ -3,7 +3,7 @@
     "name": "Riviera DEV",
     "avatar": "https://pbs.twimg.com/profile_images/729397740736806913/MZCWqb6U_400x400.jpg",
     "description": "Riviera DEV, la plus grande conférence de développeurs de la Côte d'Azur.",
-    "website": "http://www.rivieradev.fr",
+    "url": "http://www.rivieradev.fr",
     "twitter": "RivieraDev",
     "type": "CONFERENCE"
 }

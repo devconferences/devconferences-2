@@ -3,7 +3,7 @@
     "name": "Toulouse JUG",
     "avatar": "https://pbs.twimg.com/profile_images/1276625408/avatar.JPEG",
     "description": "Le Toulouse JUG est un groupe d’utilisateurs Java ayant pour but de réunir les acteurs du langage (professionnels, communautés open source, institutions, étudiants, enseignants…) afin d’échanger des idées et de discuter des avancées technologiques de la plateforme Java. Nous nous rencontrons une fois par mois. Les réunions sont gratuites, ouvertes à tous et consistent le plus souvent en une présentation technique, une démonstration d’un produit, ou une table ronde. Après la rencontre, nous nous retrouvons généralement pour discuter autour d’un verre et d’un mini-buffet.",
-    "website": "http://www.toulousejug.org",
+    "url": "http://www.toulousejug.org",
     "twitter": "toulousejug",
     "type": "COMMUNITY"
 }

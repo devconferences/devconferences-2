@@ -96,7 +96,7 @@ Une rapide description de l'Event.
 
 ### Attributs recommandés
 
-#### `website`
+#### `url`
 
 Le site web de l'Event.
 

@@ -3,7 +3,7 @@
     "name": "dotRB",
     "avatar": "http://www.dotconferences.eu/common/images/dotrb-logo.png",
     "description": "The largest Ruby conference in France.",
-    "website": "http://www.dotrb.eu",
+    "url": "http://www.dotrb.eu",
     "twitter": "dotRBeu",
     "type": "CONFERENCE"
 }

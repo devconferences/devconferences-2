@@ -3,7 +3,7 @@
     "name": "France JS",
     "avatar": "http://francejs.org/assets/img/logo.svg",
     "description": "FranceJS, c'est l'ensemble des communautés francophones autour de JavaScript.",
-    "website": "http://francejs.org",
+    "url": "http://francejs.org",
     "twitter": "francejs",
     "type": "CONFERENCE"
 }

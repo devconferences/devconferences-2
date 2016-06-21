@@ -3,7 +3,7 @@
     "name": "Scala IO",
     "avatar": "http://scala.io/assets/images/logos/scalaio/scalaio_medium.png",
     "description": "L'événement autour du langage Scala à Paris !",
-    "website": "http://scala.io",
+    "url": "http://scala.io",
     "twitter": "ScalaIO_FR",
     "type": "CONFERENCE"
 }

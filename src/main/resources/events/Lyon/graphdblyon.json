@@ -3,7 +3,7 @@
     "name": "Neo4j Graph Database Lyon",
     "avatar": "http://photos1.meetupstatic.com/photos/event/7/b/c/2/global_292711682.jpeg",
     "description": "Ce groupe à pour objectif de réunir les personnes intéressées par les bases de données NoSql de graphe. Tous les utilisateurs sont les bienvenus, depuis le développeur jusqu'à l'utilisateur final en passant par le simple curieux. A bientôt dans le graphe !",
-    "website": "http://www.meetup.com/graphdb-lyon",
+    "url": "http://www.meetup.com/graphdb-lyon",
     "meetup": "graphdb-lyon",
     "type": "COMMUNITY"
 }

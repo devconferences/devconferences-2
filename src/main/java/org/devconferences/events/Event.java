@@ -3,7 +3,6 @@ package org.devconferences.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.devconferences.elastic.Completion;
 import org.elasticsearch.common.geo.GeoPoint;
 
 public class Event {
@@ -12,7 +11,7 @@ public class Event {
     public String name;
     public String avatar;
     public String description;
-    public String website;
+    public String url;
     public String twitter;
     public String facebook;
     public String meetup;
@@ -32,7 +31,7 @@ public class Event {
         name = obj.name;
         avatar = obj.avatar;
         description = obj.description;
-        website = obj.website;
+        url = obj.url;
         twitter = obj.twitter;
         facebook = obj.facebook;
         meetup = obj.meetup;
@@ -61,7 +60,7 @@ public class Event {
         if (name != null ? !name.equals(event.name) : event.name != null) return false;
         if (avatar != null ? !avatar.equals(event.avatar) : event.avatar != null) return false;
         if (description != null ? !description.equals(event.description) : event.description != null) return false;
-        if (website != null ? !website.equals(event.website) : event.website != null) return false;
+        if (url != null ? !url.equals(event.url) : event.url != null) return false;
         if (twitter != null ? !twitter.equals(event.twitter) : event.twitter != null) return false;
         if (facebook != null ? !facebook.equals(event.facebook) : event.facebook != null) return false;
         if (meetup != null ? !meetup.equals(event.meetup) : event.meetup != null) return false;
@@ -80,7 +79,7 @@ public class Event {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (avatar != null ? avatar.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (website != null ? website.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
         result = 31 * result + (twitter != null ? twitter.hashCode() : 0);
         result = 31 * result + (facebook != null ? facebook.hashCode() : 0);
         result = 31 * result + (meetup != null ? meetup.hashCode() : 0);

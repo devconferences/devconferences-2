@@ -45,6 +45,7 @@ public class EventsRepositoryTest {
         event1.id = "1";
         event1.name = "awesome";
         event1.description = "an awesome conf";
+        event1.url = "http://aweso.me";
         event1.city = "City 1";
         event1.type = Event.Type.CONFERENCE;
         event2 = new Event();

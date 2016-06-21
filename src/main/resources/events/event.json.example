@@ -7,7 +7,7 @@
     "name": "Exemple d'Event",
     "avatar": "Url vers l'avatar",
     "description": "Il s'agit du template de création d'un Event.",
-    "website": "http://www.urldelevent.com",
+    "url": "http://www.urldelevent.com",
     "twitter": "EventExemple",
     "facebook": "EventExemple", // ou "groups/123456789012"
     "meetup": "Meetup-EventEemple",

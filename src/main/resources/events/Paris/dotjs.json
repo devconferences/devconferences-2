@@ -3,7 +3,7 @@
     "name": "dotJS",
     "avatar": "http://www.dotconferences.eu/images/dotjs-logo.png",
     "description": "The largest JavaScript conference in Europe. December 7th, 2015 - Paris",
-    "website": "http://www.dotjs.eu",
+    "url": "http://www.dotjs.eu",
     "twitter": "dotJS",
     "type": "CONFERENCE"
 }

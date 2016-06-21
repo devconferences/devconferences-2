@@ -3,7 +3,7 @@
     "name": "Agile France",
     "avatar": "http://2014.conference-agile.fr/theme/img/logo.png",
     "description": "Une conférence organisée à Paris depuis 2006. Durant deux jours, elle propose des présentations et événements, principalement en français.",
-    "website": "http://www.conference-agile.fr",
+    "url": "http://www.conference-agile.fr",
     "twitter": "AgileFrance",
     "type": "CONFERENCE"
 }

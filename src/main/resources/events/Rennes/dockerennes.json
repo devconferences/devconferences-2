@@ -3,7 +3,7 @@
     "name": "Docker Rennes",
     "avatar": "http://photos2.meetupstatic.com/photos/event/b/c/e/global_328023022.jpeg",
     "description": "Communauté rennaise des utilisateurs de Docker.",
-    "website": "http://www.meetup.com/Docker-rennes",
+    "url": "http://www.meetup.com/Docker-rennes",
     "meetup": "Docker-rennes",
     "type": "COMMUNITY"
 }

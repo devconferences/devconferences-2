@@ -3,7 +3,7 @@
     "name": "Breizhcamp",
     "avatar": "http://www.breizhcamp.org/img/logo.png",
     "description": "Le breizhcamp ce sont 2 journées \"et demi\" de conférences organisées par le BreizhJug et les communautés techniques de Rennes ayant lieu tous les ans, généralement au moi de juin. Un mix de technologies, un max de connaissances",
-    "website": "http://www.breizhcamp.org",
+    "url": "http://www.breizhcamp.org",
     "twitter": "breizhcamp",
     "type": "CONFERENCE"
 }

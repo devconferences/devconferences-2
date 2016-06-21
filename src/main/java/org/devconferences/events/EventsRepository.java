@@ -738,14 +738,14 @@ public class EventsRepository {
             return QueryBuilders.boolQuery()
                     .must(matchAllQuery());
         } else {
-            /* Boost system : id >>> name >>> tags > description, website/url
+            /* Boost system : id >>> name >>> tags > description, url
              *
              * NB : "tags" helps in boost, however a document with only
              *      the tag won't be shown with this search query)
              */
             return QueryBuilders.boolQuery()
                     .must(QueryBuilders.queryStringQuery(QueryParser.escape(query))
-                            .field("id", 6).field("name", 3).field("description").field("website").field("url")
+                            .field("id", 6).field("name", 3).field("description").field("url")
                             .boost(2))
                     .should(queryStringQuery(QueryParser.escape(query)).field("name"))
                     .should(termQuery("tags", query));

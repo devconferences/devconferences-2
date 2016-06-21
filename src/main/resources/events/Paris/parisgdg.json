@@ -3,7 +3,7 @@
     "name": "GDG Paris",
     "avatar": "http://photos4.meetupstatic.com/photos/event/7/9/c/4/global_122551172.jpeg",
     "description": "Les Google Developers Groups (GDGs) sont des regroupements de personnes intéressées par les technologies et plateformes de Google: Android, Chrome, Google Apps, GWT, AppEngine... partout dans le monde.",
-    "website": "http://gdgparis.com",
+    "url": "http://gdgparis.com",
     "twitter": "GDGParis",
     "type": "COMMUNITY"
 }

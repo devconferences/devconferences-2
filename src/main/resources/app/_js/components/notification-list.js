@@ -17,7 +17,6 @@ var NotificationList = React.createClass({
         var message = function(message) {
             var dateNotif = new Date(parseInt(message.date));
             var formattedDate = moment(message.date).format("DD/MM/YYYY HH:mm");
-            console.log(message);
             return (
                 <p key={message.date + "/" + message.text}>
                     <button data-id={message.id} type="button" className="close" title="Marquer comme lu" onClick={this.removeMessage}>

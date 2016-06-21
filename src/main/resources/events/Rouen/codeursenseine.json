@@ -3,7 +3,7 @@
     "name": "Codeurs en Seine",
     "avatar": "http://www.codeursenseine.com/assets/img/logo-codeurs-en-seine.png",
     "description": "Codeurs en Seine est une conférence gratuite qui se déroule à Rouen, sur 4 thèmes en simultané : le Java, l'Agile, le Web et l'Innovation. Vous pourrez défricher des sujets comme les bases de données NoSQL, l'histoire du web, Java 8, les objets connectés et tout se qui tourne autour du cloud. La conférence est organisée bénévolement par Normandy Web Xperts, le Normandy Agile User Group, Le Normandy Java User Group et l'Université de Rouen ; elle est également une étape de l'agile tour.",
-    "website": "http://www.codeursenseine.com",
+    "url": "http://www.codeursenseine.com",
     "twitter": "codeursenseine",
     "type": "CONFERENCE"
 }
