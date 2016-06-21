@@ -3,6 +3,8 @@
     "name": "Test",
     "date": 1461132000000,
     "url": "http://www.exemple.com/",
-    "organizerName": "Example Comm'",
-    "organizerUrl": "http://www.example.com/"
+    "organizer": {
+        "name": "Example Comm'",
+        "url": "http://www.example.com/"
+    }
 }
