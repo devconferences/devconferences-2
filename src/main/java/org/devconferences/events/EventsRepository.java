@@ -538,16 +538,14 @@ public class EventsRepository {
 
     // ***************************** GeoSearch ***************************** //
 
-    // TODO use the structure of findCalendarEventsAround()
-    public Map<String, Long> findEventsAround(double lat, double lon, double distance, int geohashPrecision) {
+    public List<Event> findEventsAround(double lat, double lon, double distance) {
         String eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(matchAllQuery(),
                         geoDistanceFilter("gps")
                         .distance(distance, KILOMETERS)
                         .lat(lat).lon(lon)
                 ))
-                .size(0)
-                .aggregation(AggregationBuilders.geohashGrid("event_locations").field("gps").precision(geohashPrecision))
+                .size(ElasticUtils.MAX_SIZE) // Default max value, or ES will throw an Exception
                 .toString();
 
         Search search = new Search.Builder(eventLocations)
@@ -559,8 +557,8 @@ public class EventsRepository {
         if(!result.isSucceeded()) {
             throw new RuntimeException(result.getErrorMessage());
         }
-        GeoHashGridAggregation locations = result.getAggregations().getGeohashGridAggregation("event_locations");
-        return locations.getBuckets().stream().collect(Collectors.toMap(GeoHashGridAggregation.GeoHashGrid::getKey, Bucket::getCount));
+
+        return getHitsFromSearch(result, Event.class);
     }
 
     public int countCalendarEventsAround(String query, double lat, double lon, double distance) {

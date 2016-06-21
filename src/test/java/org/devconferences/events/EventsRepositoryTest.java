@@ -268,13 +268,14 @@ public class EventsRepositoryTest {
         ElasticUtils.createClient().execute(refresh);
 
         // This should find $event, and not $event2
-        Map<String, Long> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10, 5);
+        List<Event> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10);
         Assertions.assertThat(events).hasSize(1);
-        String point = events.keySet().iterator().next();
-        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(1.0d, 1.0d, 5));
-        Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
+        Assertions.assertThat(events.get(0).gps).isEqualToComparingFieldByField(new GeoPoint(1.0f, 1.0f));
 
         eventsRepository.deleteEvent(event.id);
+        eventsRepository.deleteEvent(event2.id);
+
+        ElasticUtils.createClient().execute(refresh);
     }
 
     @Test
