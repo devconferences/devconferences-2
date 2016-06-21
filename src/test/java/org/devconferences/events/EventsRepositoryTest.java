@@ -290,5 +290,12 @@ public class EventsRepositoryTest {
         Assertions.assertThat(geopointCities.getLocation("the_city2"))
                 .isEqualToComparingFieldByField(new GeoPoint("47.4800,-0.5400"));
         Assertions.assertThat(geopointCities.getLocation("the_city3")).isNull();
+
+        // TearDown
+        eventsRepository.deleteEvent("testevent");
+        eventsRepository.deleteEvent("testevent2");
+
+        Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+        ElasticUtils.createClient().execute(refresh);
     }
 }
