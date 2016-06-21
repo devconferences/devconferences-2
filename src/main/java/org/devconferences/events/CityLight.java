@@ -2,11 +2,6 @@ package org.devconferences.events;
 
 import org.elasticsearch.common.geo.GeoPoint;
 
-class CityAggreg {
-    public String name;
-    public long count;
-}
-
 public class CityLight implements Comparable {
 
     public final String id;
