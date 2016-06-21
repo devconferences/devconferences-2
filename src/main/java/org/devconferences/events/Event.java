@@ -21,6 +21,7 @@ public class Event {
     public List<String> tags = new ArrayList<>();
     public Type type;
     public GeoPoint gps;
+    public Boolean hidden;
 
     public Event() {
 
@@ -47,6 +48,7 @@ public class Event {
         if(obj.gps != null) {
             gps = new GeoPoint(obj.gps.lat(), obj.gps.lon());
         }
+        hidden = obj.hidden;
     }
 
     @Override
@@ -68,6 +70,7 @@ public class Event {
         if (parleys != null ? !parleys.equals(event.parleys) : event.parleys != null) return false;
         if (city != null ? !city.equals(event.city) : event.city != null) return false;
         if (tags != null ? !tags.equals(event.tags) : event.tags != null) return false;
+        if (hidden != null ? !hidden.equals(event.hidden) : event.hidden != null) return false;
         if (type != event.type) return false;
         return gps != null ? gps.equals(event.gps) : event.gps == null;
 
@@ -89,6 +92,7 @@ public class Event {
         result = 31 * result + (tags != null ? tags.hashCode() : 0);
         result = 31 * result + (type != null ? type.hashCode() : 0);
         result = 31 * result + (gps != null ? gps.hashCode() : 0);
+        result = 31 * result + (hidden != null ? hidden.hashCode() : 0);
         return result;
     }
 

@@ -1,0 +1,8 @@
+{
+    "id": "testeventhidden",
+    "name": "Event caché pour Test",
+    "url": "http://www.event-hidden.com",
+    "description": "Event caché pour Test.",
+    "type": "COMMUNITY",
+    "hidden": true
+}

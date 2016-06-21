@@ -12,6 +12,7 @@ public class CalendarEvent {
     public Group organizer;
     public Location location;
     public CallForPapers cfp;
+    public Boolean hidden;
 
     public CalendarEvent() {
 
@@ -32,6 +33,7 @@ public class CalendarEvent {
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
         if (organizer != null ? !organizer.equals(that.organizer) : that.organizer != null) return false;
         if (location != null ? !location.equals(that.location) : that.location != null) return false;
+        if (hidden != null ? !hidden.equals(that.hidden) : that.hidden != null) return false;
         return cfp != null ? cfp.equals(that.cfp) : that.cfp == null;
 
     }
@@ -46,6 +48,7 @@ public class CalendarEvent {
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (organizer != null ? organizer.hashCode() : 0);
         result = 31 * result + (location != null ? location.hashCode() : 0);
+        result = 31 * result + (hidden != null ? hidden.hashCode() : 0);
         result = 31 * result + (cfp != null ? cfp.hashCode() : 0);
         return result;
     }
@@ -57,6 +60,7 @@ public class CalendarEvent {
         duration = obj.duration;
         url = obj.url;
         description = obj.description;
+        hidden = obj.hidden;
         if(obj.organizer != null) {
             organizer = new Group();
             organizer.name = obj.organizer.name;

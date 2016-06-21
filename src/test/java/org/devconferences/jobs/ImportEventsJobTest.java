@@ -1,9 +1,12 @@
 package org.devconferences.jobs;
 
+import net.codestory.http.errors.NotFoundException;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.Event;
+import org.devconferences.events.EventsEndPoint;
+import org.devconferences.events.EventsRepository;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -81,7 +84,11 @@ public class ImportEventsJobTest {
     @Test
     public void testReloadData() {
         int totalImportedFiles = importEventsJob.reloadData(true);
+        // One (testeventhidden) is hidden => not indexed
         Assertions.assertThat(totalImportedFiles).isEqualTo(2);
+
+        EventsRepository eventsRepository = new EventsRepository();
+        Assertions.assertThat(eventsRepository.getEvent("testeventhidden")).isNull();
     }
 
     @Test

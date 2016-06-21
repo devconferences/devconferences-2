@@ -112,6 +112,13 @@ public class EventsRepository {
         }
 
         DocumentResult documentResultGet = client.execute(get);
+
+        // Check if the document is still available (!obj.hidden || getResult.found)
+        // If not, return.
+        if(!objectCanBeUpdated(obj, documentResultGet)) {
+            return false;
+        }
+
         DocumentResult documentResultUpdate = client.execute(update);
 
         // Check the status of Update execution (unchanged, created, updated)
@@ -238,6 +245,22 @@ public class EventsRepository {
         });
 
         return owners;
+    }
+
+    private boolean objectCanBeUpdated(Object obj, DocumentResult getResult) {
+        Boolean hidden = null;
+        if (obj instanceof CalendarEvent) {
+            hidden = ((CalendarEvent) obj).hidden;
+        } else if (obj instanceof Event) {
+            hidden = ((Event) obj).hidden;
+        }
+
+        boolean founded = getResult.getJsonObject().get("found").getAsBoolean();
+
+        // obj won't be updated if he is hidden and not founded (avoid creation of it)
+        return (hidden == null || !hidden || founded);
+
+
     }
 
     // ******************************* Event ******************************* //

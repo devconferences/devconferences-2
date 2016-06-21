@@ -3,5 +3,6 @@
     "name": "Event 2 pour Test",
     "url": "http://www.event2-test.com",
     "description": "Event 2 pour Test.",
-    "type": "COMMUNITY"
+    "type": "COMMUNITY",
+    "hidden": false
 }
