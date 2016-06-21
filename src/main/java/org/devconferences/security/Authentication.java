@@ -129,7 +129,7 @@ public class Authentication {
     }
 
     @Delete("messages/:id")
-    public void deletMessage(String id, Context context) {
+    public void deleteMessage(String id, Context context) {
         DocumentResult documentResult = usersRepository.deleteMessage(getUser(context), id);
 
         if(!documentResult.isSucceeded()) {

@@ -326,14 +326,14 @@ public class UserRepositoryTest {
         User user1 = authentication.getUser(contextMock);
         Assertions.assertThat(user1.messages).hasSize(5);
         Assertions.assertThat(user1.messages.get(0).text).matches("Une conférence pouvant vous intéresser a été mise à jour : Cigale 42");
-        Assertions.assertThat(user1.messages.get(1).text).matches("Une comunauté favorite a été mise à jour : Event 3");
+        Assertions.assertThat(user1.messages.get(1).text).matches("Une communauté favorite a été mise à jour : Event 3");
         Assertions.assertThat(user1.messages.get(2).text).matches("Une conférence favorite a été mise à jour : Event 5");
-        Assertions.assertThat(user1.messages.get(3).text).matches("Une comunauté dans une ville favorite a été créée : Event 7");
+        Assertions.assertThat(user1.messages.get(3).text).matches("Une communauté dans une ville favorite a été créée : Event 7");
         Assertions.assertThat(user1.messages.get(4).text).matches("Un événement favori a été mis à jour : Event 1");
 
         // Read messages
         user1.messages.forEach(message -> {
-            authentication.deletMessage(message.id, contextMock);
+            authentication.deleteMessage(message.id, contextMock);
             client.execute(refresh);
         });
 

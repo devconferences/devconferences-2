@@ -7,7 +7,7 @@ final class NotificationText {
     public enum What {
         CALENDAR("Un événement", false),
         CONFERENCE("Une conférence", true),
-        COMMUNITY("Une comunauté", true);
+        COMMUNITY("Une communauté", true);
 
         private final String text;
         private final boolean isFeminine;
