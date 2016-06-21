@@ -1,24 +1,20 @@
 package org.devconferences.events;
 
-import com.google.gson.Gson;
 import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.*;
 import org.devconferences.events.search.CalendarEventSearch;
 import org.devconferences.events.search.EventSearch;
 import org.devconferences.events.search.CompletionSearch;
+import org.devconferences.jobs.ImportEventsJob;
+import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.node.internal.InternalNode;
-import org.elasticsearch.test.ElasticsearchIntegrationTest;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
@@ -26,6 +22,14 @@ import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 public class EventsRepositoryTest {
     private static EventsRepository eventsRepository;
     private static EventsEndPoint eventsEndPoint;
+
+    private static Event event1;
+    private static Event event2;
+    private static Event event3;
+    private static Event event4;
+    private static Event event5;
+    private static CalendarEvent calendarEvent1;
+    private static CalendarEvent calendarEvent2;
 
     @BeforeClass
     public static void classSetUp() {
@@ -37,28 +41,28 @@ public class EventsRepositoryTest {
         eventsEndPoint = new EventsEndPoint(eventsRepository);
 
         // Add data
-        Event event1 = new Event();
+        event1 = new Event();
         event1.id = "1";
         event1.name = "awesome";
         event1.description = "an awesome conf";
         event1.city = "City 1";
         event1.type = Event.Type.CONFERENCE;
-        Event event2 = new Event();
+        event2 = new Event();
         event2.id = "2";
         event2.name = "Cigale 42";
         event2.city = "City 1";
         event2.type = Event.Type.CONFERENCE;
-        Event event3 = new Event();
+        event3 = new Event();
         event3.id = "3";
         event3.name = "Event 3";
         event3.city = "City 1";
         event3.type = Event.Type.COMMUNITY;
-        Event event4 = new Event();
+        event4 = new Event();
         event4.id = "4";
         event4.name = "Event 4";
         event4.city = "City 1";
         event4.type = Event.Type.CONFERENCE;
-        Event event5 = new Event();
+        event5 = new Event();
         event5.id = "5";
         event5.name = "Event 5";
         event5.city = "City 2";
@@ -70,7 +74,7 @@ public class EventsRepositoryTest {
         eventsRepository.indexOrUpdate(event4);
         eventsRepository.indexOrUpdate(event5);
 
-        CalendarEvent calendarEvent1 = new CalendarEvent();
+        calendarEvent1 = new CalendarEvent();
         calendarEvent1.id = "1";
         calendarEvent1.name = "Lorem : 42e ipsum";
         calendarEvent1.description = "an awesome conf";
@@ -78,14 +82,14 @@ public class EventsRepositoryTest {
         calendarEvent1.location = calendarEvent1.new Location();
         calendarEvent1.location.gps = new GeoPoint(44.0500,5.4500);
         calendarEvent1.date = 2065938828000L;
-        CalendarEvent calendarEvent2 = new CalendarEvent();
+        calendarEvent2 = new CalendarEvent();
         calendarEvent2.id = "2";
         calendarEvent2.name = "26e Cigale 42";
         calendarEvent2.description = "Event 2";
         calendarEvent2.url = "http://www.example2.com";
         calendarEvent2.location = calendarEvent1.new Location();
         calendarEvent2.location.gps = new GeoPoint(88.0500,-45.4500);
-        calendarEvent2.date = 2065938828000L;
+        calendarEvent2.date = 2065938828001L;
 
         eventsRepository.indexOrUpdate(calendarEvent1);
         eventsRepository.indexOrUpdate(calendarEvent2);
@@ -98,7 +102,7 @@ public class EventsRepositoryTest {
     }
 
     @AfterClass
-    public static void tearDownOne() {
+    public static void classTearDown() {
         ElasticUtils.deleteIndex();
 
         eventsRepository = null;
@@ -106,7 +110,7 @@ public class EventsRepositoryTest {
     }
 
     @Test
-    public void should_find_event() {
+    public void testSearchEvent() {
         // Check header content of this searchEvents
         EventSearch eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
@@ -117,9 +121,7 @@ public class EventsRepositoryTest {
         // Should return event passed when created
         List<Event> matches = eventSearch.hits;
         Assertions.assertThat(matches).hasSize(1);
-        Assertions.assertThat(matches.get(0).id).matches("1");
-        Assertions.assertThat(matches.get(0).city).matches("City 1");
-        Assertions.assertThat(matches.get(0).description).matches("an awesome conf");
+        Assertions.assertThat(matches.get(0)).isEqualTo(event1);
 
         // With "-1" (and values <= 0), should throw an exception
         try {
@@ -132,7 +134,7 @@ public class EventsRepositoryTest {
     }
 
     @Test
-    public void should_find_calendar_event() {
+    public void testCalendarEventSearch() {
         // Check header content of this searchEvents
         CalendarEventSearch eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
@@ -143,18 +145,15 @@ public class EventsRepositoryTest {
         // Should return event passed when created
         List<CalendarEvent> matches = eventSearch.hits;
         Assertions.assertThat(matches).hasSize(1);
-        Assertions.assertThat(matches.get(0).id).matches("1");
-        Assertions.assertThat(matches.get(0).date).isEqualTo(2065938828000L);
-        Assertions.assertThat(matches.get(0).name).matches("Lorem : 42e ipsum");
-        Assertions.assertThat(matches.get(0).description).matches("an awesome conf");
+        Assertions.assertThat(matches.get(0)).isEqualTo(calendarEvent1);
     }
 
     @Test
-    public void should_throw_exception_when_create_event_with_existing_id() {
+    public void testCreateEventWithExistingId() {
         Event event = new Event();
         event.id = "1";
         try {
-            eventsEndPoint.createEvent(event); // This : Exception
+            eventsEndPoint.createEvent(event); // This : Exception (Event with id "1" already exist ($event1))
 
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
@@ -163,17 +162,19 @@ public class EventsRepositoryTest {
     }
 
     @Test
-    public void should_get_event_with_an_id() {
-        Event event2 = eventsEndPoint.getEvent("1");
-        Assertions.assertThat(event2.id).matches("1");
-        Assertions.assertThat(event2.name).matches("awesome");
-        Assertions.assertThat(event2.description).matches("an awesome conf");
-        Assertions.assertThat(event2.city).matches("City 1");
-        Assertions.assertThat(event2.type).isEqualTo(Event.Type.CONFERENCE);
+    public void testGetEvent() {
+        Event event = eventsEndPoint.getEvent("1");
+        Assertions.assertThat(event).isEqualTo(event1);
     }
 
     @Test
-    public void should_find_cities() {
+    public void testGetCalendarEvent() {
+        CalendarEvent calendarEvent = eventsEndPoint.getCalendarEvent("1");
+        Assertions.assertThat(calendarEvent).isEqualTo(calendarEvent1);
+    }
+
+    @Test
+    public void testGetAllCities() {
         List<CityLight> cityLightList = eventsEndPoint.allCities(null);
         Assertions.assertThat(cityLightList).hasSize(2);
         Assertions.assertThat(cityLightList.get(0).count).isEqualTo(4);
@@ -183,7 +184,7 @@ public class EventsRepositoryTest {
     }
 
     @Test
-    public void should_find_a_city() {
+    public void testGetCity() {
         City city = eventsEndPoint.city("City 1", null);
         Assertions.assertThat(city.id).matches("City 1");
         Assertions.assertThat(city.name).matches("City 1");
@@ -195,17 +196,16 @@ public class EventsRepositoryTest {
         Assertions.assertThat(city.conferences.get(2).type).isEqualTo(Event.Type.CONFERENCE);
         Assertions.assertThat(city.upcoming_events).hasSize(0);
 
-        // With geosearch of CalendarEvent
+        // With geoSearch of CalendarEvent
         city = eventsEndPoint.city("City 2", null);
-        System.err.println(new Gson().toJson(city));
         Assertions.assertThat(city.conferences).hasSize(1);
         Assertions.assertThat(city.communities).hasSize(0);
         Assertions.assertThat(city.upcoming_events).hasSize(1);
-        Assertions.assertThat(city.upcoming_events.get(0).id).matches("1");
+        Assertions.assertThat(city.upcoming_events.get(0)).isEqualTo(calendarEvent1);
     }
 
     @Test
-    public void should_detect_empty_ids_when_delete() {
+    public void testExceptionsWhenDeleteEvent() {
         Event fakeEvent = new Event();
         fakeEvent.id = "666";
         fakeEvent.name = "The number of the beast";
@@ -233,20 +233,61 @@ public class EventsRepositoryTest {
     }
 
     @Test
-    public void should_find_calendar_events() {
+    public void testGetCalendarEventsWithPagination() {
         List<CalendarEvent> calendarEventList = eventsEndPoint.getCalendarEvents("10");
         Assertions.assertThat(calendarEventList).hasSize(2);
-        Assertions.assertThat(calendarEventList.get(0).id).matches("1");
-        Assertions.assertThat(calendarEventList.get(0).name).matches("Lorem : 42e ipsum");
-        Assertions.assertThat(calendarEventList.get(0).description).matches("an awesome conf");
-        Assertions.assertThat(calendarEventList.get(0).url).matches("http://www.example.com");
+        Assertions.assertThat(calendarEventList.get(0)).isEqualTo(calendarEvent1);
+        Assertions.assertThat(calendarEventList.get(1)).isEqualTo(calendarEvent2);
     }
 
     @Test
-    public void should_find_suggestions() {
+    public void testGetSuggests() {
         CompletionSearch suggestDatas = eventsEndPoint.suggest("Ci", null);
         Assertions.assertThat(suggestDatas.hits).hasSize(3);
         Assertions.assertThat(suggestDatas.hits.get(0).text).matches("Cigale");
         Assertions.assertThat(suggestDatas.hits.get(0).score).isEqualTo(2.0d);
+    }
+
+    @Test
+    public void testEventGeoSearch() {
+        Event event = new Event();
+        event.id = UUID.randomUUID().toString();
+        event.gps = new GeoPoint(1.0f, 1.0f);
+
+        Event event2 = new Event();
+        event2.id = UUID.randomUUID().toString();
+        event2.gps = new GeoPoint(50.0f, 50.0f);
+
+        EventsRepository eventsRepository = new EventsRepository();
+        eventsRepository.createEvent(event);
+        eventsRepository.createEvent(event2);
+
+        // Refresh ES on every document update (assume update are only when start server...)
+        // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
+        Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+        ElasticUtils.createClient().execute(refresh);
+
+        // This should find $event, and not $event2
+        Map<String, Long> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10, 5);
+        Assertions.assertThat(events).hasSize(1);
+        String point = events.keySet().iterator().next();
+        Assertions.assertThat(point).isEqualTo(GeoHashUtils.encode(1.0d, 1.0d, 5));
+        Assertions.assertThat(events.values().iterator().next()).isEqualTo(1);
+
+        eventsRepository.deleteEvent(event.id);
+    }
+
+    @Test
+    public void testGeopointCities() {
+        new ImportEventsJob().reloadData(true);
+
+        GeopointCities geopointCities = GeopointCities.getInstance();
+        Assertions.assertThat(geopointCities).isNotNull();
+
+        Assertions.assertThat(geopointCities.getLocation("the_city"))
+                .isEqualToComparingFieldByField(new GeoPoint("49.900,2.3000"));
+        Assertions.assertThat(geopointCities.getLocation("the_city2"))
+                .isEqualToComparingFieldByField(new GeoPoint("47.4800,-0.5400"));
+        Assertions.assertThat(geopointCities.getLocation("the_city3")).isNull();
     }
 }
