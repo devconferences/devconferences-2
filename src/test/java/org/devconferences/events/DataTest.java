@@ -79,10 +79,12 @@ public class DataTest {
         User.Message message = user.new Message();
         message.id = "12345678.90";
         message.text = "ABC DEF GHI JKL MNO PQR STU VWX YZ.";
+        message.link = "http://like.ly";
         message.date = 1245987892000L;
         User.Message message2 = user.new Message();
         message2.id = "12345678.90";
         message2.text = "ABC DEF GHI JKL MNO PQR STU VWX YZ.";
+        message2.link = "http://like.ly";
         message2.date = 1245987892000L;
 
         Assertions.assertThat(message.hashCode()).isEqualTo(message2.hashCode());
