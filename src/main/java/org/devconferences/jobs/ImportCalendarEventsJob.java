@@ -136,18 +136,18 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
         // Check path
         try {
-            Integer.decode(year);
+            Integer.valueOf(month, 10);
         } catch(NumberFormatException e) {
             throw new RuntimeException("Invalid CalendarEvent : year in path is NaN");
         }
         try {
-            Integer.decode(month);
+            Integer.valueOf(month, 10);
         } catch(NumberFormatException e) {
             throw new RuntimeException("Invalid CalendarEvent : month in path is NaN");
         }
 
-        int yearInt = Integer.parseInt(year);
-        int monthInt = Integer.parseInt(month);
+        int yearInt = Integer.valueOf(year, 10);
+        int monthInt = Integer.valueOf(month, 10);
 
         // Check file content (mandatory fields)
         if(event.id == null) {

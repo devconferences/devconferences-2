@@ -1,0 +1,14 @@
+{
+    "id": "pyconfr2016",
+    "name": "PyCon-fr 2016",
+    "date": 1476342000000,
+    "duration": 295200000,
+    "url": "https://2016.pycon.fr/",
+    "description": "Organisée chaque année depuis 10 ans par l'AFPy, cette conférence est gratuite, entièrement organisée par des bénévoles et regroupe développeu·rs·ses, chercheu·rs·ses, étudiant·e·s et amat·eur·rice·s autour d'une même passion pour le langage de programmation Python.",
+    "location": {
+        "city": "Cesson Sévigné",
+        "name": "Télécom Bretagne",
+        "address": "12, rue de la Châtaigneraie",
+        "gps": "48.1206,-1.6278"
+    }
+}

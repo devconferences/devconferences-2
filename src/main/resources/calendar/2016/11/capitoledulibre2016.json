@@ -1,0 +1,14 @@
+{
+    "id": "capitoledulibre2016",
+    "name": "Capitole du Libre 2016",
+    "date": 1479542400000,
+    "duration": 122400000,
+    "url": "https://2016.capitoledulibre.org/",
+    "description": "Cet évènement autour du logiciel libre a lieu tous les ans fin novembre à l'INP-ENSEEIHT, il est gratuit et ouvert à toutes et à tous.\nCette année il se déroulera les samedi 19 et dimanche 20 novembre 2016.\nOrganisé par l'association Toulibre, avec la participation active des clubs étudiants de l'N7 : TVn7, Net7 CAn7 et Photo7.\nComme chaque année, les thèmes seront aussi bien orientés vers le grand public que vers les plus techniques. Conférences, ateliers, animations seront au programme, ainsi que quelques surprises !\nUn appel à conférences, ateliers et stands sera lancé d'ici fin juin.",
+    "location": {
+        "city": "Toulouse",
+        "name": "ENSEEIHT",
+        "address": "2 Rue Charles Camichel",
+        "gps": "43.6023,1.4545"
+    }
+}

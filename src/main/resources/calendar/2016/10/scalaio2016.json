@@ -1,0 +1,14 @@
+{
+    "id": "scalaio2016",
+    "name": "Scala.io 2016",
+    "date": 1476342000000,
+    "duration": 295200000,
+    "url": "http://scala.io/",
+    "description": "The Scala event in France!",
+    "location": {
+        "city": "Villeurbanne",
+        "name": "CPE Lyon",
+        "address": "43 Boulevard du 11 Novembre 1918",
+        "gps": "45.7839,4.8690"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "id": "jugsummercamp2016",
+    "name": "JUG Summer Camp 2016",
+    "date": 1474009200000,
+    "url": "http://www.jugsummercamp.com/edition/7",
+    "description": "Notez les dates dans vos agenda : nous revenons le Vendredi 16 Septembre à La Rochelle ! Le Call For Paper est désormais clôturé, nous allons vous annoncer d'ici quelques jours le programme de cette 7e édition !\nSuivez notre actu sur Twitter : @jugsummercamp.\nPour toute question, contactez-nous : team@poitoucharentesjug.org ",
+    "location": {
+        "city": "La Rochelle",
+        "name": "Espace Encan",
+        "address": "Quai Louis Prunier",
+        "gps": "46.1518, -1.1506"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "id": "bdxio2016",
+    "name": "bdx.io 2016",
+    "date": 1477033200000,
+    "url": "http://www.bdx.io",
+    "description": "C'est décidé bdx.io édition 2016 se déroulera le Vendredi 21 Octobre 2016 à l'ENSEIRB-MATMECA !\nLe programme de l'évènement est disponible sur l'application Voxxrin (en web, sur android, et sur iPhone).\nVous pouvez également visiter la page Lanyrd de l'évènement : http://lanyrd.com/2016/bdxio/",
+    "location": {
+        "city": "Talence",
+        "name": "ENSEIRB",
+        "address": "1 Avenue du docteur Albert Schweitzer",
+        "gps": "44.8057,-0.6074"
+    }
+}

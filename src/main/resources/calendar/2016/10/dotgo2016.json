@@ -1,0 +1,13 @@
+{
+    "id": "dotgo2016",
+    "name": "dot Go 2016",
+    "date": 1476082800000,
+    "url": "http://www.dotgo.eu/",
+    "description": "The European Go Conference",
+    "location": {
+        "city": "Paris",
+        "name": "Théâtre de Paris",
+        "address": "15 Rue Blanche",
+        "gps": "48.8786, 2.3315"
+    }
+}

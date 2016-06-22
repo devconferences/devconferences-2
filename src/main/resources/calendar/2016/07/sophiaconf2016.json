@@ -1,0 +1,14 @@
+{
+    "id": "sophiaconf2016",
+    "name": "SophiaConf 2016",
+    "date": 1467612000000,
+    "duration": 298800000,
+    "url": "http://www.telecom-valley.fr/sophiaconf2016-intelligence-artificielle-economie-collaborative-iot-devops/",
+    "description": "Chaque début d’été depuis 7 ans, la commission Open Source de Telecom Valley propose le rendez-vous annuel de conférences gratuites sur l’Open Source, SophiaConf, à destination des professionnels et passionnés de nouvelles technologies.",
+    "location": {
+        "city": "Biot",
+        "name": "Polytech Nice - Sophia",
+        "address": "Campus SophiaTech – Sophia Antipolis",
+        "gps": "43.6155,7.0718"
+    }
+}
