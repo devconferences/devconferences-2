@@ -76,12 +76,30 @@ public final class ElasticUtils {
                 if (!jestResult.isSucceeded()) {
                     throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
                 }
-                createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
-                createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
-                createType(UsersRepository.USERS_TYPE, "/elastic/users-mapping.json");
+                createAllTypes(false);
             }
         } catch (NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
+        }
+    }
+
+    public static void createAllTypes(boolean deleteAllTypes) {
+        if(deleteAllTypes) {
+            deleteAllTypes();
+        }
+        createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
+        createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
+        createType(UsersRepository.USERS_TYPE, "/elastic/users-mapping.json");
+    }
+
+    public static void deleteAllTypes() {
+        try (RuntimeJestClient client = createClient();) {
+            DeleteMapping deleteMapping = new DeleteMapping.Builder(DEV_CONFERENCES_INDEX, "*").build();
+            JestResult jestResult = client.execute(deleteMapping);
+            if (!jestResult.isSucceeded()) {
+                throw new IllegalStateException("Can't delete all types : " + jestResult.getErrorMessage());
+            }
+            LOGGER.info("All types have been deleted");
         }
     }
 
@@ -104,6 +122,7 @@ public final class ElasticUtils {
             if(!jestResult.isSucceeded()) {
                 throw new IllegalStateException("Can't create type '" + type + "' : " + jestResult.getErrorMessage());
             }
+            LOGGER.info("Type '" + type + "' have been created");
         } catch (NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }

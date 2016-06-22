@@ -30,6 +30,7 @@ public class Main {
         final boolean reloadData;
         final boolean noReloadData;
         final boolean dailyJob;
+        public boolean createMappings;
 
         BooleanProperties() {
             prodMode = getBooleanProperty(PROD_MODE);
@@ -43,6 +44,7 @@ public class Main {
             reloadData = getBooleanProperty(RELOAD_EVENTS);
             noReloadData = getBooleanProperty(NO_RELOAD_DATA);
             dailyJob = getBooleanProperty(DAILY_JOB);
+            createMappings = getBooleanProperty(CREATE_MAPPINGS);
         }
 
         private boolean getBooleanProperty(String property) {
@@ -68,6 +70,7 @@ public class Main {
     public static final String CHECK_CALENDAR = "CHECK_CALENDAR";
     public static final String ONLY_CHECK_CALENDAR = "ONLY_CHECK_CALENDAR";
     public static final String DAILY_JOB = "DAILY_JOB";
+    public static final String CREATE_MAPPINGS = "CREATE_MAPPINGS";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -121,6 +124,7 @@ public class Main {
         boolean skipDevNode = booleans.skipDevNode;
         boolean createIndex = booleans.createIndex;
         boolean reloadData = booleans.reloadData;
+        boolean createMappings = booleans.createMappings;
 
         if (!noReloadData && !prodMode && !skipDevNode) {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
@@ -128,6 +132,8 @@ public class Main {
         }
         if(!noReloadData && ((!prodMode && !skipDevNode) || createIndex)) {
             ElasticUtils.createIndex();
+        } else if(createMappings) { // createIndex() calls createAllTypes()
+            ElasticUtils.createAllTypes(true);
         }
         if(!noReloadData && ((!prodMode && !skipDevNode) || createIndex || prodMode || reloadData)) {
             LOGGER.info("Reload data from resources and online services...");
