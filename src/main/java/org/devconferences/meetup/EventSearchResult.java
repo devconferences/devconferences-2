@@ -2,10 +2,10 @@ package org.devconferences.meetup;
 
 import java.util.List;
 
-public class EventsSearch {
-    public List<EventSearch> results;
+public class EventSearchResult {
+    public List<EventSearchResultItem> results;
 
-    public class EventSearch {
+    public class EventSearchResultItem {
         public String id;
         public String name;
         public String description;

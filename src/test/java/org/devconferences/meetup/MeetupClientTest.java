@@ -1,9 +1,6 @@
 package org.devconferences.meetup;
 
-import net.codestory.http.errors.NotFoundException;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.data.Offset;
-import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,35 +27,35 @@ public class MeetupClientTest {
 
     @Test
     public void testUpcomingEvents() {
-        EventsSearch eventsSearchId1 = new EventsSearch();
+        EventSearchResult eventSearchResultId1 = new EventSearchResult();
 
-        EventsSearch.EventSearch eventSearch1 = eventsSearchId1.new EventSearch();
+        EventSearchResult.EventSearchResultItem eventSearch1 = eventSearchResultId1.new EventSearchResultItem();
         eventSearch1.id = "azerty";
         eventSearch1.name = "Azerty";
         eventSearch1.description = "AZERTY.";
         eventSearch1.time = 123456789000L;
-        eventSearch1.group = eventsSearchId1.new Organizer();
+        eventSearch1.group = eventSearchResultId1.new Organizer();
         eventSearch1.group.name = "AzErTy";
         eventSearch1.group.urlname = "azerty1";
-        eventSearch1.venue = eventsSearchId1.new Location();
+        eventSearch1.venue = eventSearchResultId1.new Location();
         eventSearch1.venue.address_1 = "1, Rue Bidon";
         eventSearch1.venue.city = "Ville Bidon";
         eventSearch1.venue.lat = 12.3456;
         eventSearch1.venue.lon = 34.5678;
-        EventsSearch.EventSearch eventSearch2 = eventsSearchId1.new EventSearch();
+        EventSearchResult.EventSearchResultItem eventSearch2 = eventSearchResultId1.new EventSearchResultItem();
         eventSearch2.id = "qsdfgh";
         eventSearch2.name = "Qsdfgh";
         eventSearch2.description = "QSDFGH.";
         eventSearch2.time = 123456987000L;
-        eventSearch2.group = eventsSearchId1.new Organizer();
+        eventSearch2.group = eventSearchResultId1.new Organizer();
         eventSearch2.group.name = "QsDfGh";
         eventSearch2.group.urlname = "qsdfgh1";
 
-        eventsSearchId1.results = new ArrayList<>();
-        eventsSearchId1.results.add(eventSearch1);
-        eventsSearchId1.results.add(eventSearch2);
+        eventSearchResultId1.results = new ArrayList<>();
+        eventSearchResultId1.results.add(eventSearch1);
+        eventSearchResultId1.results.add(eventSearch2);
 
-        when(mockMeetupCalls.askUpcomingEvents("id1")).thenReturn(eventsSearchId1);
+        when(mockMeetupCalls.askUpcomingEvents("id1")).thenReturn(eventSearchResultId1);
 
         List<ESCalendarEvents> calendarEventList = meetupApiClient.getUpcomingEvents("id1");
 

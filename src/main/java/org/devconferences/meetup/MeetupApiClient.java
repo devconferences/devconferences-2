@@ -2,17 +2,10 @@ package org.devconferences.meetup;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.gson.Gson;
 import com.google.inject.Singleton;
-import net.codestory.http.constants.Headers;
-import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.message.BasicHeader;
-import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
 import org.elasticsearch.common.geo.GeoPoint;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -45,11 +38,11 @@ public class MeetupApiClient {
     }
 
     public List<ESCalendarEvents> getUpcomingEvents(String id) {
-        EventsSearch eventsSearch = meetupCall.askUpcomingEvents(id);
+        EventSearchResult eventSearchResult = meetupCall.askUpcomingEvents(id);
 
         List<ESCalendarEvents> result = new ArrayList<>();
 
-        eventsSearch.results.forEach(data -> {
+        eventSearchResult.results.forEach(data -> {
             ESCalendarEvents calendarEvent = new ESCalendarEvents();
             calendarEvent.id = "meetup_" + data.id;
             calendarEvent.name = data.name;

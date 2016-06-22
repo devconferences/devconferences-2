@@ -19,8 +19,8 @@ class MeetupCalls {
     public static final String MEETUP_API_EVENTS_BY_GROUP_URL = MEETUP_API_BASE_URL + "/2/events/?group_urlname=%s&" +
             "status=upcoming&sign=true&key=%s";
 
-    public EventsSearch askUpcomingEvents(String id) {
-        return (EventsSearch) getContent(MEETUP_API_EVENTS_BY_GROUP_URL, id, EventsSearch.class);
+    public EventSearchResult askUpcomingEvents(String id) {
+        return (EventSearchResult) getContent(MEETUP_API_EVENTS_BY_GROUP_URL, id, EventSearchResult.class);
     }
 
     public Group askGroupInfo(String id) {
