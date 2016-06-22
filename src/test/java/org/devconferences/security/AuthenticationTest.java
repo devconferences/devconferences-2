@@ -126,7 +126,7 @@ public class AuthenticationTest {
         Payload payloadDisconnect = authenticationWithMock.disconnect(context);
 
         Assertions.assertThat(payloadDisconnect.cookies().get(0).name()).matches("access_token");
-        Assertions.assertThat(payloadDisconnect.cookies().get(0).value()).isNull();
+        Assertions.assertThat(encrypter.decrypt(payloadDisconnect.cookies().get(0).value())).isEqualTo("0");
         Assertions.assertThat(payloadDisconnect.cookies().get(0).expiry()).isEqualTo(1);
     }
 }

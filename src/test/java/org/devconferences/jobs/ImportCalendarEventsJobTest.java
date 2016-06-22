@@ -98,7 +98,7 @@ public class ImportCalendarEventsJobTest {
     public void testCalendarCheck() {
         CalendarEvent calendarEvent = new CalendarEvent();
         try {
-            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/4sqcd/05/file_test.json");
+            ImportCalendarEventsJob.checkCalendarEvent(calendarEvent, "/calendar/sqcd/05/file_test.json");
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : year in path is NaN");
