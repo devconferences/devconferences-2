@@ -73,7 +73,7 @@ public class Authentication {
     @Get("disconnect")
     public Payload disconnect(Context context) {
         context.setCurrentUser(null);
-        NewCookie disconnectCookie = new NewCookie(ACCESS_TOKEN, null, true).setExpiry(1);
+        NewCookie disconnectCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt("0"), true).setExpiry(1);
         return Payload.seeOther("/").withCookie(disconnectCookie);
     }
 
