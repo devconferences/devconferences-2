@@ -4,17 +4,15 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
-import io.searchbox.core.search.aggregation.Bucket;
-import io.searchbox.core.search.aggregation.GeoHashGridAggregation;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.search.PaginatedSearchResult;
-import org.devconferences.events.search.CalendarEventSearch;
-import org.devconferences.events.search.CompletionSearch;
-import org.devconferences.events.search.EventSearch;
+import org.devconferences.events.search.CalendarEventSearchResult;
+import org.devconferences.events.search.CompletionResult;
+import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 import org.elasticsearch.common.xcontent.XContentHelper;
@@ -84,9 +82,9 @@ public class EventsRepository {
 
         // Prepare queries (get, update, percolate, depends of class)
         if(obj instanceof CalendarEvent) {
-            // Set completion properties
             ESCalendarEvents esCalendarEvents = new ESCalendarEvents((CalendarEvent) obj);
-            esCalendarEvents.name_calendar_suggest.input = Arrays.asList(esCalendarEvents.name.split(" "));
+            // Set completion property
+            esCalendarEvents.suggests.input.addAll(Arrays.asList(esCalendarEvents.name.split(" ")));
 
             String updateString = String.format(updateStringTemplate,
                     new Gson().toJson(esCalendarEvents));
@@ -95,11 +93,12 @@ public class EventsRepository {
             get = new Get.Builder(DEV_CONFERENCES_INDEX, esCalendarEvents.id).type(CALENDAREVENTS_TYPE).build();
             percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, CALENDAREVENTS_TYPE, updateString).build();
         } else if(obj instanceof Event) {
-            // Set completion properties
             ESEvents esEvents = new ESEvents((Event) obj);
-            esEvents.name_event_suggest.input = Arrays.asList(esEvents.name.split(" "));
-            esEvents.tags_event_suggest.input = esEvents.tags;
-            esEvents.city_event_suggest.input = esEvents.city;
+            // Set completion property
+            esEvents.suggests.input = new ArrayList<>();
+            esEvents.suggests.input.addAll(Arrays.asList(esEvents.name.split(" ")));
+            esEvents.suggests.input.addAll(esEvents.tags);
+            esEvents.suggests.input.add(esEvents.city);
 
             String updateString = String.format(updateStringTemplate,
                     new Gson().toJson(esEvents));
@@ -343,20 +342,11 @@ public class EventsRepository {
 
     // ***************************** Suggests ***************************** //
 
-    public CompletionSearch suggest(String query, User user) {
+    public CompletionResult suggest(String query, User user) {
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion(
-                SuggestBuilders.completionSuggestion("nameEventSuggest")
-                        .field("name_event_suggest").text(query)
-        ).addSuggestion(
-                SuggestBuilders.completionSuggestion("cityEventSuggest")
-                        .field("city_event_suggest").text(query)
-        ).addSuggestion(
-                SuggestBuilders.completionSuggestion("tagsEventSuggest")
-                        .field("tags_event_suggest").text(query)
-        ).addSuggestion(
-                SuggestBuilders.completionSuggestion("nameCalendarSuggest")
-                        .field("name_calendar_suggest").text(query)
+                SuggestBuilders.completionSuggestion("suggests")
+                        .field("suggests").text(query)
         );
 
         JestResult jestResult = new JestResult(new Gson());
@@ -370,18 +360,15 @@ public class EventsRepository {
         }
 
         // Suggests result
-        CompletionSearch result = new CompletionSearch();
+        CompletionResult result = new CompletionResult();
         result.query = query;
         result.hits = new ArrayList<>();
 
         // Merge results from all sub-queries in one list (firstly a Map<id,score>, then an List)
         HashMap<String, Double> rating = new HashMap<>();
-        SuggestResponse.Suggests test = new Gson().fromJson(jestResult.getJsonObject(), SuggestResponse.Suggests.class);
+        SuggestResponse test = new Gson().fromJson(jestResult.getJsonObject(), SuggestResponse.class);
 
-        test.cityEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-        test.nameEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-        test.tagsEventSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
-        test.nameCalendarSuggest.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+        test.suggests.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
 
         // Add favourites booster in suggestions
         if(user != null) {
@@ -629,14 +616,14 @@ public class EventsRepository {
 
     // ****************************** Search ****************************** //
 
-    public EventSearch searchEvents(String query, String page, String limit) {
-        return (EventSearch) search(query, page, EVENTS_TYPE, null, null, limit);
+    public EventSearchResult searchEvents(String query, String page, String limit) {
+        return (EventSearchResult) search(query, page, EVENTS_TYPE, null, null, limit);
     }
 
-    public CalendarEventSearch searchCalendarEvents(String query, String page, String limit) {
+    public CalendarEventSearchResult searchCalendarEvents(String query, String page, String limit) {
         FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
-        return (CalendarEventSearch) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);
+        return (CalendarEventSearchResult) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);
     }
 
     // Generic function of search
@@ -705,10 +692,10 @@ public class EventsRepository {
 
         switch(typeSearch) {
             case EVENTS_TYPE:
-                res = new EventSearch();
+                res = new EventSearchResult();
             break;
             case CALENDAREVENTS_TYPE:
-                res = new CalendarEventSearch();
+                res = new CalendarEventSearchResult();
             break;
             default:
                 throw new RuntimeException("Unknown search type : " + typeSearch);
@@ -723,7 +710,7 @@ public class EventsRepository {
         res.totalPage = String.valueOf(totalPages);
         res.hitsAPage = String.valueOf(Math.min(perPage, Integer.valueOf(res.totalHits)));
 
-        if(res instanceof EventSearch) {
+        if(res instanceof EventSearchResult) {
             res.hits = getHitsFromSearch(searchResult, Event.class);
         } else {
             res.hits = getHitsFromSearch(searchResult, CalendarEvent.class);

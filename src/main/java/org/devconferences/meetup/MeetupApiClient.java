@@ -46,7 +46,8 @@ public class MeetupApiClient {
             ESCalendarEvents calendarEvent = new ESCalendarEvents();
             calendarEvent.id = "meetup_" + data.id;
             calendarEvent.name = data.name;
-            calendarEvent.name_calendar_suggest.input = Arrays.asList(calendarEvent.name.split(" "));
+            calendarEvent.suggests.input = new ArrayList<>();
+            calendarEvent.suggests.input.addAll(Arrays.asList(calendarEvent.name.split(" ")));
             calendarEvent.url = data.event_url;
             calendarEvent.description = data.description;
             calendarEvent.date = data.time;

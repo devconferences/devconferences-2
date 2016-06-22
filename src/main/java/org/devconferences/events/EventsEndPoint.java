@@ -5,9 +5,9 @@ import net.codestory.http.Context;
 import net.codestory.http.annotations.*;
 import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
-import org.devconferences.events.search.CalendarEventSearch;
-import org.devconferences.events.search.EventSearch;
-import org.devconferences.events.search.CompletionSearch;
+import org.devconferences.events.search.CalendarEventSearchResult;
+import org.devconferences.events.search.EventSearchResult;
+import org.devconferences.events.search.CompletionResult;
 import org.devconferences.security.Authentication;
 import org.devconferences.security.Encrypter;
 import org.devconferences.users.User;
@@ -47,14 +47,14 @@ public class EventsEndPoint {
 
     @Get("suggest?q=:query")
     @AllowOrigin("*")
-    public CompletionSearch suggest(String query, Context context) {
+    public CompletionResult suggest(String query, Context context) {
         return eventsRepository.suggest(query, authentication.getUser(context));
     }
 
     @Get("search/events?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public EventSearch eventsSearch(String query, String page, String limit) {
-        EventSearch result;
+    public EventSearchResult eventsSearch(String query, String page, String limit) {
+        EventSearchResult result;
         try {
             result = eventsRepository.searchEvents(query, page, limit);
         } catch (RuntimeException e) {
@@ -69,8 +69,8 @@ public class EventsEndPoint {
 
     @Get("search/calendar?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public CalendarEventSearch eventsCalendarSearch(String query, String page, String limit) {
-        CalendarEventSearch result;
+    public CalendarEventSearchResult eventsCalendarSearch(String query, String page, String limit) {
+        CalendarEventSearchResult result;
         try {
             result = eventsRepository.searchCalendarEvents(query, page, limit);
         } catch (RuntimeException e) {

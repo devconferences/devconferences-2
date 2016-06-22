@@ -7,7 +7,7 @@
       "name": {
         "type": "string"
       },
-      "name_event_suggest": {
+      "suggests": {
         "type": "completion"
       },
       "avatar": {
@@ -55,15 +55,9 @@
       "tags": {
         "type": "string"
       },
-      "tags_event_suggest": {
-        "type": "completion"
-      },
       "city": {
         "type": "string",
         "index": "not_analyzed"
-      },
-      "city_event_suggest": {
-        "type": "completion"
       },
       "gps" : {
         "type" : "geo_point"

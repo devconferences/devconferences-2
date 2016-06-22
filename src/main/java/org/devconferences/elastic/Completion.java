@@ -1,5 +1,8 @@
 package org.devconferences.elastic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Completion<T> {
-    public T input;
+    public List<T> input = new ArrayList<>();
 }

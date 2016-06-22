@@ -3,18 +3,16 @@ package org.devconferences.events;
 import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.*;
-import org.devconferences.events.search.CalendarEventSearch;
-import org.devconferences.events.search.EventSearch;
-import org.devconferences.events.search.CompletionSearch;
+import org.devconferences.events.search.CalendarEventSearchResult;
+import org.devconferences.events.search.EventSearchResult;
+import org.devconferences.events.search.CompletionResult;
 import org.devconferences.jobs.ImportEventsJob;
-import org.elasticsearch.common.geo.GeoHashUtils;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
@@ -113,7 +111,7 @@ public class EventsRepositoryTest {
     @Test
     public void testSearchEvent() {
         // Check header content of this searchEvents
-        EventSearch eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
+        EventSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -137,7 +135,7 @@ public class EventsRepositoryTest {
     @Test
     public void testCalendarEventSearch() {
         // Check header content of this searchEvents
-        CalendarEventSearch eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
+        CalendarEventSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -243,10 +241,9 @@ public class EventsRepositoryTest {
 
     @Test
     public void testGetSuggests() {
-        CompletionSearch suggestDatas = eventsEndPoint.suggest("Ci", null);
+        CompletionResult suggestDatas = eventsEndPoint.suggest("Ci", null);
         Assertions.assertThat(suggestDatas.hits).hasSize(3);
         Assertions.assertThat(suggestDatas.hits.get(0).text).matches("Cigale");
-        Assertions.assertThat(suggestDatas.hits.get(0).score).isEqualTo(2.0d);
     }
 
     @Test
