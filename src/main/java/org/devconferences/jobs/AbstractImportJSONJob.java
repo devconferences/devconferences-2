@@ -88,8 +88,7 @@ public abstract class AbstractImportJSONJob {
 
         // Get root path of the jar
         if(calendarEvent.getProtocol().equals("jar")) {
-            try {
-                FileSystem mountedJar = FileSystems.newFileSystem(calendarEvent.toURI(), env);
+            try(FileSystem mountedJar = FileSystems.newFileSystem(calendarEvent.toURI(), env)) {
                 rootPath = mountedJar.getRootDirectories().iterator().next(); // There is only one...
             } catch (URISyntaxException | IOException e) {
                 throw new RuntimeException(e);

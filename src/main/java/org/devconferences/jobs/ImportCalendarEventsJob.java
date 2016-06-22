@@ -52,8 +52,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         // Deserialization of Meetup Ids
         ObjectInputStream objectInputStream = null;
 
-        try {
-            final FileInputStream file = new FileInputStream(".meetupIdList");
+        try(final FileInputStream file = new FileInputStream(".meetupIdList")) {
             objectInputStream = new ObjectInputStream(file);
             HashSet<String> backupMeetupIds = null;
             backupMeetupIds = (HashSet<String>) objectInputStream.readObject();
@@ -62,14 +61,6 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             LOGGER.info("List of Meetup ids loaded ! Size : " + idMeetupList.size());
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            if (objectInputStream != null) {
-                try {
-                    objectInputStream.close();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 
@@ -181,23 +172,12 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
     private static void saveMeetupIdList() {
         // Serialization of Meetup ids for cron update
         LOGGER.info("Saving Meetup ids...");
-        ObjectOutputStream objectOutputStream = null;
-        try {
-            final FileOutputStream file = new FileOutputStream(".meetupIdList");
-            objectOutputStream = new ObjectOutputStream(file);
+        try(final FileOutputStream file = new FileOutputStream(".meetupIdList");
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(file)) {
             objectOutputStream.writeObject(idMeetupList);
             LOGGER.info("List of Meetup ids saved !");
         } catch (Exception e) {
             throw new RuntimeException(e);
-        } finally {
-            if(objectOutputStream != null) {
-                try {
-                    objectOutputStream.flush();
-                    objectOutputStream.close();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 

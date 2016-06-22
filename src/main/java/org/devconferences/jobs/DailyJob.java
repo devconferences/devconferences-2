@@ -121,7 +121,7 @@ public class DailyJob {
                     } if(data.source instanceof CalendarEvent) {
                         return ((CalendarEvent) data.source).id;
                     } else {
-                        return null;
+                        throw new IllegalStateException("Unknown type : " + data.source);
                     }
                 }).collect(Collectors.toList())
         ;
