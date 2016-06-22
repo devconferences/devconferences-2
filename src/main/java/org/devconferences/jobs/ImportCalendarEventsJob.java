@@ -202,7 +202,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         }
     }
 
-    private int askMeetupUpcomingEvents() {
+    public int askMeetupUpcomingEvents() {
         EventsRepository eventsRepository = new EventsRepository();
         final int[] totalMeetupImport = {0, 0};
 

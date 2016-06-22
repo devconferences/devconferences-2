@@ -1,0 +1,14 @@
+{
+    "id": "kejfnffsdf",
+    "name": "Test",
+    "date": 1461132000000,
+    "url": "http://www.exemple.com/",
+    "description": "No description.",
+    "organizer": {
+        "name": "Example Comm'",
+        "url": "http://www.example.com/"
+    },
+    "location": {
+        "gps": "-15.2154,44.1424"
+    }
+}

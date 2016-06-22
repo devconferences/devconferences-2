@@ -32,7 +32,7 @@ public final class ElasticUtils {
     public static final String ES_URL = "ES_URL";
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences";
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);
-
+    
     public static RuntimeJestClient createClient() {
         if(DeveloppementESNode.portNode != null) {
             // Set port to "0" disable creation of client (useful in tests)

@@ -7,6 +7,7 @@ import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.EventsEndPoint;
 import org.devconferences.jobs.AbstractImportJSONJob;
+import org.devconferences.jobs.DailyJob;
 import org.devconferences.jobs.ImportCalendarEventsJob;
 import org.devconferences.jobs.ImportEventsJob;
 import org.devconferences.meetup.MeetupEndPoint;
@@ -28,6 +29,7 @@ public class Main {
         final boolean createIndex;
         final boolean reloadData;
         final boolean noReloadData;
+        final boolean dailyJob;
 
         BooleanProperties() {
             prodMode = getBooleanProperty(PROD_MODE);
@@ -40,6 +42,7 @@ public class Main {
             createIndex = getBooleanProperty(CREATE_INDEX);
             reloadData = getBooleanProperty(RELOAD_EVENTS);
             noReloadData = getBooleanProperty(NO_RELOAD_DATA);
+            dailyJob = getBooleanProperty(DAILY_JOB);
         }
 
         private boolean getBooleanProperty(String property) {
@@ -52,6 +55,7 @@ public class Main {
             new ImportCalendarEventsJob();
     public static final ImportEventsJob importEventsJob =
             new ImportEventsJob();
+    public static final DailyJob dailyJob = new DailyJob();
     // All options with '-D'
     public static final String PROD_MODE = "PROD_MODE";
     public static final String SKIP_CREATE_ES_DEV_NODE = "SKIP_DEV_NODE";
@@ -63,6 +67,7 @@ public class Main {
     public static final String ONLY_RELOAD_CALENDAR = "ONLY_RELOAD_CALENDAR";
     public static final String CHECK_CALENDAR = "CHECK_CALENDAR";
     public static final String ONLY_CHECK_CALENDAR = "ONLY_CHECK_CALENDAR";
+    public static final String DAILY_JOB = "DAILY_JOB";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
@@ -131,6 +136,15 @@ public class Main {
         }
     }
 
+
+    static void ifDailyJob(BooleanProperties booleans) {
+        if(booleans.dailyJob) {
+            dailyJob.doJob();
+
+            System.exit(0);
+        }
+    }
+
     static WebServer configureWebServer() {
         WebServer webServer = new WebServer();
 
@@ -164,6 +178,7 @@ public class Main {
 
         ifCheckEvents(booleans);
         ifCheckCalendarEvents(booleans);
+        ifDailyJob(booleans);
         ifOnlyReloadCalendar(booleans.onlyReloadCalendar);
         ifNoReloadData(booleans);
 

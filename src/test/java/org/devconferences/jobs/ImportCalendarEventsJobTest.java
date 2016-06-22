@@ -183,10 +183,10 @@ public class ImportCalendarEventsJobTest {
     @Test
     public void testCheckDataFail() {
         try {
-            importCalendarEventsJob.checkData("/calendar_fail/2016/04/file_kejfnffsdf.json");
+            importCalendarEventsJob.checkData("/calendar_fail/2016/04/kejfnffsdf.json");
         } catch(RuntimeException e) {
             Assertions.assertThat(e.getMessage()).matches("Invalid CalendarEvent : " +
-                    "no 'description' field - file path : /calendar_fail/2016/04/file_kejfnffsdf.json");
+                    "no 'description' field - file path : /calendar_fail/2016/04/kejfnffsdf.json");
         }
     }
 }
