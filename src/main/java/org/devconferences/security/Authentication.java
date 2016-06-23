@@ -1,31 +1,26 @@
 package org.devconferences.security;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.google.inject.Inject;
 import io.searchbox.core.DocumentResult;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
 import net.codestory.http.NewCookie;
-import net.codestory.http.annotations.*;
-import net.codestory.http.constants.Headers;
+import net.codestory.http.annotations.Delete;
+import net.codestory.http.annotations.Get;
+import net.codestory.http.annotations.Post;
+import net.codestory.http.annotations.Prefix;
 import net.codestory.http.constants.HttpStatus;
 import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Form;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
-import org.apache.http.message.BasicHeader;
 import org.devconferences.events.search.SimpleSearchResult;
-import org.devconferences.users.UsersRepository;
 import org.devconferences.users.User;
+import org.devconferences.users.UsersRepository;
 
 import java.io.IOException;
 import java.util.Map;
-
-import static org.devconferences.env.EnvUtils.fromEnv;
 
 /**
  * Created by chris on 05/06/15.
@@ -53,20 +48,25 @@ public class Authentication {
 
     @Get("?code=:code")
     public Payload oauthCallBack(String code, Context context) {
-        try {
-            GitHubAuthenticationResponse authenticationResponse = githubCalls.authorize(code);
+        if(code != null) {
+            try {
+                GitHubAuthenticationResponse authenticationResponse = githubCalls.authorize(code);
 
-            User user = getUser(authenticationResponse.accessToken);
-            usersRepository.save(user);
-            context.setCurrentUser(user);
+                User user = getUser(authenticationResponse.accessToken);
+                usersRepository.save(user);
+                context.setCurrentUser(user);
 
-            NewCookie accessTokenCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt(authenticationResponse.accessToken), true);
-            //TODO move to secure (HTTPS only) newCookie.setSecure(true);
-            return Payload.seeOther("/")
-                    .withCookie(accessTokenCookie);
-            //.withCookie("user", gson.toJson(user));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+                NewCookie accessTokenCookie = new NewCookie(ACCESS_TOKEN, encrypter.encrypt(authenticationResponse.accessToken), true);
+                //TODO move to secure (HTTPS only) newCookie.setSecure(true);
+                return Payload.seeOther("/")
+                        .withCookie(accessTokenCookie);
+                //.withCookie("user", gson.toJson(user));
+            } catch(IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            // URI : /auth/
+            throw new NotFoundException();
         }
     }
 
@@ -139,7 +139,7 @@ public class Authentication {
 
     public boolean isAuthenticated(Context context) throws IOException {
         String accessToken = extractAccessToken(context);
-        if (accessToken == null) {
+        if(accessToken == null) {
             return false;
         }
 
@@ -151,7 +151,7 @@ public class Authentication {
     }
 
     private User getUser(String accessToken) {
-        if (accessToken == null) {
+        if(accessToken == null) {
             return null;
         }
         try {
@@ -160,12 +160,12 @@ public class Authentication {
 
             Map<String, Object> map = gson.fromJson(content.asString(), Map.class);
             User userFromResponse = extractUserFromResponse(map);
-            if (userFromResponse == null) {
+            if(userFromResponse == null) {
                 return null;
             }
 
             User user = usersRepository.getUser(userFromResponse.login);
-            if (user == null) {
+            if(user == null) {
                 user = userFromResponse;
             }
             user.avatarURL = userFromResponse.avatarURL;
@@ -173,7 +173,7 @@ public class Authentication {
             user.login = userFromResponse.login;
             return user;
 
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new RuntimeException(e);
         }
     }

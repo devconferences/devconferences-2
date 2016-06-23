@@ -2,7 +2,6 @@ package org.devconferences;
 
 import net.codestory.http.WebServer;
 import net.codestory.http.injection.GuiceAdapter;
-import net.codestory.http.templating.ModelAndView;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.EventsEndPoint;
@@ -126,7 +125,7 @@ public class Main {
         boolean reloadData = booleans.reloadData;
         boolean createMappings = booleans.createMappings;
 
-        if (!noReloadData && !prodMode && !skipDevNode) {
+        if(!noReloadData && !prodMode && !skipDevNode) {
             LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true To skip ES dev node creation");
             DeveloppementESNode.createDevNode();
         }
@@ -161,14 +160,6 @@ public class Main {
                 .add(EventsEndPoint.class)
                 .add(MeetupEndPoint.class)
                 .get("/ping", (context) -> "pong")
-                .get("/calendar/:id", (context, id) -> ModelAndView.of("index"))
-                .get("/city/:id", (context, id) -> ModelAndView.of("index"))
-                .get("/city/:id/:query", (context, id, query) -> ModelAndView.of("index"))
-                .get("/event/:id", (context, id) -> ModelAndView.of("index"))
-                .get("/favourites/:type", (context, type) -> ModelAndView.of("index"))
-                .get("/search", (context) -> ModelAndView.of("index"))
-                .get("/search/:query", (context, query) -> ModelAndView.of("index"))
-                .get("/search/:query/:page", (context, query, page) -> ModelAndView.of("index"))
         );
         return webServer;
     }
