@@ -1,14 +1,11 @@
 package org.devconferences.jobs;
 
-import com.google.gson.*;
-import io.searchbox.core.Count;
+import com.google.gson.GsonBuilder;
 import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.EventsRepository;
-import org.devconferences.users.UsersRepository;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,32 +27,28 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.jobs.ImportEventsJob.EVENTS_TYPE;
 
 public abstract class AbstractImportJSONJob {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractImportJSONJob.class);
     protected RuntimeJestClient client;
 
-    public AbstractImportJSONJob() {
+    AbstractImportJSONJob() {
         client = ElasticUtils.createClient();
     }
 
-    public AbstractImportJSONJob(RuntimeJestClient client) {
+    AbstractImportJSONJob(RuntimeJestClient client) {
         this.client = client;
     }
 
     public abstract int reloadData(boolean noRemoteCall);
-
-    public void checkAllDataInFolder(String resourceFolderPath) {
-        listFilesinFolder(resourceFolderPath).forEach(path -> checkData(path));
-    }
-
     public abstract void checkData(String path);
-
     public abstract void checkAllData();
 
-    protected int importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object,String,Object> forEachFunc) {
+    void checkAllDataInFolder(String resourceFolderPath) {
+        listFilesinFolder(resourceFolderPath).forEach(this::checkData);
+    }
+
+    int importJsonInFolder(String resourceFolderPath, Class<?> classInfo, BiFunction<Object, String, Object> forEachFunc) {
         EventsRepository eventsRepository = new EventsRepository(client);
 
         // Refresh ES on every document update (assume update are only when start server...)
@@ -65,7 +58,7 @@ public abstract class AbstractImportJSONJob {
         final int[] totalEvents = {0}; // For logging...
         LOGGER.info("Import data (" + classInfo.getSimpleName() + ")...");
         listFilesinFolder(resourceFolderPath).forEach(path -> {
-            Object object = new GsonBuilder().registerTypeAdapter(GeoPoint.class,new GeoPointAdapter()).create()
+            Object object = new GsonBuilder().registerTypeAdapter(GeoPoint.class, new GeoPointAdapter()).create()
                     .fromJson(new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream(path)), classInfo);
             Object object2 = forEachFunc.apply(object, path);
             if(object2 != null) {
@@ -83,21 +76,21 @@ public abstract class AbstractImportJSONJob {
 
     private List<String> listFilesinFolder(String resourceFolderPath) {
         Path rootPath;
-        HashMap<String,String> env = new HashMap<>();
+        HashMap<String, String> env = new HashMap<>();
         URL calendarEvent = AbstractImportJSONJob.class.getClassLoader().getResource(resourceFolderPath);
 
         // Get root path of the jar
         if(calendarEvent.getProtocol().equals("jar")) {
             try(FileSystem mountedJar = FileSystems.newFileSystem(calendarEvent.toURI(), env)) {
                 rootPath = mountedJar.getRootDirectories().iterator().next(); // There is only one...
-            } catch (URISyntaxException | IOException e) {
+            } catch(URISyntaxException | IOException e) {
                 throw new RuntimeException(e);
             }
         } else {
             try {
                 File rootFile = new File(calendarEvent.toURI());
                 rootPath = rootFile.toPath();
-            } catch (URISyntaxException e) {
+            } catch(URISyntaxException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -105,7 +98,7 @@ public abstract class AbstractImportJSONJob {
         try {
             Stream<Path> res = Files.find(rootPath, 5,
                     (path, attr) -> isJSONFileInFolder(path, attr, resourceFolderPath));
-            return res.map(path -> path.toString())
+            return res.map(Path::toString)
                     .map(path -> {
                         if(!calendarEvent.getProtocol().equals("jar")) {
                             // Replace absolute path with jar-like path
@@ -115,7 +108,7 @@ public abstract class AbstractImportJSONJob {
                         }
                     })
                     .collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new RuntimeException(e);
         }
     }
