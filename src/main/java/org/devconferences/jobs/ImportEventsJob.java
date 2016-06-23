@@ -1,7 +1,6 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
-import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.Event;
 import org.devconferences.events.GeopointCities;
@@ -16,7 +15,7 @@ public class ImportEventsJob extends AbstractImportJSONJob {
     // TODO, le temps de ...
     public static final String EVENTS_TYPE = "events";
 
-    public  ImportEventsJob() {
+    public ImportEventsJob() {
         super();
     }
 
@@ -50,6 +49,8 @@ public class ImportEventsJob extends AbstractImportJSONJob {
                 if(event.meetup != null) {
                     ImportCalendarEventsJob.addIdMeetup(event.meetup);
                 }
+            } else {
+                throw new IllegalStateException("Unknown class : " + obj.getClass());
             }
 
             return obj;
@@ -66,7 +67,7 @@ public class ImportEventsJob extends AbstractImportJSONJob {
         Event event = new Gson().fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), Event.class);
         try {
             checkEvent(event, path); // This line might throw an exception
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             throw new RuntimeException(e.getMessage() + " - file path : " + path);
         }
     }

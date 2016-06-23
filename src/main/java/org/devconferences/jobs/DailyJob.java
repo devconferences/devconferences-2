@@ -6,9 +6,9 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.devconferences.events.AbstractEvent;
 import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.Event;
-import org.elasticsearch.common.netty.util.internal.SystemPropertyUtil;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -116,15 +116,12 @@ public class DailyJob {
 
         List<String> idsList = searchResult.getHits(clazz).stream()
                 .map(data -> {
-                    if(data.source instanceof Event) {
-                        return ((Event) data.source).id;
-                    } if(data.source instanceof CalendarEvent) {
-                        return ((CalendarEvent) data.source).id;
+                    if(data.source instanceof AbstractEvent) {
+                        return ((AbstractEvent) data.source).id;
                     } else {
-                        throw new IllegalStateException("Unknown type : " + data.source);
+                        throw new IllegalStateException("Unknown class : " + data.source.getClass());
                     }
-                }).collect(Collectors.toList())
-        ;
+                }).collect(Collectors.toList());
 
         idsList.forEach(id -> {
             LOGGER.info("Deleting " + id + "...");

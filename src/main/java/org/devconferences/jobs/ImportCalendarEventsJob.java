@@ -1,9 +1,7 @@
 package org.devconferences.jobs;
 
-import com.google.gson.*;
-import io.searchbox.core.Index;
+import com.google.gson.GsonBuilder;
 import io.searchbox.indices.Refresh;
-import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
@@ -59,7 +57,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
             backupMeetupIds.forEach(ImportCalendarEventsJob::addIdMeetup);
             LOGGER.info("List of Meetup ids loaded ! Size : " + idMeetupList.size());
-        } catch (Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -89,13 +87,15 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
             }
             // Replace <p></p> and <br/> with \n (ReactJS will detect it), and remove others HTML tags
             calendarEvent.description = calendarEvent.description.replaceAll("</p>", "\n")
-                    .replaceAll("<br/>", "\n").replaceAll("<[^>]*>","")
+                    .replaceAll("<br/>", "\n").replaceAll("<[^>]*>", "")
                     .replaceAll("&amp;", "&") // Fix missed &
                     .replaceAll("(\\n\\s*)+", "\n"); // Only one newline
 
             if(calendarEvent.date < System.currentTimeMillis()) {
                 return null;
             }
+        } else {
+            throw new IllegalStateException("Unknown class : " + obj.getClass());
         }
         return obj;
     }
@@ -111,7 +111,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                 .fromJson(new InputStreamReader(ImportEventsJob.class.getResourceAsStream(path)), CalendarEvent.class);
         try {
             checkCalendarEvent(event, path); // This line might throw an exception
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             throw new RuntimeException(e.getMessage() + " - file path : " + path);
         }
     }
@@ -173,10 +173,10 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
         // Serialization of Meetup ids for cron update
         LOGGER.info("Saving Meetup ids...");
         try(final FileOutputStream file = new FileOutputStream(".meetupIdList");
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(file)) {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(file)) {
             objectOutputStream.writeObject(idMeetupList);
             LOGGER.info("List of Meetup ids saved !");
-        } catch (Exception e) {
+        } catch(Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -215,7 +215,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                 LOGGER.info("Total Meetup requests : " + totalMeetupImport[1] + "/" + idMeetupList.size());
 
 
-            } catch (Exception e) {
+            } catch(Exception e) {
                 throw new RuntimeException(e);
             }
         });

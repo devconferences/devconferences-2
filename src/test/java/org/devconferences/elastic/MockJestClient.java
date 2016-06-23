@@ -25,8 +25,9 @@ public class MockJestClient {
             if(o instanceof Search) {
                 Search search = (Search) o;
                 return search.getType().equals(CALENDAREVENTS_TYPE);
+            } else {
+                return false;
             }
-            return false;
         }
 
         public String toString() {
@@ -40,8 +41,9 @@ public class MockJestClient {
             if(o instanceof Search) {
                 Search search = (Search) o;
                 return search.getType().equals(EVENTS_TYPE);
+            } else {
+                return false;
             }
-            return false;
         }
 
         public String toString() {

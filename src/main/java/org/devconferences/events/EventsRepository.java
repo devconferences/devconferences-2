@@ -9,10 +9,10 @@ import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.search.PaginatedSearchResult;
 import org.devconferences.events.search.CalendarEventSearchResult;
 import org.devconferences.events.search.CompletionResult;
 import org.devconferences.events.search.EventSearchResult;
+import org.devconferences.events.search.PaginatedSearchResult;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 import org.elasticsearch.common.xcontent.XContentHelper;
@@ -67,7 +67,6 @@ public class EventsRepository {
     // ********************** Event and CalendarEvent ********************** //
 
     /**
-     *
      * @return true if the document was updated
      */
     public boolean indexOrUpdate(Object obj) {
@@ -81,35 +80,38 @@ public class EventsRepository {
         Percolate percolate;
 
         // Prepare queries (get, update, percolate, depends of class)
-        if(obj instanceof CalendarEvent) {
-            ESCalendarEvents esCalendarEvents = new ESCalendarEvents((CalendarEvent) obj);
-            // Set completion property
-            esCalendarEvents.suggests.input.addAll(Arrays.asList(esCalendarEvents.name.split(" ")));
+        if(obj instanceof AbstractEvent) {
+            AbstractEvent abstractEvent = (AbstractEvent) obj;
+            AbstractEvent abstractEventInES;
+            String type;
+            ArrayList<String> suggestList = new ArrayList<>();
+
+            suggestList.addAll(Arrays.asList(abstractEvent.name.split(" ")));
+            suggestList.addAll(abstractEvent.tags);
+            if(obj instanceof CalendarEvent) {
+                type = CALENDAREVENTS_TYPE;
+                abstractEventInES = new ESCalendarEvents((CalendarEvent) obj);
+                ((ESCalendarEvents) abstractEventInES).suggests.input.addAll(suggestList);
+            } else if(obj instanceof Event) {
+                type = EVENTS_TYPE;
+                abstractEventInES = new ESEvents((Event) obj);
+                suggestList.add(((Event) obj).city);
+                ((ESEvents) abstractEventInES).suggests.input.addAll(suggestList);
+            } else {
+                throw new IllegalStateException("Unknown class : " + obj.getClass());
+            }
 
             String updateString = String.format(updateStringTemplate,
-                    new Gson().toJson(esCalendarEvents));
+                    new Gson().toJson(abstractEventInES));
             update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
-                    .type(CALENDAREVENTS_TYPE).id(esCalendarEvents.id).build();
-            get = new Get.Builder(DEV_CONFERENCES_INDEX, esCalendarEvents.id).type(CALENDAREVENTS_TYPE).build();
-            percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, CALENDAREVENTS_TYPE, updateString).build();
-        } else if(obj instanceof Event) {
-            ESEvents esEvents = new ESEvents((Event) obj);
-            // Set completion property
-            esEvents.suggests.input = new ArrayList<>();
-            esEvents.suggests.input.addAll(Arrays.asList(esEvents.name.split(" ")));
-            esEvents.suggests.input.addAll(esEvents.tags);
-            esEvents.suggests.input.add(esEvents.city);
-
-            String updateString = String.format(updateStringTemplate,
-                    new Gson().toJson(esEvents));
-            update = new Update.Builder(updateString).index(DEV_CONFERENCES_INDEX)
-                    .type(EVENTS_TYPE).id(esEvents.id).build();
-            get = new Get.Builder(DEV_CONFERENCES_INDEX, esEvents.id).type(EVENTS_TYPE).build();
-            percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, EVENTS_TYPE, updateString).build();
+                    .type(type).id(abstractEvent.id).build();
+            get = new Get.Builder(DEV_CONFERENCES_INDEX, abstractEvent.id).type(type).build();
+            percolate = new Percolate.Builder(DEV_CONFERENCES_INDEX, type, updateString).build();
         } else {
-            throw new RuntimeException("Unknown class : " + obj.getClass().getName());
+            throw new IllegalStateException("Unknown class : " + obj.getClass());
         }
 
+        // Execute queries
         DocumentResult documentResultGet = client.execute(get);
 
         // Check if the document is still available (!obj.hidden || getResult.found)
@@ -174,7 +176,7 @@ public class EventsRepository {
         // What : The begin of the text
         if(obj instanceof Event) {
             Event event = (Event) obj;
-            switch (event.type) {
+            switch(event.type) {
                 case CONFERENCE:
                     objType = NotificationText.What.CONFERENCE;
                     break;
@@ -190,11 +192,11 @@ public class EventsRepository {
             objName = calendarEvent.name;
             message.link = "/calendar/" + calendarEvent.id;
         } else {
-            throw new RuntimeException("Unknown class : " + obj.getClass().getName());
+            throw new IllegalStateException("Unknown class : " + obj.getClass());
         }
 
         // Why : the 2nd part
-        switch (type) {
+        switch(type) {
             case CITY:
                 favType = NotificationText.Why.CITY;
                 break;
@@ -237,7 +239,7 @@ public class EventsRepository {
                 // Manage 2+ percolators for an user, with a priority system :
                 // TAG < CITY < CONFERENCE, COMMUNITY, CALENDAR (and there are declared in this order,
                 // so compare is possible with native function from Enum class)
-                if (favType.compareTo(owners.get(values[0])) > 0) {
+                if(favType.compareTo(owners.get(values[0])) > 0) {
                     owners.replace(values[0], favType);
                 }
             }
@@ -248,10 +250,10 @@ public class EventsRepository {
 
     private boolean objectCanBeUpdated(Object obj, DocumentResult getResult) {
         Boolean hidden = null;
-        if (obj instanceof CalendarEvent) {
-            hidden = ((CalendarEvent) obj).hidden;
-        } else if (obj instanceof Event) {
-            hidden = ((Event) obj).hidden;
+        if(obj instanceof AbstractEvent) {
+            hidden = ((AbstractEvent) obj).hidden;
+        } else {
+            throw new IllegalStateException("unknown class : " + obj.getClass());
         }
 
         boolean founded = getResult.getJsonObject().get("found").getAsBoolean();
@@ -265,7 +267,7 @@ public class EventsRepository {
     // ******************************* Event ******************************* //
 
     public void createEvent(Event event) {
-        if (getEvent(event.id) != null) {
+        if(getEvent(event.id) != null) {
             throw new RuntimeException("Event already exists with same id");
         } else {
             Index index = new Index.Builder(event).index(DEV_CONFERENCES_INDEX).type(EVENTS_TYPE)
@@ -355,14 +357,13 @@ public class EventsRepository {
                     .addIndex(DEV_CONFERENCES_INDEX).build();
 
             jestResult = client.execute(suggest);
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
         // Suggests result
         CompletionResult result = new CompletionResult();
         result.query = query;
-        result.hits = new ArrayList<>();
 
         // Merge results from all sub-queries in one list (firstly a Map<id,score>, then an List)
         HashMap<String, Double> rating = new HashMap<>();
@@ -392,7 +393,7 @@ public class EventsRepository {
 
         // Sort hits : (high score, alphabetical text)
         result.hits.sort((suggO, suggT1) -> {
-            if (suggO != null && suggT1 != null) {
+            if(suggO != null && suggT1 != null) {
                 if(suggO.score.compareTo(suggT1.score) != 0) {
                     return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
                 } else {
@@ -444,16 +445,16 @@ public class EventsRepository {
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 
-        HashMap<String,CityLight> resultMap = new HashMap<>();
+        HashMap<String, CityLight> resultMap = new HashMap<>();
 
         // Because we use sub-aggregation here (CONFERENCES and COMMUNITIES are in the same type : events),
         // we need a nested for loop
-        for (TermsAggregation.Entry city : cities.getBuckets()) {
+        for(TermsAggregation.Entry city : cities.getBuckets()) {
             TermsAggregation types = city.getTermsAggregation("types");
             CityLight cityLight = new CityLight(city.getKey(), city.getKey());
             cityLight.location = GeopointCities.getInstance().getLocation(city.getKey());
-            for (TermsAggregation.Entry type : types.getBuckets()) {
-                switch (type.getKey()) {
+            for(TermsAggregation.Entry type : types.getBuckets()) {
+                switch(type.getKey()) {
                     case "COMMUNITY":
                         cityLight.totalCommunity = type.getCount();
                         break;
@@ -471,7 +472,7 @@ public class EventsRepository {
             int countForCity = countCalendarEventsAround(query, value.lat(), value.lon(), GEO_DISTANCE);
             if(countForCity > 0) {
                 // If CityLight was not created with conferences or communities, then create it
-                if (!resultMap.containsKey(key)) {
+                if(!resultMap.containsKey(key)) {
                     CityLight cityLight = new CityLight(key, key);
                     cityLight.location = value;
                     resultMap.put(key, cityLight);
@@ -497,7 +498,7 @@ public class EventsRepository {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(ElasticUtils.MAX_SIZE)
                 .query(filteredQuery(queryBuilder, FilterBuilders.queryFilter(
-                    QueryBuilders.termQuery("city", cityId)
+                        QueryBuilders.termQuery("city", cityId)
                 )));
 
         City city = new City();
@@ -534,7 +535,7 @@ public class EventsRepository {
 
     // Add event in the good list of city, according to its type
     private void addEventToCityObject(City city, Event event) {
-        switch (event.type) {
+        switch(event.type) {
             case COMMUNITY:
                 city.communities.add(event);
                 break;
@@ -552,8 +553,8 @@ public class EventsRepository {
         String eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(matchAllQuery(),
                         geoDistanceFilter("gps")
-                        .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon)
+                                .distance(distance, KILOMETERS)
+                                .lat(lat).lon(lon)
                 ))
                 .size(ElasticUtils.MAX_SIZE) // Default max value, or ES will throw an Exception
                 .toString();
@@ -576,8 +577,8 @@ public class EventsRepository {
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
                         geoDistanceFilter("location.gps")
-                        .distance(distance, KILOMETERS)
-                        .lat(lat).lon(lon)));
+                                .distance(distance, KILOMETERS)
+                                .lat(lat).lon(lon)));
 
         Count search = new Count.Builder().query(eventLocations.toString())
                 .addIndex(DEV_CONFERENCES_INDEX)
@@ -635,20 +636,20 @@ public class EventsRepository {
                 10 : Integer.valueOf(limit));
 
         // Check parameters
-        if (pageInt <= 0) {
+        if(pageInt <= 0) {
             throw new RuntimeException("HTML 400 : page parameter must be positive");
         }
-        if (query == null || query.equals("undefined")) {
+        if(query == null || query.equals("undefined")) {
             throw new RuntimeException("HTML 400 : query parameter is missing");
         }
-        if (perPage < 1 || perPage > 1000) {
+        if(perPage < 1 || perPage > 1000) {
             throw new RuntimeException("HTML 400 : limit parameter must be between 1 and 1000");
         }
 
         // Count query
         QueryBuilder queryBuilder = getQueryBuilder(query.toLowerCase());
 
-        if (filter == null) {
+        if(filter == null) {
             searchQuery.query(queryBuilder);
         } else {
             searchQuery.query(filteredQuery(queryBuilder, filter));
@@ -666,7 +667,7 @@ public class EventsRepository {
 
         // Search query
         // Check conditions about page and size (part 2)
-        if (perPage * (pageInt - 1) >= countResult.getCount() && (countResult.getCount() != 0 || pageInt != 1)) {
+        if(perPage * (pageInt - 1) >= countResult.getCount() && (countResult.getCount() != 0 || pageInt != 1)) {
             throw new RuntimeException("HTML 400 : page out of bounds");
         }
 
@@ -693,10 +694,10 @@ public class EventsRepository {
         switch(typeSearch) {
             case EVENTS_TYPE:
                 res = new EventSearchResult();
-            break;
+                break;
             case CALENDAREVENTS_TYPE:
                 res = new CalendarEventSearchResult();
-            break;
+                break;
             default:
                 throw new RuntimeException("Unknown search type : " + typeSearch);
         }
@@ -709,11 +710,12 @@ public class EventsRepository {
 
         res.totalPage = String.valueOf(totalPages);
         res.hitsAPage = String.valueOf(Math.min(perPage, Integer.valueOf(res.totalHits)));
-
         if(res instanceof EventSearchResult) {
-            res.hits = getHitsFromSearch(searchResult, Event.class);
+            res.hits.addAll(getHitsFromSearch(searchResult, Event.class));
+        } else if(res instanceof CalendarEventSearchResult) {
+            res.hits.addAll(getHitsFromSearch(searchResult, CalendarEvent.class));
         } else {
-            res.hits = getHitsFromSearch(searchResult, CalendarEvent.class);
+            throw new IllegalStateException("Unknown class : " + res.getClass());
         }
 
         return res;

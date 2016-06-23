@@ -20,6 +20,9 @@
       "date": {
         "type": "long"
       },
+      "tags": {
+        "type": "string"
+      },
       "organizer": {
         "properties": {
           "name": {

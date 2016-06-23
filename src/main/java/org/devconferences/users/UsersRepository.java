@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.inject.Singleton;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
-import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
@@ -43,9 +42,10 @@ public class UsersRepository {
         public String value;
 
         public enum FavouriteType {
-           TAG, CITY, CONFERENCE, COMMUNITY, CALENDAR
+            TAG, CITY, CONFERENCE, COMMUNITY, CALENDAR
         }
     }
+
     public static final String USERS_TYPE = "users";
 
     private final RuntimeJestClient client;
@@ -73,7 +73,7 @@ public class UsersRepository {
             SearchResult searchResult;
             SimpleSearchResult result;
             Class classType;
-            switch (typeEnum) {
+            switch(typeEnum) {
                 case CONFERENCE:
                     searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.conferences);
                     result = new SimpleSearchResult<Event>();
@@ -93,7 +93,7 @@ public class UsersRepository {
                     throw new RuntimeException("HTML 400 : Unsupported FavouriteType : " + typeEnum);
             }
             result.query = "favourites/" + typeEnum.toString();
-            result.hits = eventsRepository.getHitsFromSearch(searchResult, classType);
+            result.hits.addAll(eventsRepository.getHitsFromSearch(searchResult, classType));
 
             return result;
         } else {
@@ -133,7 +133,7 @@ public class UsersRepository {
 
             // Add percolate query
             List<Index> indexes = new ArrayList<>();
-            String percolatorId =  user.name() + "_" + type.name() + "_" + value;
+            String percolatorId = user.name() + "_" + type.name() + "_" + value;
             switch(type) {
                 case CITY:
                     // 2 searches : conference/commu with city term + calendar with geosearch (if gps of city is defined)
@@ -148,7 +148,7 @@ public class UsersRepository {
                                                 geoDistanceFilter("location.gps")
                                                         .distance(20d, KILOMETERS)
                                                         .lat(geoPoint.lat()).lon(geoPoint.lon()))).toString()
-                        ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId + "_geo").build());
+                                ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId + "_geo").build());
                     }
                     break;
                 case TAG:
@@ -185,7 +185,7 @@ public class UsersRepository {
             listItems.remove(value);
 
             // Remove percolate query
-            String percolatorId =  user.name() + "_" + type.name() + "_" + value;
+            String percolatorId = user.name() + "_" + type.name() + "_" + value;
             Delete delete = new Delete.Builder(percolatorId)
                     .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
 
