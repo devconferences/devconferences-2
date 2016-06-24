@@ -45,7 +45,7 @@ var City = React.createClass({
             if(items.length > 0) {
                 return (
                     <div className="text-center">
-                        <h3><a href="#upcomingevents">{items.length} événements à venir</a></h3>
+                        <h3><a href="#upcomingevents">{items.length} événement(s) à venir</a></h3>
                     </div>
                 );
             }
