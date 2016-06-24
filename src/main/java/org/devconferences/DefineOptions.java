@@ -25,17 +25,18 @@ class DefineOptions {
      */
     static final String DAILY_JOB = "DAILY_JOB";
     /**
-     * Re-create 'dev-conferences' types. (BUT IT DELETES ALL DOCUMENTS IN dev-conferences INDEX !!)
-     * Useful if mappings have changed, and a PUT _mapping might fail.
+     * Create Dev Conferences index (if it doesn't exist), and all its types.
+     * (IT DELETES ALL DOCUMENTS IN Dev Conferences INDEX !!)
+     * Useful if type mappings have changed.
      */
-    static final String CREATE_MAPPINGS = "CREATE_MAPPINGS";
+    static final String CREATE_INDEX = "CREATE_INDEX";
 
     final boolean prodMode;
     final boolean checkFiles;
     final boolean skipDevNode;
     final boolean noReloadData;
     final boolean dailyJob;
-    final boolean createMappings;
+    final boolean createIndex;
 
     DefineOptions() {
         prodMode = getBooleanProperty(PROD_MODE);
@@ -43,7 +44,7 @@ class DefineOptions {
         checkFiles = getBooleanProperty(CHECK_FILES);
         noReloadData = getBooleanProperty(NO_RELOAD_DATA);
         dailyJob = getBooleanProperty(DAILY_JOB);
-        createMappings = getBooleanProperty(CREATE_MAPPINGS);
+        createIndex = getBooleanProperty(CREATE_INDEX);
     }
 
     private boolean getBooleanProperty(String property) {

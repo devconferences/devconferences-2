@@ -14,7 +14,7 @@ import org.devconferences.security.SecurityFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.devconferences.DefineOptions.*;
+import static org.devconferences.DefineOptions.SKIP_CREATE_ES_DEV_NODE;
 
 class DCSetup {
     private static final ImportCalendarEventsJob importCalendarEventsJob =
@@ -52,7 +52,7 @@ class DCSetup {
         boolean noReloadData = defineOptions.noReloadData;
         boolean prodMode = defineOptions.prodMode;
         boolean skipDevNode = defineOptions.skipDevNode;
-        boolean createMappings = defineOptions.createMappings;
+        boolean createIndex = defineOptions.createIndex;
 
         if(noReloadData) {
             LOGGER.info("Skip reload JSON files.");
@@ -61,10 +61,10 @@ class DCSetup {
                 LOGGER.info("-D" + SKIP_CREATE_ES_DEV_NODE + "=true to skip ES dev node creation");
                 DeveloppementESNode.createDevNode();
             }
-            if(!prodMode && !skipDevNode || createMappings) {
-                ElasticUtils.createAllTypes(true);
+            if(!prodMode && !skipDevNode || createIndex) {
+                ElasticUtils.createIndex();
             }
-            if(!prodMode && !skipDevNode || createMappings || prodMode) {
+            if(!prodMode && !skipDevNode || createIndex || prodMode) {
                 LOGGER.info("Update index with JSON files and online services...");
                 importEventsJob.reloadData(false);
                 importCalendarEventsJob.reloadData(false);

@@ -19,9 +19,6 @@ import java.io.IOException;
 
 import static org.devconferences.env.EnvUtils.fromEnv;
 
-/**
- * Created by chris on 08/06/15.
- */
 public final class ElasticUtils {
     public static final int MAX_SIZE = 10000; // Default max value, or ES will throw an Exception
 
@@ -29,10 +26,10 @@ public final class ElasticUtils {
 
     }
 
-    public static final String ES_URL = "ES_URL";
-    public static final String DEV_CONFERENCES_INDEX = "dev-conferences";
+    private static final String ES_URL = "ES_URL";
+    public static final String DEV_CONFERENCES_INDEX = "dev-conferences-2";
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);
-    
+
     public static RuntimeJestClient createClient() {
         if(DeveloppementESNode.portNode != null) {
             // Set port to "0" disable creation of client (useful in tests)
@@ -61,24 +58,24 @@ public final class ElasticUtils {
         createIndexIfNotExists();
     }
 
-    public static void createIndexIfNotExists() {
-        try (RuntimeJestClient client = createClient();) {
+    private static void createIndexIfNotExists() {
+        try(RuntimeJestClient client = createClient();) {
             JestResult indexExistsResult = indiceExists(client, DEV_CONFERENCES_INDEX);
             boolean found = indexExistsResult.isSucceeded();
 
-            if (!found) {
+            if(!found) {
                 LOGGER.info("Creating index : " + DEV_CONFERENCES_INDEX);
                 CreateIndex createIndex =
                         new CreateIndex.Builder(DEV_CONFERENCES_INDEX)
                                 .settings(ImmutableSettings.settingsBuilder().build().getAsMap())
                                 .build();
                 JestResult jestResult = client.execute(createIndex);
-                if (!jestResult.isSucceeded()) {
+                if(!jestResult.isSucceeded()) {
                     throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
                 }
                 createAllTypes(false);
             }
-        } catch (NullPointerException e) {
+        } catch(NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
@@ -93,10 +90,10 @@ public final class ElasticUtils {
     }
 
     public static void deleteAllTypes() {
-        try (RuntimeJestClient client = createClient();) {
+        try(RuntimeJestClient client = createClient();) {
             DeleteMapping deleteMapping = new DeleteMapping.Builder(DEV_CONFERENCES_INDEX, "*").build();
             JestResult jestResult = client.execute(deleteMapping);
-            if (!jestResult.isSucceeded()) {
+            if(!jestResult.isSucceeded()) {
                 throw new IllegalStateException("Can't delete all types : " + jestResult.getErrorMessage());
             }
             LOGGER.info("All types have been deleted");
@@ -109,11 +106,11 @@ public final class ElasticUtils {
     }
 
     private static void createType(String type, String mappingFilePath) {
-        try (RuntimeJestClient client = createClient();) {
+        try(RuntimeJestClient client = createClient();) {
             String mappingFile;
             try {
                 mappingFile = IOUtils.toString(EventsRepository.class.getResourceAsStream(mappingFilePath));
-            } catch (IOException e) {
+            } catch(IOException e) {
                 throw new RuntimeException(e);
             }
 
@@ -123,25 +120,25 @@ public final class ElasticUtils {
                 throw new IllegalStateException("Can't create type '" + type + "' : " + jestResult.getErrorMessage());
             }
             LOGGER.info("Type '" + type + "' have been created");
-        } catch (NullPointerException e) {
+        } catch(NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }
 
     public static void deleteIndex() {
-        try (RuntimeJestClient client = createClient();) {
+        try(RuntimeJestClient client = createClient();) {
             JestResult indexExistsResult = indiceExists(client, DEV_CONFERENCES_INDEX);
             boolean found = indexExistsResult.isSucceeded();
 
-            if (found) {
+            if(found) {
                 LOGGER.info("Deleting index : " + DEV_CONFERENCES_INDEX);
                 DeleteIndex deleteIndex = new DeleteIndex.Builder(DEV_CONFERENCES_INDEX).build();
                 JestResult jestResult = client.execute(deleteIndex);
-                if (!jestResult.isSucceeded()) {
+                if(!jestResult.isSucceeded()) {
                     throw new IllegalStateException("Index deletion failed : " + jestResult.getJsonString());
                 }
             }
-        } catch (NullPointerException e) {
+        } catch(NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }
     }

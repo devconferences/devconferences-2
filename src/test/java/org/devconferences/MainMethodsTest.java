@@ -11,7 +11,7 @@ public class MainMethodsTest {
         DefineOptions booleans = new DefineOptions();
 
         Assertions.assertThat(booleans.checkFiles).isFalse();
-        Assertions.assertThat(booleans.createMappings).isFalse();
+        Assertions.assertThat(booleans.createIndex).isFalse();
         Assertions.assertThat(booleans.dailyJob).isFalse();
         Assertions.assertThat(booleans.noReloadData).isFalse();
         Assertions.assertThat(booleans.prodMode).isFalse();
