@@ -36,15 +36,21 @@ public final class ElasticUtils {
             if(DeveloppementESNode.portNode.equals("0")) {
                 return null;
             } else {
-                return createClient(DeveloppementESNode.portNode);
+                return createClient(DeveloppementESNode.portNode, false);
             }
         } else {
-            return createClient(DeveloppementESNode.elasticPort);
+            return createClient(DeveloppementESNode.elasticPort, true);
         }
     }
 
-    public static RuntimeJestClient createClient(String port) {
-        String esURL = fromEnv(ES_URL, "http://localhost:" + port);
+    public static RuntimeJestClient createClient(String port, boolean useESUrl) {
+        String esURL;
+        // MAY use ES_URL only when useESUrl is true
+        if(useESUrl) {
+            esURL = fromEnv(ES_URL, "http://localhost:" + port);
+        } else {
+            esURL = "http://localhost:" + port;
+        }
 
         JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(esURL)

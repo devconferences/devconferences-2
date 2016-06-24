@@ -23,9 +23,6 @@ public class RuntimeJestClientTest {
         Assertions.assertThat(jestClient).isNotNull();
         // Index should not exists yet
         try { // This might throw randomly a SocketTimeoutException which we can't manage
-            Assertions.assertThat(ElasticUtils.indiceExists(
-                    jestClient,ElasticUtils.DEV_CONFERENCES_INDEX
-            ).isSucceeded()).isFalse();
             ElasticUtils.createIndex(); // Index + type creation
         } catch(RuntimeException e) {
             if(e.getCause() instanceof SocketTimeoutException) {

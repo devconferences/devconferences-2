@@ -339,7 +339,7 @@ public class EventsRepository {
             throw new RuntimeException(searchResult.getErrorMessage());
         }
 
-        return getHitsFromSearch(searchResult, CalendarEvent.class);
+        return new CalendarEventSearchResult().getHitsFromSearch(searchResult);
     }
 
     // ***************************** Suggests ***************************** //
@@ -569,7 +569,7 @@ public class EventsRepository {
             throw new RuntimeException(result.getErrorMessage());
         }
 
-        return getHitsFromSearch(result, Event.class);
+        return new EventSearchResult().getHitsFromSearch(result);
     }
 
     public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
@@ -612,7 +612,7 @@ public class EventsRepository {
         if(!result.isSucceeded()) {
             throw new RuntimeException(result.getErrorMessage());
         }
-        return getHitsFromSearch(result, CalendarEvent.class);
+        return new CalendarEventSearchResult().getHitsFromSearch(result);
     }
 
     // ****************************** Search ****************************** //
@@ -694,9 +694,11 @@ public class EventsRepository {
         switch(typeSearch) {
             case EVENTS_TYPE:
                 res = new EventSearchResult();
+                ((EventSearchResult) res).hits.addAll(((EventSearchResult) res).getHitsFromSearch(searchResult));
                 break;
             case CALENDAREVENTS_TYPE:
                 res = new CalendarEventSearchResult();
+                ((CalendarEventSearchResult) res).hits.addAll(((CalendarEventSearchResult) res).getHitsFromSearch(searchResult));
                 break;
             default:
                 throw new RuntimeException("Unknown search type : " + typeSearch);
@@ -710,13 +712,6 @@ public class EventsRepository {
 
         res.totalPage = String.valueOf(totalPages);
         res.hitsAPage = String.valueOf(Math.min(perPage, Integer.valueOf(res.totalHits)));
-        if(res instanceof EventSearchResult) {
-            res.hits.addAll(getHitsFromSearch(searchResult, Event.class));
-        } else if(res instanceof CalendarEventSearchResult) {
-            res.hits.addAll(getHitsFromSearch(searchResult, CalendarEvent.class));
-        } else {
-            throw new IllegalStateException("Unknown class : " + res.getClass());
-        }
 
         return res;
     }
@@ -736,13 +731,6 @@ public class EventsRepository {
     }
 
     // *************************** Miscellaneous *************************** //
-
-    // Extract List with casted hits from a SearchResult
-    public static List getHitsFromSearch(SearchResult searchResult, Class<?> sourceType) {
-        return (searchResult.getHits(sourceType).stream()
-                .map((data) -> data.source).collect(Collectors.toList())
-        );
-    }
 
     // Choose between matchAllQuery and queryStringQuery depending of query
     private QueryBuilder getQueryBuilder(String query) {

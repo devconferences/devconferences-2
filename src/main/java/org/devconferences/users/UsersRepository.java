@@ -6,10 +6,9 @@ import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.CalendarEvent;
-import org.devconferences.events.Event;
-import org.devconferences.events.EventsRepository;
-import org.devconferences.events.GeopointCities;
+import org.devconferences.events.*;
+import org.devconferences.events.search.CalendarEventSearchResult;
+import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.events.search.SimpleSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.IdsQueryBuilder;
@@ -76,24 +75,23 @@ public class UsersRepository {
             switch(typeEnum) {
                 case CONFERENCE:
                     searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.conferences);
-                    result = new SimpleSearchResult<Event>();
-                    classType = Event.class;
+                    result = new EventSearchResult();
+                    ((EventSearchResult) result).hits.addAll(((EventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 case COMMUNITY:
                     searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.communities);
-                    result = new SimpleSearchResult<Event>();
-                    classType = Event.class;
+                    result = new EventSearchResult();
+                    ((EventSearchResult) result).hits.addAll(((EventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 case CALENDAR:
                     searchResult = eventsRepository.searchByIds(EventsRepository.CALENDAREVENTS_TYPE, user.favourites.upcomingEvents);
-                    result = new SimpleSearchResult<CalendarEvent>();
-                    classType = CalendarEvent.class;
+                    result = new CalendarEventSearchResult();
+                    ((CalendarEventSearchResult) result).hits.addAll(((CalendarEventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 default:
                     throw new RuntimeException("HTML 400 : Unsupported FavouriteType : " + typeEnum);
             }
             result.query = "favourites/" + typeEnum.toString();
-            result.hits.addAll(eventsRepository.getHitsFromSearch(searchResult, classType));
 
             return result;
         } else {
@@ -120,7 +118,7 @@ public class UsersRepository {
 
         SearchResult searchResult = client.execute(search);
 
-        return EventsRepository.getHitsFromSearch(searchResult, User.class);
+        return new SimpleSearchResult<User>().getHitsFromSearch(searchResult, User.class);
     }
 
     public DocumentResult addFavourite(User user, FavouriteItem.FavouriteType type, String value) {

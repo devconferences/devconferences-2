@@ -14,7 +14,6 @@ public class MainMethodsTest {
         Assertions.assertThat(booleans.createIndex).isFalse();
         Assertions.assertThat(booleans.dailyJob).isFalse();
         Assertions.assertThat(booleans.noReloadData).isFalse();
-        Assertions.assertThat(booleans.prodMode).isFalse();
         Assertions.assertThat(booleans.skipDevNode).isFalse();
     }
 
