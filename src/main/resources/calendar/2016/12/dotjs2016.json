@@ -1,0 +1,13 @@
+{
+    "id": "dotjs2016",
+    "name": "dot JS 2016",
+    "date": 1480924800000,
+    "url": "http://www.dotjs.io/",
+    "description": "The largest JavaScript conference in Europe",
+    "location": {
+        "city": "Paris",
+        "name": "Théâtre Mogador",
+        "address": "25 Rue de Mogador",
+        "gps": "48.8753, 2.3312"
+    }
+}

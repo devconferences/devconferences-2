@@ -1,0 +1,13 @@
+{
+    "id": "dotswift2017",
+    "name": "dot Swift 2017",
+    "date": 1485504000000,
+    "url": "http://www.dotswift.io/",
+    "description": "The European Swift Conference",
+    "location": {
+        "city": "Paris",
+        "name": "Théâtre des Variétés",
+        "address": "7 boulevard Montmartre",
+        "gps": "48.8715, 2.3422"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "id": "codeursenseine2016",
+    "name": "Codeurs En Seine 2016",
+    "date": 1479974400000,
+    "url": "http://www.codeursenseine.com/2016/",
+    "description": "Codeurs en Seine est une conférence gratuite qui se déroule à Rouen, sur 4 thèmes en simultané : Web, Agile, Java et Technologies.",
+    "location": {
+        "city": "Mont-Saint-Aignan",
+        "name": "Université de Rouen",
+        "address": "Place Emile Blondel",
+        "gps": "49.4583, 1.0691"
+    }
+}
