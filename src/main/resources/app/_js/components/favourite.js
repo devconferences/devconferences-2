@@ -50,11 +50,13 @@ var Favourite = React.createClass({
     render: function () {
         if(this.state.isAuthenticated == true) {
             var className = "favourite";
+            var title = "Ajouter aux favoris";
             if(this.state.favouriteUser == true) {
                 className += " favourite-user"
+                title = "Retirer des favoris"
             }
             return (
-                <span data-toggle="" data-target="" className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
+                <span title={title} className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
                         onMouseLeave={this.onMouseLeave}>
                 &nbsp;
                 </span>
