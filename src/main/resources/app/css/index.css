@@ -286,3 +286,11 @@ div.event img.avatar {
 .navbar .container {
     position: relative;
 }
+
+.no-shadow {
+    box-shadow: 0px 0px 0px 0px #ffffff;
+}
+
+.no-margin {
+    margin: 0px;
+}

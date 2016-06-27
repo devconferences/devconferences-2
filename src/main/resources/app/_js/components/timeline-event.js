@@ -50,23 +50,23 @@ var TimelineEvent = React.createClass({
                 return null;
             }
         };
-        var nameTitle = function(name, url) {
-            if(url) {
+        var nameTitle = function(event) {
+            if(event.url) {
                 return (
-                    <span><a href={url}>{name}</a></span>
+                    <span><a href={event.url}>{event.name}</a></span>
                 );
             } else {
                 return (
-                    <span>{name}</span>
+                    <span>{event.name}</span>
                 );
             }
         };
-        var location = function(location) {
-            if(location) {
-                var mapsUrl = "http://maps.google.com/?q=" + location.gps.lat + ", " + location.gps.lon;
+        var location = function(event) {
+            if(event.location) {
+                var mapsUrl = "http://maps.google.com/?q=" + event.location.gps.lat + ", " + event.location.gps.lon;
                 return (
                     <p>
-                        <i className="fa fa-map-marker"></i> : <a href={mapsUrl}>{location.name}</a> ({location.address}, {location.city})
+                        <i className="fa fa-map-marker"></i> : <a href={mapsUrl}>{event.location.name}</a> ({event.location.address}, {event.location.city})
                     </p>
                 );
             } else {
@@ -102,21 +102,51 @@ var TimelineEvent = React.createClass({
                     this.props.favourites.upcomingEvents.indexOf(event.id) > -1);
         }.bind(this);
 
+        var expand = function(event) {
+            return (
+                <a data-parent={"#collapse_" + event.id} data-toggle="collapse"
+                    href={"#collapse_" + event.id + "_show"}><Glyphicon glyph='chevron-down'></Glyphicon></a>
+            );
+        };
+
+        var reduce = function(event) {
+            return (
+                <a data-parent={"#collapse_" + event.id} data-toggle="collapse"
+                    href={"#collapse_" + event.id + "_hide"}><Glyphicon glyph='chevron-up'></Glyphicon></a>
+            );
+        };
+
         return (
-            <div className="timeline-event panel panel-default"  data-toggle="collapse" data-target={"#" + event.id} title="Cliquez pour afficher toutes les informations">
+            <div className="timeline-event panel panel-default" >
                 <div>
                     <h3>
-                        <Favourite favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event.name, event.url)}
+                        <Favourite favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
                     </h3>
                     <p>
                         {prettyDates(date, event.duration)}{organizer(event.organizer)}
                     </p>
-                    {location(event.location)}
+                    {location(event)}
                 </div>
-                <div id={event.id} className="collapse">
-                    {cfp(event.cfp)}
-                    <div className="pre-style text-justify">
-                        {event.description}
+                <div id={"collapse_" + event.id}>
+                    <div className="panel no-shadow no-margin">
+                        <div id={"collapse_" + event.id + "_hide"} className="collapse in">
+                            <div className="text-center">
+                              <span data-toggle="collapse" data-parent={"#collapse_" + event.id} data-target={"#collapse_" + event.id + "_show"}>
+                                <Glyphicon glyph='chevron-down'></Glyphicon>
+                              </span>
+                            </div>
+                        </div>
+                        <div id={"collapse_" + event.id + "_show"} className="collapse">
+                            <div className="text-center">
+                              <span data-toggle="collapse" data-parent={"#collapse_" + event.id} data-target={"#collapse_" + event.id + "_hide"}>
+                                  <Glyphicon glyph='chevron-up'></Glyphicon>
+                              </span>
+                            </div>
+                            {cfp(event.cfp)}
+                            <div className="pre-style text-justify">
+                                {event.description}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

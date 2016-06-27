@@ -44,7 +44,7 @@ var Favourite = React.createClass({
             className += " favourite-user"
         }
         return (
-            <span className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
+            <span data-toggle="" data-target="" className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
                     onMouseLeave={this.onMouseLeave}>
             &nbsp;
             </span>
