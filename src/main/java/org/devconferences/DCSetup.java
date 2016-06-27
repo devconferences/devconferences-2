@@ -24,7 +24,7 @@ class DCSetup {
     private static final DailyJob dailyJob = new DailyJob();
     private static DefineOptions defineOptions = new DefineOptions();
     // All options with '-D'
-    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("org.devconferences.Setup");
 
     static void checkJSONFiles() {
         boolean noReloadData = defineOptions.noReloadData;
