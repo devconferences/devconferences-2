@@ -84,7 +84,7 @@ var City = React.createClass({
                     <div className="text-center">
                         <h1>
                             Dev Conferences @ {this.state.city.name} {queryText(this.props.params.query)}
-                            <Favourite favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
+                            <Favourite isAuthenticated={this.state.user != null} favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
                         </h1>
                     </div>
 

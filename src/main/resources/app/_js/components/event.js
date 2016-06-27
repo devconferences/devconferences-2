@@ -99,7 +99,7 @@ var Event = React.createClass({
             <div className="event">
                 <a name={event.id}></a>
                 <h3>
-                    <Favourite favouriteUser={isFavouriteUser()} type={event.type} value={event.id}/> {event.name}
+                    <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type={event.type} value={event.id}/> {event.name}
                 </h3>
 
                 <Grid className="no-fixed-container">

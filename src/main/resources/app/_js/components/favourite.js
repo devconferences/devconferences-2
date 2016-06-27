@@ -5,12 +5,21 @@ var DevConferencesClient = require('../client/client');
 var Favourite = React.createClass({
     getInitialState: function() {
         return {
-            favouriteUser: this.props.favouriteUser
+            isAuthenticated: null,
+            favouriteUser: null
         };
+    },
+
+    componentDidMount: function() {
+        this.setState({
+            isAuthenticated: this.props.isAuthenticated,
+            favouriteUser: this.props.favouriteUser
+        });
     },
 
     componentWillReceiveProps: function(newProps) {
         this.setState({
+            isAuthenticated: newProps.isAuthenticated,
             favouriteUser: newProps.favouriteUser
         })
     },
@@ -39,16 +48,20 @@ var Favourite = React.createClass({
     },
 
     render: function () {
-        var className = "favourite";
-        if(this.state.favouriteUser == true) {
-            className += " favourite-user"
+        if(this.state.isAuthenticated == true) {
+            var className = "favourite";
+            if(this.state.favouriteUser == true) {
+                className += " favourite-user"
+            }
+            return (
+                <span data-toggle="" data-target="" className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
+                        onMouseLeave={this.onMouseLeave}>
+                &nbsp;
+                </span>
+            );
+        } else {
+            return null;
         }
-        return (
-            <span data-toggle="" data-target="" className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}
-                    onMouseLeave={this.onMouseLeave}>
-            &nbsp;
-            </span>
-        );
     }
 
 });

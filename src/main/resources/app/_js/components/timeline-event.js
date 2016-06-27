@@ -120,7 +120,7 @@ var TimelineEvent = React.createClass({
             <div className="timeline-event panel panel-default" >
                 <div>
                     <h3>
-                        <Favourite favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
+                        <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
                     </h3>
                     <p>
                         {prettyDates(date, event.duration)}{organizer(event.organizer)}
