@@ -30,7 +30,7 @@ var App = React.createClass({
     render: function () {
         return (
             <div>
-                <nav className="navbar navbar-default">
+                <header className="navbar navbar-default navbar-header">
                     <div className="container">
                         <Authentication />
 
@@ -40,33 +40,33 @@ var App = React.createClass({
                             </a>
                         </div>
                     </div>
-                </nav>
+                </header>
 
                 {this.props.children}
 
-                <hr />
-
-                <footer>
+                <footer className="navbar navbar-default navbar-footer">
                     <Grid>
                         <Row className="text-center">
                             <Col md={4}>
-                                <Glyphicon glyph="cloud-upload"></Glyphicon>
-                                &nbsp;Hébergé chez&nbsp;
-                                    <a href="//www.clever-cloud.com">Clever Cloud</a>
-
+                                <p>
+                                    <Glyphicon glyph="cloud-upload"></Glyphicon>
+                                    &nbsp;Hébergé chez&nbsp;
+                                        <a href="//www.clever-cloud.com">Clever Cloud</a>
+                                </p>
                             </Col>
                             <Col md={4}>
-                                <i className="fa fa-twitter"></i>
-                                &nbsp;Suivez-nous sur&nbsp;
-                                    <a href="//twitter.com/DevConferences">Twitter</a>
-
+                                <p>
+                                    <i className="fa fa-twitter"></i>
+                                    &nbsp;Suivez-nous sur&nbsp;
+                                        <a href="//twitter.com/DevConferences">Twitter</a>
+                                </p>
                             </Col>
                             <Col md={4}>
-                                <i className="fa fa-bug"></i>
-                                &nbsp;Remontez les bugs via&nbsp;
-                                    <a href="//github.com/devconferences/devconferences-2/issues">&nbsp;Github</a>
-
-
+                                <p>
+                                    <i className="fa fa-bug"></i>
+                                    &nbsp;Remontez les bugs via&nbsp;
+                                        <a href="//github.com/devconferences/devconferences-2/issues">Github</a>
+                                </p>
                             </Col>
                         </Row>
                     </Grid>

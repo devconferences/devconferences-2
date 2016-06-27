@@ -294,3 +294,17 @@ div.event img.avatar {
 .no-margin {
     margin: 0px;
 }
+
+.navbar-header {
+    margin-bottom: 20px;
+    margin-top: 0px;
+    width: 100%;
+    float: none;
+}
+
+.navbar-footer {
+    margin-bottom: 0px;
+    margin-top: 20px;
+    padding: 1em 0em;
+    width: 100%;
+}
