@@ -171,7 +171,9 @@ var Authentication = React.createClass({
                                 <p>
                                     Vous voulez être informé des dernières modifications sur un événement, sur ce qu'il
                                     se passe dans votre ville, ou tout simplement être au courant des événements sur un
-                                    thème ? Connectez-vous via Github, et vous pourrez créer vos favoris !
+                                    thème ? Connectez-vous via Github, et vous pourrez créer vos favoris ! Une
+                                    notification sera envoyée pour toute création ou modification pouvant
+                                    vous intéresser.
                                 </p>
                                 <p>
                                     Une conférence ou une communauté manque sur le site ?<br/>Un événement à venir n'est

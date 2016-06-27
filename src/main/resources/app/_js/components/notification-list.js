@@ -26,11 +26,19 @@ var NotificationList = React.createClass({
                 </p>
             );
         }.bind(this);
-        return (
-            <div>
-                {this.props.messages.map(message)}
-            </div>
-        );
+        if(this.props.messages.size > 0) {
+            return (
+                <div>
+                    {this.props.messages.map(message)}
+                </div>
+            );
+        } else {
+            return (
+                <div className="text-center">
+                    <i>Pas de nouvelles notifications.</i>
+                </div>
+            );
+        }
     }
 });
 
