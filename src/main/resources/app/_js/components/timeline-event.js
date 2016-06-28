@@ -116,6 +116,16 @@ var TimelineEvent = React.createClass({
             );
         };
 
+        var rotate180 = function(e) {
+            var elem = e.target.parentNode;
+            elem.classList.toggle("expanded");
+            if(elem.classList.contains("expanded")) {
+                elem.title = "Cliquez pour affichez moins d'informations";
+            } else {
+                elem.title = "Cliquez pour afficher plus d'informations";
+            }
+        };
+
         return (
             <div className="timeline-event panel panel-default" >
                 <div>
@@ -128,20 +138,16 @@ var TimelineEvent = React.createClass({
                     {location(event)}
                 </div>
                 <div id={"collapse_" + event.id}>
-                    <div className="panel no-shadow no-margin">
-                        <div id={"collapse_" + event.id + "_hide"} className="collapse in">
+                    <div>
+                        <div>
                             <div className="text-center">
-                              <span data-toggle="collapse" data-parent={"#collapse_" + event.id} data-target={"#collapse_" + event.id + "_show"}>
-                                <Glyphicon glyph='chevron-down'></Glyphicon>
+                              <span data-toggle="collapse" data-target={"#collapse_" + event.id + "_show"}
+                                    onClick={rotate180}>
+                                <span className="expand-glyph"><Glyphicon glyph='chevron-down'></Glyphicon></span>
                               </span>
                             </div>
                         </div>
                         <div id={"collapse_" + event.id + "_show"} className="collapse">
-                            <div className="text-center">
-                              <span data-toggle="collapse" data-parent={"#collapse_" + event.id} data-target={"#collapse_" + event.id + "_hide"}>
-                                  <Glyphicon glyph='chevron-up'></Glyphicon>
-                              </span>
-                            </div>
                             {cfp(event.cfp)}
                             <div className="pre-style text-justify">
                                 {event.description}

@@ -287,10 +287,6 @@ div.event img.avatar {
     position: relative;
 }
 
-.no-shadow {
-    box-shadow: 0px 0px 0px 0px #ffffff;
-}
-
 .no-margin {
     margin: 0px;
 }
@@ -307,4 +303,14 @@ div.event img.avatar {
     margin-top: 20px;
     padding: 1em 0em;
     width: 100%;
+}
+
+.expand-glyph {
+    -webkit-transition: 500ms ease all;
+    transition: 500ms ease all;
+    display: inline-block;
+}
+.expand-glyph.expanded {
+    -webkit-transform: scaleY(-1);
+    transform: scaleY(-1);
 }
