@@ -20,13 +20,13 @@ var NotificationList = React.createClass({
             return (
                 <p key={message.date + "/" + message.text}>
                     <button data-id={message.id} type="button" className="close" title="Marquer comme lu" onClick={this.removeMessage}>
-                      <span aria-hidden="true">&times;</span>
+                        &times;
                     </button>
                     {formattedDate} : (<Link to={message.link}>Voir</Link>) <br/> {message.text}
                 </p>
             );
         }.bind(this);
-        if(this.props.messages.size > 0) {
+        if(this.props.messages.length > 0) {
             return (
                 <div>
                     {this.props.messages.map(message)}

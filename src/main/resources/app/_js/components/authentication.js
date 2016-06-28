@@ -104,6 +104,19 @@ var Authentication = React.createClass({
             }
         }.bind(this);
 
+        var notificationStatus = function() {
+            if(this.state.user &&
+               this.state.user.messages.length > 0) {
+                return (
+                    <span data-toggle="modal" data-target="#notificationsModal" className="notification-status unread" title={this.state.user.messages.length + " nouvelle(s) notification(s)"}></span>
+                );
+            } else {
+                return (
+                    <span data-toggle="modal" data-target="#notificationsModal" className="notification-status"></span>
+                );
+            }
+        }.bind(this);
+
         return (
             <div className="authentication dropdown">
                 <a href="" className="dropdown-toggle" data-toggle="dropdown">
@@ -113,6 +126,7 @@ var Authentication = React.createClass({
                            className="img-circle"
                            />
                 </a>
+                {notificationStatus()}
                 <ul className="dropdown-menu dropdown-menu-right">
                     {favourites()}
                     {notifications()}

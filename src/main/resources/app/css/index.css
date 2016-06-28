@@ -314,3 +314,17 @@ div.event img.avatar {
     -webkit-transform: scaleY(-1);
     transform: scaleY(-1);
 }
+
+.notification-status {
+    display: inline-block;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+}
+.notification-status.unread {
+    background-color: #337ab7;
+    cursor: pointer;
+}
