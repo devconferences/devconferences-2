@@ -2,10 +2,10 @@ var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
 
-var EventAnchorList = require('./event-anchor-list');
-var EventList = require('./event-list');
-var UpcomingEventsList = require('./upcoming-events-list');
-var Favourite = require('./favourite');
+var EventAnchorList = require('../components/event-anchor-list');
+var EventList = require('../components/event-list');
+var UpcomingEventsList = require('../components/upcoming-events-list');
+var FavouriteButton = require('../components/favourite-button');
 var DevConferencesClient = require('../client/client');
 
 var City = React.createClass({
@@ -84,7 +84,7 @@ var City = React.createClass({
                     <div className="text-center">
                         <h1>
                             Dev Conferences @ {this.state.city.name} {queryText(this.props.params.query)}
-                            <Favourite isAuthenticated={this.state.user != null} favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
+                            <FavouriteButton isAuthenticated={this.state.user != null} favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
                         </h1>
                     </div>
 

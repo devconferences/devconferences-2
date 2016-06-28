@@ -2,7 +2,7 @@ var React = require('react');
 
 var DevConferencesClient = require('../client/client');
 
-var Favourite = React.createClass({
+var FavouriteButton = React.createClass({
     getInitialState: function() {
         return {
             isAuthenticated: null,
@@ -68,4 +68,4 @@ var Favourite = React.createClass({
 
 });
 
-module.exports = Favourite;
+module.exports = FavouriteButton;

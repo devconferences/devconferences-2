@@ -2,9 +2,10 @@ var React = require('react');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 
-var Event = require('./event');
-var DevConferencesClient = require('../client/client');
 var NotFound = require('./not-found');
+
+var Event = require('../components/event');
+var DevConferencesClient = require('../client/client');
 
 var EventPage = React.createClass({
     mixins: [Router.Navigation],

@@ -2,9 +2,10 @@ var React = require('react');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 
-var TimelineEvent = require('./timeline-event');
-var DevConferencesClient = require('../client/client');
 var NotFound = require('./not-found');
+
+var TimelineEvent = require('../components/timeline-event');
+var DevConferencesClient = require('../client/client');
 
 var CalendarPage = React.createClass({
     mixins: [Router.Navigation],

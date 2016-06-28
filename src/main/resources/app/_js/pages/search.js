@@ -3,9 +3,9 @@ var Router = require('react-router');
 var ReactDOM = require('react-dom');
 var $ = require('jquery');
 
-var Event = require('./event');
-var TimelineEvent = require('./timeline-event');
-var SearchBar = require('./search-bar');
+var Event = require('../components/event');
+var TimelineEvent = require('../components/timeline-event');
+var SearchBar = require('../components/search-bar');
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;

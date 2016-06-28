@@ -4,7 +4,7 @@ var Router = require('react-router');
 
 var DevConferencesClient = require('../client/client');
 var auth = require('./authentication');
-var Favourite = require('./favourite');
+var FavouriteButton = require('./favourite-button');
 
 var SearchBar = React.createClass({
     // All kind of research
@@ -235,7 +235,7 @@ var SearchBar = React.createClass({
                     <li key={suggest.text} data-value={suggest.text}
                             onClick={this.setSearchQuery} onMouseOver={hoverSuggest} onMouseOut={noHoverSuggest}>
                         {suggest.text}
-                        <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={suggest.text}/>
+                        <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={suggest.text}/>
                     </li>
                 );
             }.bind(this);
@@ -259,7 +259,7 @@ var SearchBar = React.createClass({
         return (
             <div className="search-bar-container text-center">
                 <input type="text" className="search-bar" ref="searchInput" onKeyPress={this.onEnterPress} onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
-                <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={this.state.query}/>
+                <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={this.state.query}/>
                 {suggestList(this.state.suggests, this.state.showSuggests)}
             </div>
         );

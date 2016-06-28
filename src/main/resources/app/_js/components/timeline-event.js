@@ -2,7 +2,9 @@ var React = require('react');
 var moment = require('moment');
 var ReactBootstrap = require('react-bootstrap');
 
-var Favourite = require('./favourite');
+var Cfp = require('./properties/cfp');
+var Location = require('./properties/location');
+var FavouriteButton = require('./favourite-button');
 
 var Glyphicon = ReactBootstrap.Glyphicon;
 
@@ -61,39 +63,28 @@ var TimelineEvent = React.createClass({
                 );
             }
         };
-        var location = function(event) {
-            if(event.location) {
-                var mapsUrl = "http://maps.google.com/?q=" + event.location.gps.lat + ", " + event.location.gps.lon;
+
+        var renderCfp = function(cfpData) {
+            if(cfpData) {
                 return (
                     <p>
-                        <i className="fa fa-map-marker"></i> : <a href={mapsUrl}>{event.location.name}</a> ({event.location.address}, {event.location.city})
+                        <Cfp cfp={cfpData} />
                     </p>
                 );
             } else {
-                return (<span></span>);
+                return null;
             }
         };
-        var cfp = function(cfpData) {
-            if(cfpData) {
-                var statusCFP = function() {
-                    if(new Date() < new Date(cfpData.dateSubmission)) {
-                    var prettyDate = moment(new Date(cfpData.dateSubmission)).format("DD/MM/YYYY à HH:mm");
-                        return (
-                            <span><span className="label label-success">Ouvert</span> (Fermeture le {prettyDate})</span>
-                        );
-                    } else {
-                        return (
-                            <span className="label label-danger">Fermé</span>
-                        );
-                    }
-                }.bind(this);
+
+        var renderLocation = function(event) {
+            if(event.location) {
                 return (
                     <p>
-                        CFP : {statusCFP()} <a href={cfpData.url}>{cfpData.url}</a>
+                        <Location location={event.location} />
                     </p>
                 );
             } else {
-                return (<span></span>);
+                return null;
             }
         };
 
@@ -101,20 +92,6 @@ var TimelineEvent = React.createClass({
             return (this.props.favourites &&
                     this.props.favourites.upcomingEvents.indexOf(event.id) > -1);
         }.bind(this);
-
-        var expand = function(event) {
-            return (
-                <a data-parent={"#collapse_" + event.id} data-toggle="collapse"
-                    href={"#collapse_" + event.id + "_show"}><Glyphicon glyph='chevron-down'></Glyphicon></a>
-            );
-        };
-
-        var reduce = function(event) {
-            return (
-                <a data-parent={"#collapse_" + event.id} data-toggle="collapse"
-                    href={"#collapse_" + event.id + "_hide"}><Glyphicon glyph='chevron-up'></Glyphicon></a>
-            );
-        };
 
         var rotate180 = function(e) {
             var elem = e.target.parentNode;
@@ -130,25 +107,23 @@ var TimelineEvent = React.createClass({
             <div className="timeline-event panel panel-default" >
                 <div>
                     <h3>
-                        <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
+                        <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
                     </h3>
                     <p>
                         {prettyDates(date, event.duration)}{organizer(event.organizer)}
                     </p>
-                    {location(event)}
+                    {renderLocation(event)}
                 </div>
                 <div id={"collapse_" + event.id}>
                     <div>
-                        <div>
-                            <div className="text-center">
-                              <span data-toggle="collapse" data-target={"#collapse_" + event.id + "_show"}
+                        <div className="text-center">
+                            <span data-toggle="collapse" data-target={"#collapse_" + event.id + "_show"}
                                     onClick={rotate180}>
                                 <span className="expand-glyph"><Glyphicon glyph='chevron-down'></Glyphicon></span>
-                              </span>
-                            </div>
+                            </span>
                         </div>
                         <div id={"collapse_" + event.id + "_show"} className="collapse">
-                            {cfp(event.cfp)}
+                            {renderCfp(event.cfp)}
                             <div className="pre-style text-justify">
                                 {event.description}
                             </div>

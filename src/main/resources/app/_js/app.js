@@ -4,15 +4,15 @@ var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
 var injectTapEventPlugin = require("react-tap-event-plugin");
 
-var Home = require('./components/home');
-var City = require('./components/city');
-var Search = require('./components/search');
-var MyFavourites = require('./components/my-favourites');
-var NotFound = require('./components/not-found');
-var BreizhcampTeaser = require('./components/breizhcamp-teaser');
+var CalendarPage = require('./pages/calendar-page');
+var City = require('./pages/city');
+var EventPage = require('./pages/event-page');
+var Home = require('./pages/home');
+var MyFavourites = require('./pages/my-favourites');
+var NotFound = require('./pages/not-found');
+var Search = require('./pages/search');
+
 var Authentication = require('./components/authentication');
-var CalendarPage = require('./components/calendar-page');
-var EventPage = require('./components/event-page');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;

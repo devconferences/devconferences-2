@@ -7,8 +7,8 @@ var FacebookLink = require('./social/facebook-link');
 var MeetupLink = require('./social/meetup-link');
 var YoutubeLink = require('./social/youtube-link');
 var ParleysLink = require('./social/parleys-link');
-var Tags = require('./tags');
-var Favourite = require('./favourite');
+var Tags = require('./properties/tags');
+var FavouriteButton = require('./favourite-button');
 
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
@@ -99,7 +99,7 @@ var Event = React.createClass({
             <div className="event">
                 <a name={event.id}></a>
                 <h3>
-                    <Favourite isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type={event.type} value={event.id}/> {event.name}
+                    <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type={event.type} value={event.id}/> {event.name}
                 </h3>
 
                 <Grid className="no-fixed-container">

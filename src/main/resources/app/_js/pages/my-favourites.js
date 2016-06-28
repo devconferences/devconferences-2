@@ -2,8 +2,8 @@ var React = require('react');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 
-var EventList = require('./event-list');
-var TimelineEvent = require('./timeline-event');
+var EventList = require('../components/event-list');
+var TimelineEvent = require('../components/timeline-event');
 var DevConferencesClient = require('../client/client');
 
 var MyFavourites = React.createClass({
