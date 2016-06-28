@@ -212,7 +212,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
                 });
 
                 totalMeetupImport[1]++;
-                LOGGER.info("Total Meetup requests : " + totalMeetupImport[1] + "/" + idMeetupList.size());
+                LOGGER.debug("Total Meetup requests : " + totalMeetupImport[1] + "/" + idMeetupList.size());
 
 
             } catch(Exception e) {
