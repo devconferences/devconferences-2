@@ -1,3 +1,3 @@
 [
-  "0 2 * * * cd $ROOT && /usr/bin/mvn exec:java -DDAILY_JOB=true"
+  "0 2 * * * source /home/bas/applicationrc; cd $ROOT; /usr/bin/mvn exec:java -DDAILY_JOB=true"
 ]

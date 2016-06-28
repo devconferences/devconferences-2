@@ -48,7 +48,7 @@ public class DailyJob {
         RuntimeJestClient client = ElasticUtils.createClient();
 
         // Intro
-        LOGGER.info(new Date() + " : Start daily job...");
+        LOGGER.info("Start daily job...");
 
         // 1.
         ImportCalendarEventsJob.reloadMeetupIds();
