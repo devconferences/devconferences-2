@@ -216,9 +216,7 @@ public class EventsRepository {
         }
 
         // Action : the 3rd part, is in parameter
-
-        message.text = String.format("%s %s %s : %s", objType.getText(), favType.getText(objType.isFeminine()),
-                action.getText(objType.isFeminine()), objName);
+        message.text = String.format("%s : %s", new NotificationText(objType, favType, action), objName);
     }
 
     // Extract ids percolators from Percolate execution

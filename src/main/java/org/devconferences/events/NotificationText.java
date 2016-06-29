@@ -4,7 +4,23 @@ package org.devconferences.events;
  * Created by ronan on 21/06/16.
  */
 final class NotificationText {
-    public enum What {
+    private final What what;
+    private final Why why;
+    private final Action action;
+
+    public NotificationText(What what, Why why, Action action) {
+        this.what = what;
+        this.why = why;
+        this.action = action;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %s", what.getText(), why.getText(what.isFeminine()),
+                action.getText(what.isFeminine()));
+    }
+
+    enum What {
         CALENDAR("Un événement", false),
         CONFERENCE("Une conférence", true),
         COMMUNITY("Une communauté", true);
@@ -26,7 +42,7 @@ final class NotificationText {
         }
     }
 
-    public enum Why {
+    enum Why {
         SEARCH("pouvant vous intéresser"),
         FAVOURITE("favori%s", "te"),
         CITY("dans une ville favorite");
@@ -49,7 +65,7 @@ final class NotificationText {
         }
     }
 
-    public enum Action {
+    enum Action {
         CREATION("a été créé%s", "e"),
         UPDATE("a été mis%s à jour", "e");
 
