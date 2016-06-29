@@ -7,6 +7,7 @@ import io.searchbox.indices.CreateIndex;
 import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.IndicesExists;
 import io.searchbox.indices.mapping.DeleteMapping;
+import io.searchbox.indices.mapping.GetMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
@@ -79,8 +80,22 @@ public final class ElasticUtils {
                 if(!jestResult.isSucceeded()) {
                     throw new IllegalStateException("Index creation failed : " + jestResult.getJsonString());
                 }
-                createAllTypes(false);
             }
+
+            // Check if there is no mapping, then create it
+            GetMapping getMapping = new GetMapping.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
+            JestResult jestResult = client.execute(getMapping);
+
+            if(jestResult.isSucceeded()) {
+                if(jestResult.getJsonObject().get(DEV_CONFERENCES_INDEX).getAsJsonObject().get("mappings")
+                        .getAsJsonObject().toString().equals("{}")
+                        ) {
+                    createAllTypes(false);
+                }
+            } else {
+                throw new IllegalStateException("Can't get mappings : " + jestResult.getJsonString());
+            }
+
         } catch(NullPointerException e) {
             LOGGER.warn("No RuntimeJestClient have been created !");
         }
