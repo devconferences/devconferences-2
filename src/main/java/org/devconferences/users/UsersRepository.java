@@ -6,7 +6,8 @@ import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.*;
+import org.devconferences.events.EventsRepository;
+import org.devconferences.events.GeopointCities;
 import org.devconferences.events.search.CalendarEventSearchResult;
 import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.events.search.SimpleSearchResult;
@@ -23,16 +24,12 @@ import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 import static org.devconferences.elastic.ElasticUtils.createClient;
-import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CALENDAR;
 import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CITY;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
-/**
- * Created by chris on 07/06/15.
- */
 @Singleton
 public class UsersRepository {
 
@@ -71,7 +68,6 @@ public class UsersRepository {
         if(user != null) {
             SearchResult searchResult;
             SimpleSearchResult result;
-            Class classType;
             switch(typeEnum) {
                 case CONFERENCE:
                     searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.conferences);
@@ -157,7 +153,6 @@ public class UsersRepository {
                 case CONFERENCE:
                 case COMMUNITY:
                 case CALENDAR:
-                    String typeES = (type == CALENDAR) ? EventsRepository.CALENDAREVENTS_TYPE : EventsRepository.EVENTS_TYPE;
                     indexes.add(new Index.Builder(
                             new SearchSourceBuilder().query(QueryBuilders.termQuery("id", value)).toString()
                     ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
@@ -230,7 +225,7 @@ public class UsersRepository {
         return listItems;
     }
 
-    DocumentResult updateFavourites(User user) {
+    private DocumentResult updateFavourites(User user) {
         String updateStringTemplate = "{" +
                 "  \"doc\": {" +
                 "    \"favourites\": %s" +
@@ -242,9 +237,7 @@ public class UsersRepository {
         Update update = new Update.Builder(updateString)
                 .index(DEV_CONFERENCES_INDEX).type(USERS_TYPE).id(user.login).build();
 
-        DocumentResult result = client.execute(update);
-
-        return result;
+        return client.execute(update);
 
     }
 
@@ -263,7 +256,7 @@ public class UsersRepository {
         return updateMessages(user);
     }
 
-    DocumentResult updateMessages(User user) {
+    private DocumentResult updateMessages(User user) {
         String updateStringTemplate = "{" +
                 "  \"doc\": {" +
                 "    \"messages\": %s" +

@@ -13,8 +13,8 @@ import java.io.IOException;
 import static org.devconferences.env.EnvUtils.fromEnv;
 
 public class GithubCalls {
-    public static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
-    public static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
+    private static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
+    private static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
 
     final String clientId;
     private final String clientSecret;

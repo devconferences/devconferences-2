@@ -269,7 +269,7 @@ public class EventsRepository {
 
     // ******************************* Event ******************************* //
 
-    public void createEvent(Event event) {
+    void createEvent(Event event) {
         if(getEvent(event.id) != null) {
             throw new RuntimeException("Event already exists with same id");
         } else {
@@ -294,7 +294,7 @@ public class EventsRepository {
         return result.getSourceAsObject(Event.class);
     }
 
-    public void deleteEvent(String eventId) {
+    void deleteEvent(String eventId) {
         Preconditions.checkNotNull(eventId, "Should not be null !");
         Preconditions.checkArgument(!eventId.equals(""));
 
@@ -305,7 +305,7 @@ public class EventsRepository {
 
     // *************************** CalendarEvent *************************** //
 
-    public CalendarEvent getCalendarEvent(String eventId) {
+    CalendarEvent getCalendarEvent(String eventId) {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(CALENDAREVENTS_TYPE).build();
 
         JestResult result = client.execute(get);
@@ -319,7 +319,7 @@ public class EventsRepository {
         return result.getSourceAsObject(CalendarEvent.class);
     }
 
-    public List<CalendarEvent> getCalendarEventList(String page) {
+    List<CalendarEvent> getCalendarEventList(String page) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
 
         int pageInt = ElasticUtils.MAX_SIZE;
@@ -347,7 +347,7 @@ public class EventsRepository {
 
     // ***************************** Suggests ***************************** //
 
-    public CompletionResult suggest(String query, User user) {
+    CompletionResult suggest(String query, User user) {
         SuggestBuilder suggestBuilder = new SuggestBuilder();
         suggestBuilder.addSuggestion(
                 SuggestBuilders.completionSuggestion("suggests")
@@ -422,7 +422,7 @@ public class EventsRepository {
 
     // ******************************* City ******************************* //
 
-    public List<CityLight> getAllCitiesWithQuery(String query) {
+    List<CityLight> getAllCitiesWithQuery(String query) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(0);
 
@@ -491,12 +491,7 @@ public class EventsRepository {
         }).sorted().collect(Collectors.toList());
     }
 
-    @Deprecated
-    public List<CityLight> getAllCities() {
-        return getAllCitiesWithQuery(null);
-    }
-
-    public City getCity(String cityId, String query) {
+    City getCity(String cityId, String query) {
         QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
         searchQuery.size(ElasticUtils.MAX_SIZE)
@@ -552,7 +547,7 @@ public class EventsRepository {
 
     // ***************************** GeoSearch ***************************** //
 
-    public List<Event> findEventsAround(double lat, double lon, double distance) {
+    List<Event> findEventsAround(double lat, double lon, double distance) {
         String eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(matchAllQuery(),
                         geoDistanceFilter("gps")
@@ -575,7 +570,7 @@ public class EventsRepository {
         return new EventSearchResult().getHitsFromSearch(result);
     }
 
-    public int countCalendarEventsAround(String query, double lat, double lon, double distance) {
+    int countCalendarEventsAround(String query, double lat, double lon, double distance) {
         QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
@@ -595,7 +590,7 @@ public class EventsRepository {
         return result.getCount().intValue();
     }
 
-    public List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
+    List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
         QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
@@ -620,11 +615,11 @@ public class EventsRepository {
 
     // ****************************** Search ****************************** //
 
-    public EventSearchResult searchEvents(String query, Integer page, Integer limit) {
+    EventSearchResult searchEvents(String query, Integer page, Integer limit) {
         return (EventSearchResult) search(query, page, EVENTS_TYPE, null, null, limit);
     }
 
-    public CalendarEventSearchResult searchCalendarEvents(String query, Integer page, Integer limit) {
+    CalendarEventSearchResult searchCalendarEvents(String query, Integer page, Integer limit) {
         FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
         return (CalendarEventSearchResult) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);

@@ -22,12 +22,9 @@ import org.devconferences.users.UsersRepository;
 import java.io.IOException;
 import java.util.Map;
 
-/**
- * Created by chris on 05/06/15.
- */
 @Prefix("auth/")
 public class Authentication {
-    public static final String ACCESS_TOKEN = "access_token";
+    private static final String ACCESS_TOKEN = "access_token";
 
     private final Encrypter encrypter;
     private final UsersRepository usersRepository;
@@ -137,7 +134,7 @@ public class Authentication {
         }
     }
 
-    public boolean isAuthenticated(Context context) throws IOException {
+    boolean isAuthenticated(Context context) throws IOException {
         String accessToken = extractAccessToken(context);
         if(accessToken == null) {
             return false;
@@ -184,8 +181,7 @@ public class Authentication {
         String avatarUrl = (String) map.get("avatar_url");
         String email = (String) map.get("email");
 
-        User user = new User(login, id, email, avatarUrl);
-        return user;
+        return new User(login, id, email, avatarUrl);
     }
 
     private String extractAccessToken(Context context) {

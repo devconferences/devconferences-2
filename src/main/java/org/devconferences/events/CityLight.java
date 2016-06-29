@@ -17,14 +17,6 @@ public class CityLight implements Comparable {
         this.name = name;
     }
 
-    public String id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-
     @Override
     public int compareTo(Object o) {
         CityLight other = (CityLight) o;
