@@ -5,12 +5,6 @@ var TimelineEvent = require('./timeline-event');
 var DevConferencesClient = require('../client/client');
 
 var TimelineEventList = React.createClass({
-    getInitialState: function() {
-        return {
-            eventsList: [],
-            page: 0
-        };
-    },
     render: function() {
         var calendarEvent = function(event) {
             return (
@@ -28,14 +22,30 @@ var TimelineEventList = React.createClass({
                 return null;
             }
         };
+
         var moreUpcomingEventsCall = function(e) {
             this.props.moreUpcomingEvents(parseInt(this.props.calendar.hitsAPage) + 10);
         }.bind(this);
+
+        var hits = function() {
+            if(this.props.calendar.hits) {
+                if(this.props.calendar.hits.length > 0) {
+                    return (
+                        <div>
+                            {this.props.calendar.hits.map(calendarEvent)}
+                        </div>
+                    );
+                } else {
+                    return (<p className="text-center">Pas d'événements à venir.</p>);
+                }
+            } else {
+                return (<p className="text-center">Chargement...</p>);
+            }
+        }.bind(this);
+
         return (
             <div id="timeline-event-list" className="text-left separe scrollable">
-                <div>
-                    {this.props.calendar.hits.map(calendarEvent)}
-                </div>
+                {hits()}
                 {moreUpcomingEvents(this.props.calendar.totalPage, moreUpcomingEventsCall)}
             </div>
         );

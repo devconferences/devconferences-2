@@ -42,42 +42,61 @@ var MyFavourites = React.createClass({
     },
 
     render: function() {
-        var items = function() {
-            if(this.props.params.type == "conference" ||
-                    this.props.params.type == "community") {
-                return (
-                    <EventList events={this.state.items ? this.state.items.hits : []} favourites={(this.state.user ? this.state.user.favourites : null)} />
-                );
-            } else if(this.props.params.type == "calendar") {
-                var aEvent = function(event) {
+        var items = function(noItemText) {
+            if(this.state.items) {
+                if(this.state.items.length > 0) {
+                    if(this.props.params.type == "conference" ||
+                            this.props.params.type == "community") {
+                        return (
+                            <EventList events={this.state.items.hits} favourites={(this.state.user ? this.state.user.favourites : null)} />
+                        );
+                    } else if(this.props.params.type == "calendar") {
+                        var aEvent = function(event) {
+                            return (
+                                <TimelineEvent key={event.id} event={event} favourites={(this.state.user ? this.state.user.favourites : null)}/>
+                            );
+                        }.bind(this);
+                        return (
+                            <div>
+                                {this.state.items.hits.map(aEvent)}
+                            </div>
+                        );
+                    }
+                } else {
                     return (
-                        <TimelineEvent key={event.id} event={event} favourites={(this.state.user ? this.state.user.favourites : null)}/>
+                        <p className="text-center">{noItemText}</p>
                     );
-                }.bind(this);
+                }
+            } else {
                 return (
-                    <div>
-                        {this.state.items ? this.state.items.hits.map(aEvent) : null}
-                    </div>
+                    <p className="text-center">Chargement...</p>
                 );
             }
         }.bind(this);
         var typeFavouriteText = function() {
+            var result = {
+                title: null,
+                noItem: null
+            };
             if(this.props.params.type == "conference") {
-                return "conférences";
+                result.title = "conférences";
+                result.noItem = "Pas de conférences favorites.";
             } else if(this.props.params.type == "community") {
-                return "communautés";
+                result.title = "communautés";
+                result.noItem = "Pas de communautés favorites.";
             } else if(this.props.params.type == "calendar") {
-                return "événements";
-            } else {
-                return "";
+                result.title = "événements";
+                result.noItem = "Pas d'événements favoris.";
             }
+
+            return result;
         }.bind(this);
         return (
             <div className="container">
                 <div className="text-center">
-                    <h1>Mes favoris : {typeFavouriteText()}</h1>
+                    <h1>Mes favoris : {typeFavouriteText().title}</h1>
                 </div>
-                {items()}
+                {items(typeFavouriteText().noItem)}
             </div>
         )
     }

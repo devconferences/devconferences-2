@@ -25,7 +25,7 @@ var Home = React.createClass({
             cities: [],
             calendar: {
                 query: null,
-                hits: []
+                hits: null
             },
             user: null
         };
