@@ -119,7 +119,7 @@ var TimelineEvent = React.createClass({
                         <div className="text-center">
                             <span data-toggle="collapse" data-target={"#collapse_" + event.id + "_show"}
                                     onClick={rotate180}>
-                                <span className="expand-glyph"><Glyphicon glyph='chevron-down'></Glyphicon></span>
+                                <span className="expand-glyph" title="Cliquez pour afficher plus d'informations"><Glyphicon glyph='chevron-down'></Glyphicon></span>
                             </span>
                         </div>
                         <div id={"collapse_" + event.id + "_show"} className="collapse">
