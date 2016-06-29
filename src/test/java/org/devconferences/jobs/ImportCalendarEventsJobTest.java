@@ -32,7 +32,7 @@ public class ImportCalendarEventsJobTest {
 
     @AfterClass
     public static void tearDownOne() {
-        ElasticUtils.deleteIndex();
+        ElasticUtils.deleteAllTypes();
     }
 
     @Before

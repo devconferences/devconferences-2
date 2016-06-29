@@ -56,11 +56,6 @@ final class NotificationText {
         private final String textMasc;
         private final String textFem;
 
-        Action(String text) {
-            this.textMasc = text;
-            this.textFem = text;
-        }
-
         Action(String text, String feminineAdd) {
             this.textMasc = String.format(text, "");
             this.textFem = String.format(text, feminineAdd);

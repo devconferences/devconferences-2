@@ -1,5 +1,6 @@
 package org.devconferences.events;
 
+import org.devconferences.meetup.EventSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 
 public class CalendarEvent extends AbstractEvent {
@@ -34,6 +35,28 @@ public class CalendarEvent extends AbstractEvent {
             cfp = new CallForPapers();
             cfp.dateSubmission = obj.cfp.dateSubmission;
             cfp.url = obj.cfp.url;
+        }
+    }
+
+    public CalendarEvent(EventSearchResult.EventSearchResultItem meetupEvent) {
+        this.id = "meetup_" + meetupEvent.id;
+        this.name = meetupEvent.name;
+        this.url = meetupEvent.event_url;
+        this.description = meetupEvent.description;
+        this.date = meetupEvent.time;
+        this.duration = meetupEvent.duration;
+        if(meetupEvent.group != null) {
+            this.organizer = new Group();
+            this.organizer.name = meetupEvent.group.name;
+            this.organizer.url = "http://www.meetup.com/" + meetupEvent.group.urlname;
+        }
+
+        if(meetupEvent.venue != null) {
+            this.location = new Location();
+            this.location.address = meetupEvent.venue.address_1;
+            this.location.name = meetupEvent.venue.name;
+            this.location.city = meetupEvent.venue.city;
+            this.location.gps = new GeoPoint(meetupEvent.venue.lat, meetupEvent.venue.lon);
         }
     }
 

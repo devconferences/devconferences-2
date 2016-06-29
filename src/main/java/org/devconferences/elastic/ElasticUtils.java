@@ -23,10 +23,6 @@ import static org.devconferences.env.EnvUtils.fromEnv;
 public final class ElasticUtils {
     public static final int MAX_SIZE = 10000; // Default max value, or ES will throw an Exception
 
-    private ElasticUtils() {
-
-    }
-
     private static final String ES_URL = "ES_URL";
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences-2";
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);

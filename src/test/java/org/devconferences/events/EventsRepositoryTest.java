@@ -108,7 +108,7 @@ public class EventsRepositoryTest {
 
     @AfterClass
     public static void classTearDown() {
-        ElasticUtils.deleteIndex();
+        ElasticUtils.deleteAllTypes();
 
         eventsRepository = null;
         eventsEndPoint = null;

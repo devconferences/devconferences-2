@@ -159,7 +159,7 @@ public class UserRepositoryTest {
 
     @AfterClass
     public static void tearDownOne() {
-        ElasticUtils.deleteIndex();
+        ElasticUtils.deleteAllTypes();
     }
 
     @Test

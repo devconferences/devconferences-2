@@ -23,7 +23,7 @@ public class ImportEventsJobTest {
 
     @AfterClass
     public static void tearDownOne() {
-        ElasticUtils.deleteIndex();
+        ElasticUtils.deleteAllTypes();
     }
 
     @Before
