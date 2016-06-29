@@ -1,6 +1,7 @@
 package org.devconferences.meetup;
 
 import org.assertj.core.api.Assertions;
+import org.devconferences.events.CalendarEvent;
 import org.devconferences.events.ESCalendarEvents;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class MeetupClientTest {
 
         when(mockMeetupCalls.askUpcomingEvents("id1")).thenReturn(eventSearchResultId1);
 
-        List<ESCalendarEvents> calendarEventList = meetupApiClient.getUpcomingEvents("id1");
+        List<CalendarEvent> calendarEventList = meetupApiClient.getUpcomingEvents("id1");
 
         Assertions.assertThat(calendarEventList).hasSize(2);
         Assertions.assertThat(calendarEventList.get(0).id).matches("meetup_azerty");

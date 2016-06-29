@@ -5,7 +5,6 @@ import io.searchbox.indices.Refresh;
 import org.devconferences.elastic.GeoPointAdapter;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.CalendarEvent;
-import org.devconferences.events.ESCalendarEvents;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.meetup.MeetupApiClient;
 import org.elasticsearch.common.geo.GeoPoint;
@@ -189,8 +188,7 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
         idMeetupList.forEach(id -> {
             try {
-                List<ESCalendarEvents> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
-
+                List<CalendarEvent> listCalendarEvent = meetupApiClient.getUpcomingEvents(id);
 
                 listCalendarEvent.forEach(data -> {
                     if(data.description == null) {

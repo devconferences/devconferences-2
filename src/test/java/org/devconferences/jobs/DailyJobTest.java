@@ -1,14 +1,15 @@
 package org.devconferences.jobs;
 
 import com.google.gson.Gson;
-import io.searchbox.core.*;
+import io.searchbox.core.Count;
+import io.searchbox.core.CountResult;
 import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.ESCalendarEvents;
-import org.devconferences.events.ESEvents;
+import org.devconferences.events.CalendarEvent;
+import org.devconferences.events.Event;
 import org.devconferences.events.EventsRepository;
 import org.devconferences.meetup.MeetupApiClient;
 import org.junit.AfterClass;
@@ -31,11 +32,11 @@ public class DailyJobTest {
     private static DailyJob dailyJob;
     private static RuntimeJestClient client;
     private static MeetupApiClient mockMeetupClient;
-    private static ESCalendarEvents calendarEvent1;
-    private static ESCalendarEvents calendarEvent2;
-    private static ESCalendarEvents calendarEvent3;
-    private static ESCalendarEvents calendarEvent4;
-    private static ESEvents event1;
+    private static CalendarEvent calendarEvent1;
+    private static CalendarEvent calendarEvent2;
+    private static CalendarEvent calendarEvent3;
+    private static CalendarEvent calendarEvent4;
+    private static Event event1;
 
 
     @BeforeClass
@@ -51,32 +52,32 @@ public class DailyJobTest {
         dailyJob = new DailyJob(importCalendarEventsJob);
 
         // Add data to mock
-        calendarEvent1 = new ESCalendarEvents();
+        calendarEvent1 = new CalendarEvent();
         calendarEvent1.id = "1562462143";
         calendarEvent1.date = 2065938828000L;
         calendarEvent1.name = "Event 1";
-        calendarEvent2 = new ESCalendarEvents();
+        calendarEvent2 = new CalendarEvent();
         calendarEvent2.id = "1562462144";
         calendarEvent2.date = 2065938828001L;
         calendarEvent2.name = "Event 2";
-        calendarEvent3 = new ESCalendarEvents();
+        calendarEvent3 = new CalendarEvent();
         calendarEvent3.id = "1562462145";
         calendarEvent3.date = 123456786000L;
         calendarEvent3.name = "Event 3";
-        ArrayList<ESCalendarEvents> calendarEventAaaa = new ArrayList<>();
+        ArrayList<CalendarEvent> calendarEventAaaa = new ArrayList<>();
         calendarEventAaaa.add(calendarEvent1);
-        ArrayList<ESCalendarEvents> calendarEventBbbb = new ArrayList<>();
+        ArrayList<CalendarEvent> calendarEventBbbb = new ArrayList<>();
         calendarEventBbbb.add(calendarEvent2);
         calendarEventBbbb.add(calendarEvent3);
         when(mockMeetupClient.getUpcomingEvents("aaaa")).thenReturn(calendarEventAaaa);
         when(mockMeetupClient.getUpcomingEvents("bbbb")).thenReturn(calendarEventBbbb);
 
-        calendarEvent4  = new Gson().fromJson(
+        calendarEvent4 = new Gson().fromJson(
                 new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream("/calendar/2035/06/kejfnffsdfaa.json"))
-                , ESCalendarEvents.class);
+                , CalendarEvent.class);
         event1 = new Gson().fromJson(
                 new InputStreamReader(AbstractImportJSONJob.class.getResourceAsStream("/events/the_city2/testeventhidden.json"))
-                , ESEvents.class);
+                , Event.class);
 
         ImportCalendarEventsJob.idMeetupList.clear();
         ImportCalendarEventsJob.addIdMeetup("aaaa");

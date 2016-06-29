@@ -78,9 +78,9 @@ public class ImportCalendarEventsJobTest {
         ESCalendarEvents calendarEvent3 = new ESCalendarEvents();
         calendarEvent3.id = "1562462145";
         calendarEvent3.name = "Event 3";
-        ArrayList<ESCalendarEvents> calendarEventAaaa = new ArrayList<>();
+        ArrayList<CalendarEvent> calendarEventAaaa = new ArrayList<>();
         calendarEventAaaa.add(calendarEvent1);
-        ArrayList<ESCalendarEvents> calendarEventBbbb = new ArrayList<>();
+        ArrayList<CalendarEvent> calendarEventBbbb = new ArrayList<>();
         calendarEventBbbb.add(calendarEvent2);
         calendarEventBbbb.add(calendarEvent3);
         when(mockMeetupClient.getUpcomingEvents("aaaa")).thenReturn(calendarEventAaaa);

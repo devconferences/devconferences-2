@@ -79,6 +79,7 @@ public class EventsRepository {
         Get get;
         Update update;
         Percolate percolate;
+        Class<?> clazz;
 
         // Prepare queries (get, update, percolate, depends of class)
         if(obj instanceof AbstractEvent) {
@@ -92,10 +93,12 @@ public class EventsRepository {
             suggestList.addAll(abstractEvent.tags);
             if(obj instanceof CalendarEvent) {
                 type = CALENDAREVENTS_TYPE;
+                clazz = CalendarEvent.class;
                 abstractEventInES = new ESCalendarEvents((CalendarEvent) obj);
                 ((ESCalendarEvents) abstractEventInES).suggests.input.addAll(suggestList);
             } else if(obj instanceof Event) {
                 type = EVENTS_TYPE;
+                clazz = Event.class;
                 abstractEventInES = new ESEvents((Event) obj);
                 suggestList.add(((Event) obj).city);
                 ((ESEvents) abstractEventInES).suggests.input.addAll(suggestList);
@@ -118,30 +121,30 @@ public class EventsRepository {
 
         // Check if the document is still available (!obj.hidden || getResult.found)
         // If not, return.
-        if(!objectCanBeUpdated(obj, documentResultGet)) {
+        if(!checkHiddenStatus(obj, documentResultGet)) {
             return false;
         }
 
-        DocumentResult documentResultUpdate = client.execute(update);
-
-        // Check the status of Update execution (unchanged, created, updated)
+        // Check if obj will create, update, or do nothing when use Update
         boolean founded = documentResultGet.getJsonObject().get("found").getAsBoolean();
-        Integer oldVersion = null;
-        if(founded) {
-            oldVersion = documentResultGet.getJsonObject().get("_version").getAsInt();
-        }
-        Integer newVersion = documentResultUpdate.getJsonObject().get("_version").getAsInt();
-
-        // Begins to build notification message
+        Object sourceOfGetResult = documentResultGet.getSourceAsObject(clazz);
         NotificationText.Action action;
+
         if(!founded) {
             action = NotificationText.Action.CREATION;
-        } else if(!oldVersion.equals(newVersion)) {
-            action = NotificationText.Action.UPDATE;
         } else {
-            // neither update nor creation => no more actions
-            return false;
+            // Check if sourceOfGetResult and obj are equals (NOT WITH ES* CLASSES, BUT WITH THEIR SUPER CLASSES,
+            // their specific properties change must not implies a notification,
+            // that's an hidden property from outside)
+            if(!clazz.cast(obj).equals(sourceOfGetResult)) {
+                action = NotificationText.Action.UPDATE;
+            } else {
+                // neither update nor creation => no more actions
+                return false;
+            }
         }
+
+        client.execute(update);
 
         // Find percolators and theirs owners
         JestResult jestResult = client.execute(percolate);
@@ -250,7 +253,7 @@ public class EventsRepository {
         return owners;
     }
 
-    private boolean objectCanBeUpdated(Object obj, DocumentResult getResult) {
+    private boolean checkHiddenStatus(Object obj, DocumentResult getResult) {
         Boolean hidden;
         if(obj instanceof AbstractEvent) {
             hidden = ((AbstractEvent) obj).hidden;
@@ -443,7 +446,7 @@ public class EventsRepository {
             throw new RuntimeException(searchResult.getErrorMessage());
         }
 
-        // Manage aggreggations
+        // Manage aggregations
         MetricAggregation aggregations = searchResult.getAggregations();
         TermsAggregation cities = aggregations.getAggregation("cities", TermsAggregation.class);
 

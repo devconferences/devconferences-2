@@ -3,11 +3,10 @@ package org.devconferences.meetup;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Singleton;
-import org.devconferences.events.ESCalendarEvents;
+import org.devconferences.events.CalendarEvent;
 import org.elasticsearch.common.geo.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -32,22 +31,20 @@ public class MeetupApiClient {
     public MeetupInfo getMeetupInfo(String id) {
         try {
             return cache.get(id, () -> loadMeetupInfo(id));
-        } catch (ExecutionException e) {
+        } catch(ExecutionException e) {
             return null;
         }
     }
 
-    public List<ESCalendarEvents> getUpcomingEvents(String id) {
+    public List<CalendarEvent> getUpcomingEvents(String id) {
         EventSearchResult eventSearchResult = meetupCall.askUpcomingEvents(id);
 
-        List<ESCalendarEvents> result = new ArrayList<>();
+        List<CalendarEvent> result = new ArrayList<>();
 
         eventSearchResult.results.forEach(data -> {
-            ESCalendarEvents calendarEvent = new ESCalendarEvents();
+            CalendarEvent calendarEvent = new CalendarEvent();
             calendarEvent.id = "meetup_" + data.id;
             calendarEvent.name = data.name;
-            calendarEvent.suggests.input = new ArrayList<>();
-            calendarEvent.suggests.input.addAll(Arrays.asList(calendarEvent.name.split(" ")));
             calendarEvent.url = data.event_url;
             calendarEvent.description = data.description;
             calendarEvent.date = data.time;
@@ -83,7 +80,7 @@ public class MeetupApiClient {
         meetupInfo.members = group.members;
 
         // Step 2 - get next event data
-        if (group.next_event != null) {
+        if(group.next_event != null) {
             String nextEventId = group.next_event.id;
             Event nextEvent = meetupCall.askEventInfo(nextEventId);
 
