@@ -35,7 +35,8 @@ import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
-import static org.elasticsearch.index.query.QueryBuilders.*;
+import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 @Singleton
 public class EventsRepository {
@@ -86,7 +87,8 @@ public class EventsRepository {
             String type;
             ArrayList<String> suggestList = new ArrayList<>();
 
-            suggestList.addAll(Arrays.asList(abstractEvent.name.split(" ")));
+            suggestList.addAll(Arrays.stream(abstractEvent.name.split("[\\s,]")).distinct()
+                    .filter((value) -> !value.matches("[-:]")).collect(Collectors.toList()));
             suggestList.addAll(abstractEvent.tags);
             if(obj instanceof CalendarEvent) {
                 type = CALENDAREVENTS_TYPE;
@@ -225,7 +227,7 @@ public class EventsRepository {
         return result;
     }
 
-    // Extract owners (begin of the id) tfrom the percolaotrs id's list
+    // Extract owners (begin of the id) from the percolators id's list
     private Map<String, UsersRepository.FavouriteItem.FavouriteType> getPercolatorsOwners(List<String> percolatorsIds) {
         Map<String, UsersRepository.FavouriteItem.FavouriteType> owners = new HashMap<>();
 
@@ -249,7 +251,7 @@ public class EventsRepository {
     }
 
     private boolean objectCanBeUpdated(Object obj, DocumentResult getResult) {
-        Boolean hidden = null;
+        Boolean hidden;
         if(obj instanceof AbstractEvent) {
             hidden = ((AbstractEvent) obj).hidden;
         } else {
@@ -316,7 +318,7 @@ public class EventsRepository {
         return result.getSourceAsObject(CalendarEvent.class);
     }
 
-    public List<CalendarEvent> getCalendarEvents(String page) {
+    public List<CalendarEvent> getCalendarEventList(String page) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
 
         int pageInt = ElasticUtils.MAX_SIZE;
@@ -617,23 +619,21 @@ public class EventsRepository {
 
     // ****************************** Search ****************************** //
 
-    public EventSearchResult searchEvents(String query, String page, String limit) {
+    public EventSearchResult searchEvents(String query, Integer page, Integer limit) {
         return (EventSearchResult) search(query, page, EVENTS_TYPE, null, null, limit);
     }
 
-    public CalendarEventSearchResult searchCalendarEvents(String query, String page, String limit) {
+    public CalendarEventSearchResult searchCalendarEvents(String query, Integer page, Integer limit) {
         FilterBuilder filterOldCE = rangeFilter("date").gt(System.currentTimeMillis());
         SortBuilder sortByDate = SortBuilders.fieldSort("date").order(SortOrder.ASC);
         return (CalendarEventSearchResult) search(query, page, CALENDAREVENTS_TYPE, sortByDate, filterOldCE, limit);
     }
 
     // Generic function of search
-    private PaginatedSearchResult search(String query, String page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, String limit) {
+    private PaginatedSearchResult search(String query, Integer page, String typeSearch, SortBuilder sortBy, FilterBuilder filter, Integer limit) {
         SearchSourceBuilder searchQuery = new SearchSourceBuilder();
-        final int pageInt = (page == null || page.equals("undefined") || page.equals("null") ?
-                1 : Integer.valueOf(page));
-        final int perPage = (limit == null || limit.equals("undefined") || limit.equals("null") ?
-                10 : Integer.valueOf(limit));
+        final int pageInt = (page == null ? 1 : page);
+        final int perPage = (limit == null ? 10 : limit);
 
         // Check parameters
         if(pageInt <= 0) {

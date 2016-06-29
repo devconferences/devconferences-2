@@ -6,8 +6,8 @@ import net.codestory.http.annotations.*;
 import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
 import org.devconferences.events.search.CalendarEventSearchResult;
-import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.events.search.CompletionResult;
+import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.security.Authentication;
 import org.devconferences.security.Encrypter;
 import org.devconferences.users.User;
@@ -53,11 +53,11 @@ public class EventsEndPoint {
 
     @Get("search/events?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public EventSearchResult eventsSearch(String query, String page, String limit) {
+    public EventSearchResult eventsSearch(String query, Integer page, Integer limit) {
         EventSearchResult result;
         try {
             result = eventsRepository.searchEvents(query, page, limit);
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();
             } else {
@@ -69,11 +69,11 @@ public class EventsEndPoint {
 
     @Get("search/calendar?q=:query&page=:page&limit=:limit")
     @AllowOrigin("*")
-    public CalendarEventSearchResult eventsCalendarSearch(String query, String page, String limit) {
+    public CalendarEventSearchResult eventsCalendarSearch(String query, Integer page, Integer limit) {
         CalendarEventSearchResult result;
         try {
             result = eventsRepository.searchCalendarEvents(query, page, limit);
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             if(e.getMessage() != null && e.getMessage().startsWith("HTML 400 :")) {
                 throw new BadRequestException();
             } else {
@@ -97,7 +97,7 @@ public class EventsEndPoint {
 
     @Post("events/")
     @AllowOrigin("*")
-    public void createEvent(Event event){
+    public void createEvent(Event event) {
         eventsRepository.createEvent(event);
     }
 
@@ -119,13 +119,13 @@ public class EventsEndPoint {
 
     @Get("calendar?p=:page")
     @AllowOrigin("*")
-    public List<CalendarEvent> getCalendarEvents (String page) {
-        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEvents(page));
+    public List<CalendarEvent> getCalendarEvents(String page) {
+        return NotFoundException.notFoundIfNull(eventsRepository.getCalendarEventList(page));
     }
 
     private void checkUsersEvent(String eventId, Context context) {
         User user = (User) context.currentUser();
-        if (user.isInRole(EVENT_MANAGER)) {
+        if(user.isInRole(EVENT_MANAGER)) {
             checkArgument(user.events.contains(eventId));
         }
     }

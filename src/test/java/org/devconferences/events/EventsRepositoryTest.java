@@ -2,10 +2,12 @@ package org.devconferences.events;
 
 import io.searchbox.indices.Refresh;
 import org.assertj.core.api.Assertions;
-import org.devconferences.elastic.*;
+import org.devconferences.elastic.DeveloppementESNode;
+import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.search.CalendarEventSearchResult;
-import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.events.search.CompletionResult;
+import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.jobs.ImportEventsJob;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.AfterClass;
@@ -28,6 +30,8 @@ public class EventsRepositoryTest {
     private static Event event5;
     private static CalendarEvent calendarEvent1;
     private static CalendarEvent calendarEvent2;
+
+    private static RuntimeJestClient client;
 
     @BeforeClass
     public static void classSetUp() {
@@ -79,7 +83,7 @@ public class EventsRepositoryTest {
         calendarEvent1.description = "an awesome conf";
         calendarEvent1.url = "http://www.example.com";
         calendarEvent1.location = calendarEvent1.new Location();
-        calendarEvent1.location.gps = new GeoPoint(44.0500,5.4500);
+        calendarEvent1.location.gps = new GeoPoint(44.0500, 5.4500);
         calendarEvent1.date = 2065938828000L;
         calendarEvent2 = new CalendarEvent();
         calendarEvent2.id = "2";
@@ -87,17 +91,19 @@ public class EventsRepositoryTest {
         calendarEvent2.description = "Event 2";
         calendarEvent2.url = "http://www.example2.com";
         calendarEvent2.location = calendarEvent1.new Location();
-        calendarEvent2.location.gps = new GeoPoint(88.0500,-45.4500);
+        calendarEvent2.location.gps = new GeoPoint(88.0500, -45.4500);
         calendarEvent2.date = 2065938828001L;
 
         eventsRepository.indexOrUpdate(calendarEvent1);
         eventsRepository.indexOrUpdate(calendarEvent2);
 
+        client = ElasticUtils.createClient();
+
 
         // Refresh ES on every document update (assume update are only when start server...)
         // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
         Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
-        ElasticUtils.createClient().execute(refresh);
+        client.execute(refresh);
     }
 
     @AfterClass
@@ -111,7 +117,7 @@ public class EventsRepositoryTest {
     @Test
     public void testSearchEvent() {
         // Check header content of this searchEvents
-        EventSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", "1", null);
+        EventSearchResult eventSearch = eventsEndPoint.eventsSearch("awesome", 1, null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -124,10 +130,10 @@ public class EventsRepositoryTest {
 
         // With "-1" (and values <= 0), should throw an exception
         try {
-            eventSearch = eventsEndPoint.eventsSearch("awesome", "-1", null);
+            eventSearch = eventsEndPoint.eventsSearch("awesome", -1, null);
 
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             // GOOD !
         }
     }
@@ -135,7 +141,7 @@ public class EventsRepositoryTest {
     @Test
     public void testCalendarEventSearch() {
         // Check header content of this searchEvents
-        CalendarEventSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", "1", null);
+        CalendarEventSearchResult eventSearch = eventsEndPoint.eventsCalendarSearch("awesome", 1, null);
         Assertions.assertThat(eventSearch.hitsAPage).matches("1");
         Assertions.assertThat(eventSearch.totalHits).matches("1");
         Assertions.assertThat(eventSearch.totalPage).matches("1");
@@ -214,19 +220,19 @@ public class EventsRepositoryTest {
             eventsRepository.deleteEvent(null);
 
             Assertions.failBecauseExceptionWasNotThrown(NullPointerException.class);
-        } catch (NullPointerException e) {
+        } catch(NullPointerException e) {
             // GOOD !
         }
         try {
             eventsRepository.deleteEvent("");
 
             Assertions.failBecauseExceptionWasNotThrown(IllegalArgumentException.class);
-        } catch (IllegalArgumentException e) {
+        } catch(IllegalArgumentException e) {
             // GOOD !
         }
         try {
             eventsRepository.deleteEvent("666"); // Should pass
-        } catch (RuntimeException e) {
+        } catch(RuntimeException e) {
             Assertions.fail("Should not throw an exception !", e);
         }
     }
@@ -263,7 +269,7 @@ public class EventsRepositoryTest {
         // Refresh ES on every document update (assume update are only when start server...)
         // Because users are return with a search, when update a lot of document, some notifications can be lost without this...
         Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
-        ElasticUtils.createClient().execute(refresh);
+        client.execute(refresh);
 
         // This should find $event, and not $event2
         List<Event> events = eventsRepository.findEventsAround(1.0f, 1.0f, 10);
@@ -273,7 +279,7 @@ public class EventsRepositoryTest {
         eventsRepository.deleteEvent(event.id);
         eventsRepository.deleteEvent(event2.id);
 
-        ElasticUtils.createClient().execute(refresh);
+        client.execute(refresh);
     }
 
     @Test
@@ -294,6 +300,6 @@ public class EventsRepositoryTest {
         eventsRepository.deleteEvent("testevent2");
 
         Refresh refresh = new Refresh.Builder().addIndex(DEV_CONFERENCES_INDEX).build();
-        ElasticUtils.createClient().execute(refresh);
+        client.execute(refresh);
     }
 }
