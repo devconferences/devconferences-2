@@ -267,6 +267,7 @@ public class UserRepositoryTest {
         usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.COMMUNITY, "3");
         usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CONFERENCE, "5");
         usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CITY, "City 2");
+        usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CITY, "City 1/io");
         usersRepository.addFavourite(user, UsersRepository.FavouriteItem.FavouriteType.TAG, "Cigale");
         client.execute(refresh);
 
@@ -278,13 +279,14 @@ public class UserRepositoryTest {
 
         SearchResult searchResult = client.execute(search);
         List<SearchResult.Hit<PercolateResponse,Void>> listHits = searchResult.getHits(PercolateResponse.class);
-        Assertions.assertThat(listHits).hasSize(6);
+        Assertions.assertThat(listHits).hasSize(7);
         Assertions.assertThat(listHits.get(0).sort.get(0)).matches("abc1234_CALENDAR_1");
-        Assertions.assertThat(listHits.get(1).sort.get(0)).matches("abc1234_CITY_City 2");
-        Assertions.assertThat(listHits.get(2).sort.get(0)).matches("abc1234_CITY_City 2_geo"); // City 2 have geohash
-        Assertions.assertThat(listHits.get(3).sort.get(0)).matches("abc1234_COMMUNITY_3");
-        Assertions.assertThat(listHits.get(4).sort.get(0)).matches("abc1234_CONFERENCE_5");
-        Assertions.assertThat(listHits.get(5).sort.get(0)).matches("abc1234_TAG_Cigale");
+        Assertions.assertThat(listHits.get(1).sort.get(0)).matches("abc1234_CITY_City 1/io");
+        Assertions.assertThat(listHits.get(2).sort.get(0)).matches("abc1234_CITY_City 2");
+        Assertions.assertThat(listHits.get(3).sort.get(0)).matches("abc1234_CITY_City 2_geo"); // City 2 have geohash
+        Assertions.assertThat(listHits.get(4).sort.get(0)).matches("abc1234_COMMUNITY_3");
+        Assertions.assertThat(listHits.get(5).sort.get(0)).matches("abc1234_CONFERENCE_5");
+        Assertions.assertThat(listHits.get(6).sort.get(0)).matches("abc1234_TAG_Cigale");
 
         // Test some updates
         Event eventUpdate1 = new Event(event1);
@@ -344,7 +346,13 @@ public class UserRepositoryTest {
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.COMMUNITY, "3");
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CONFERENCE, "5");
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CITY, "City 2");
+        usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.CITY, "City 1/io");
         usersRepository.removeFavourite(user, UsersRepository.FavouriteItem.FavouriteType.TAG, "Cigale");
         client.execute(refresh);
+
+        searchResult = client.execute(search);
+        List<SearchResult.Hit<PercolateResponse,Void>> listHits2 = searchResult.getHits(PercolateResponse.class);
+        Assertions.assertThat(listHits2).hasSize(0);
+
     }
 }

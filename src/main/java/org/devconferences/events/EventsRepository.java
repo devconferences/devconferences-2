@@ -729,7 +729,7 @@ public class EventsRepository {
     // *************************** Miscellaneous *************************** //
 
     // Choose between matchAllQuery and queryStringQuery depending of query
-    private QueryBuilder getQueryBuilder(String query) {
+    public QueryBuilder getQueryBuilder(String query) {
         if(query == null || query.equals("") || query.equals("undefined")) {
             return QueryBuilders.boolQuery()
                     .must(matchAllQuery());

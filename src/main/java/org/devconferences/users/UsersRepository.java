@@ -13,6 +13,7 @@ import org.devconferences.events.search.EventSearchResult;
 import org.devconferences.events.search.SimpleSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.IdsQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -28,8 +29,7 @@ import static org.devconferences.elastic.ElasticUtils.createClient;
 import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CITY;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
-import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 @Singleton
 public class UsersRepository {
@@ -131,15 +131,25 @@ public class UsersRepository {
             String percolatorId = user.name() + "_" + type.name() + "_" + value;
             switch(type) {
                 case CITY:
+                    // Create query builders
+                    String[] cityFilter = value.split("/");
+                    // Search with filter (cityFilter[1]) if it exists
+                    QueryBuilder filterQueryBuilder = eventsRepository.getQueryBuilder((cityFilter.length == 2 ? cityFilter[1] : null));
+                    // Search with filter above and city term
+                    QueryBuilder boolQueryBuilder = boolQuery()
+                            .must(termQuery("city", cityFilter[0]))
+                            .must(filterQueryBuilder);
+
                     // 2 searches : conference/commu with city term + calendar with geosearch (if gps of city is defined)
-                    GeoPoint geoPoint = GeopointCities.getInstance().getLocation(value);
                     indexes.add(new Index.Builder(
-                            new SearchSourceBuilder().query(QueryBuilders.termQuery("city", value)).toString()
+                            new SearchSourceBuilder().query(boolQueryBuilder).toString()
                     ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
+
+                    GeoPoint geoPoint = GeopointCities.getInstance().getLocation(cityFilter[0]);
                     if(geoPoint != null) {
                         indexes.add(
                                 new Index.Builder(new SearchSourceBuilder()
-                                        .query(filteredQuery(matchAllQuery(),
+                                        .query(filteredQuery(filterQueryBuilder,
                                                 geoDistanceFilter("location.gps")
                                                         .distance(20d, KILOMETERS)
                                                         .lat(geoPoint.lat()).lon(geoPoint.lon()))).toString()
@@ -190,13 +200,15 @@ public class UsersRepository {
             }
             // Remove also geosearch if type is CITY
             if(type == CITY) {
-                delete = new Delete.Builder(percolatorId + "_geo")
-                        .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
+                if(GeopointCities.getInstance().getLocation(value.split("/")[0]) != null) {
+                    delete = new Delete.Builder(percolatorId + "_geo")
+                            .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
 
-                documentResult = client.execute(delete);
-                if(!documentResult.isSucceeded()) {
-                    throw new RuntimeException("Impossible to remove percolator " + percolatorId + "_geo" + "\n" +
-                            documentResult.getErrorMessage());
+                    documentResult = client.execute(delete);
+                    if(!documentResult.isSucceeded()) {
+                        throw new RuntimeException("Impossible to remove percolator " + percolatorId + "_geo" + "\n" +
+                                documentResult.getErrorMessage());
+                    }
                 }
             }
         }
