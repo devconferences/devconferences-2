@@ -1,6 +1,5 @@
 package org.devconferences.events.data;
 
-import org.devconferences.meetup.EventSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 
 public class CalendarEvent extends AbstractEvent {
@@ -38,7 +37,7 @@ public class CalendarEvent extends AbstractEvent {
         }
     }
 
-    public CalendarEvent(EventSearchResult.EventSearchResultItem meetupEvent) {
+    public CalendarEvent(org.devconferences.meetup.Event meetupEvent) {
         this.id = "meetup_" + meetupEvent.id;
         this.name = meetupEvent.name;
         this.url = meetupEvent.event_url;

@@ -29,25 +29,25 @@ public class MeetupClientTest {
     public void testUpcomingEvents() {
         EventSearchResult eventSearchResultId1 = new EventSearchResult();
 
-        EventSearchResult.EventSearchResultItem eventSearch1 = eventSearchResultId1.new EventSearchResultItem();
+        Event eventSearch1 = new Event();
         eventSearch1.id = "azerty";
         eventSearch1.name = "Azerty";
         eventSearch1.description = "AZERTY.";
         eventSearch1.time = 123456789000L;
-        eventSearch1.group = eventSearchResultId1.new Organizer();
+        eventSearch1.group = new Event.Organizer();
         eventSearch1.group.name = "AzErTy";
         eventSearch1.group.urlname = "azerty1";
-        eventSearch1.venue = eventSearchResultId1.new Location();
+        eventSearch1.venue = new Event.Location();
         eventSearch1.venue.address_1 = "1, Rue Bidon";
         eventSearch1.venue.city = "Ville Bidon";
         eventSearch1.venue.lat = 12.3456;
         eventSearch1.venue.lon = 34.5678;
-        EventSearchResult.EventSearchResultItem eventSearch2 = eventSearchResultId1.new EventSearchResultItem();
+        Event eventSearch2 = new Event();
         eventSearch2.id = "qsdfgh";
         eventSearch2.name = "Qsdfgh";
         eventSearch2.description = "QSDFGH.";
         eventSearch2.time = 123456987000L;
-        eventSearch2.group = eventSearchResultId1.new Organizer();
+        eventSearch2.group = new Event.Organizer();
         eventSearch2.group.name = "QsDfGh";
         eventSearch2.group.urlname = "qsdfgh1";
 
