@@ -14,6 +14,7 @@ import org.devconferences.events.search.SimpleSearchResult;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.ArrayList;
@@ -147,7 +148,7 @@ public class UsersRepository {
                     break;
                 case TAG:
                     indexes.add(new Index.Builder(
-                            new SearchSourceBuilder().query(QueryBuilders.queryStringQuery(value)).toString()
+                            new SearchSourceBuilder().query(QueryBuilders.queryStringQuery(value).defaultOperator(QueryStringQueryBuilder.Operator.AND)).toString()
                     ).index(DEV_CONFERENCES_INDEX).type(".percolator").id(percolatorId).build());
                     break;
                 case CONFERENCE:
