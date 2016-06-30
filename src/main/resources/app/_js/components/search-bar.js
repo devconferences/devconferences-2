@@ -30,13 +30,24 @@ var SearchBar = React.createClass({
 
     componentDidMount: function() {
         this.research(this.props.query || "", null, null);
-        var e = {};
-        e.target = {};
-        e.target.value = "";
+        var e = {
+            target: {
+                value: ""
+            }
+        };
         this.queryChanged(e);
     },
 
     componentWillReceiveProps: function(newProps) {
+        if(this.props.favourites &&
+                this.props.favourites.tags.length != newProps.favourites.tags.length) {
+            var e = {
+                target: {
+                    value: this.state.suggests.query
+                }
+            };
+            this.queryChanged(e);
+        }
         this.research(newProps.query, newProps.page, newProps.searchType);
     },
 
