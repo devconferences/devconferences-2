@@ -1,10 +1,7 @@
-package org.devconferences.security;
+package org.devconferences.github;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by ronan on 20/06/16.
- */
 public class GitHubAuthenticationResponse {
     @SerializedName("access_token")
     public String accessToken;

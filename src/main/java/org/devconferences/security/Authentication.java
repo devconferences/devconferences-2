@@ -18,6 +18,9 @@ import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.search.SimpleSearchResult;
+import org.devconferences.github.GitHubAuthenticationResponse;
+import org.devconferences.github.GithubCalls;
+import org.devconferences.github.GithubUser;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 

@@ -13,6 +13,9 @@ import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.MockJestClient;
 import org.devconferences.elastic.RuntimeJestClientAdapter;
+import org.devconferences.github.GitHubAuthenticationResponse;
+import org.devconferences.github.GithubCalls;
+import org.devconferences.github.GithubUser;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 import org.junit.Test;
@@ -116,10 +119,10 @@ public class AuthenticationTest {
         }
 
         Assertions.assertThat(authenticationWithMock.getConnectedUser(context).login).matches("user123");
-        Assertions.assertThat(authenticationWithMock.getConnectedUser(context).id).matches("1234567.0");
+        Assertions.assertThat(authenticationWithMock.getConnectedUser(context).id).matches("1234567");
 
         Assertions.assertThat(authenticationWithMock.getUser(context).login).matches("user123");
-        Assertions.assertThat(authenticationWithMock.getUser(context).id).matches("1234567.0");
+        Assertions.assertThat(authenticationWithMock.getUser(context).id).matches("1234567");
 
         // Try to disconnect
         Payload payloadDisconnect = authenticationWithMock.disconnect(context);

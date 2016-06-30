@@ -1,4 +1,4 @@
-package org.devconferences.security;
+package org.devconferences.github;
 
 import com.google.gson.Gson;
 import net.codestory.http.constants.Headers;
@@ -16,7 +16,7 @@ public class GithubCalls {
     private static final String GITHUB_OAUTH_CLIENT_ID = "GITHUB_OAUTH_CLIENT_ID";
     private static final String GITHUB_OAUTH_CLIENT_SECRET = "GITHUB_OAUTH_CLIENT_SECRET";
 
-    final String clientId;
+    public final String clientId;
     private final String clientSecret;
 
     private final Gson gson = new Gson();

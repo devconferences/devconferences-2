@@ -1,8 +1,8 @@
-package org.devconferences.security;
+package org.devconferences.github;
 
 import com.google.gson.annotations.SerializedName;
 
-class GithubUser {
+public class GithubUser {
     public String login;
     public long id;
     @SerializedName("avatar_url")
