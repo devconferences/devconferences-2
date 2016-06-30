@@ -2,8 +2,8 @@ package org.devconferences.jobs;
 
 import com.google.gson.Gson;
 import org.devconferences.elastic.RuntimeJestClient;
-import org.devconferences.events.Event;
 import org.devconferences.events.GeopointCities;
+import org.devconferences.events.data.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

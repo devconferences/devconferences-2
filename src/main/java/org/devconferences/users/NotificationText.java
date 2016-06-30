@@ -1,9 +1,9 @@
-package org.devconferences.events;
+package org.devconferences.users;
 
 /**
  * Created by ronan on 21/06/16.
  */
-final class NotificationText {
+public final class NotificationText {
     private final What what;
     private final Why why;
     private final Action action;
@@ -20,7 +20,7 @@ final class NotificationText {
                 action.getText(what.isFeminine()));
     }
 
-    enum What {
+    public enum What {
         CALENDAR("Un événement", false),
         CONFERENCE("Une conférence", true),
         COMMUNITY("Une communauté", true);
@@ -42,7 +42,7 @@ final class NotificationText {
         }
     }
 
-    enum Why {
+    public enum Why {
         SEARCH("pouvant vous intéresser"),
         FAVOURITE("favori%s", "te"),
         CITY("dans une ville favorite");
@@ -65,7 +65,7 @@ final class NotificationText {
         }
     }
 
-    enum Action {
+    public enum Action {
         CREATION("a été créé%s", "e"),
         UPDATE("a été mis%s à jour", "e");
 

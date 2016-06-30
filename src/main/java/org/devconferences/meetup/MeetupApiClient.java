@@ -3,7 +3,7 @@ package org.devconferences.meetup;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.inject.Singleton;
-import org.devconferences.events.CalendarEvent;
+import org.devconferences.events.data.CalendarEvent;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;

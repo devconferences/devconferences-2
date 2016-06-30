@@ -1,11 +1,9 @@
 package org.devconferences.jobs;
 
-import net.codestory.http.errors.NotFoundException;
 import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
-import org.devconferences.events.Event;
-import org.devconferences.events.EventsEndPoint;
+import org.devconferences.events.data.Event;
 import org.devconferences.events.EventsRepository;
 import org.junit.AfterClass;
 import org.junit.Before;

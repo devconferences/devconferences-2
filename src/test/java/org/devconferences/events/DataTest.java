@@ -1,6 +1,8 @@
 package org.devconferences.events;
 
 import org.assertj.core.api.Assertions;
+import org.devconferences.events.data.CalendarEvent;
+import org.devconferences.events.data.Event;
 import org.devconferences.users.User;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.junit.Test;

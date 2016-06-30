@@ -1,4 +1,4 @@
-package org.devconferences.events;
+package org.devconferences.events.data;
 
 import java.util.ArrayList;
 import java.util.List;

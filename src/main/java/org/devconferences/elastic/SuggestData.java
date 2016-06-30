@@ -1,4 +1,4 @@
-package org.devconferences.events;
+package org.devconferences.elastic;
 
 public class SuggestData {
     public String text;

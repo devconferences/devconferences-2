@@ -1,13 +1,11 @@
 package org.devconferences.events;
 
 import com.google.gson.Gson;
-import org.devconferences.jobs.AbstractImportJSONJob;
+import org.devconferences.events.data.CityList;
 import org.elasticsearch.common.geo.GeoPoint;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by ronan on 24/05/16.
@@ -15,7 +13,7 @@ import java.util.List;
 public class GeopointCities {
     private static GeopointCities instance = null;
 
-    private HashMap<String,GeoPoint> citiesLoc;
+    private HashMap<String, GeoPoint> citiesLoc;
 
     private GeopointCities() {
         citiesLoc = new HashMap<>();
@@ -39,7 +37,7 @@ public class GeopointCities {
         return citiesLoc.get(city);
     }
 
-    public HashMap<String,GeoPoint> getAllLocations() {
+    public HashMap<String, GeoPoint> getAllLocations() {
         return (HashMap<String, GeoPoint>) citiesLoc.clone();
     }
 

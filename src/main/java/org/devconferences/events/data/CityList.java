@@ -1,6 +1,4 @@
-package org.devconferences.events;
-
-import org.elasticsearch.common.geo.GeoPoint;
+package org.devconferences.events.data;
 
 import java.util.List;
 

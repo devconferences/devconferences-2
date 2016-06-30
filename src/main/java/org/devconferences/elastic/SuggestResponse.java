@@ -1,11 +1,8 @@
-package org.devconferences.events;
+package org.devconferences.elastic;
 
 import java.util.List;
 
-/**
- * Created by ronan on 21/06/16.
- */
-final class SuggestResponse {
+public final class SuggestResponse {
     public List<SuggestDataList> suggests;
 
     public class SuggestDataList {

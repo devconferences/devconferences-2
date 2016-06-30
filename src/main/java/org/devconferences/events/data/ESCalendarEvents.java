@@ -1,4 +1,4 @@
-package org.devconferences.events;
+package org.devconferences.events.data;
 
 import org.devconferences.elastic.Completion;
 

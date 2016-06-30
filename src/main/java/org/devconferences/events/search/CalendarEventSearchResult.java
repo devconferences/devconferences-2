@@ -1,7 +1,7 @@
 package org.devconferences.events.search;
 
 import io.searchbox.core.SearchResult;
-import org.devconferences.events.CalendarEvent;
+import org.devconferences.events.data.CalendarEvent;
 
 import java.util.List;
 
