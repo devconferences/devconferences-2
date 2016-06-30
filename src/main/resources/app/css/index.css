@@ -222,7 +222,7 @@ div.event img.avatar {
 }
 
 .search-suggests li {
-    padding: 0px 7px;
+    padding: 0.1em 12px;
     position: relative;
 }
 
@@ -254,14 +254,11 @@ div.event img.avatar {
     content: '\f005';
 }
 
-.search-suggests li span:last-child,
-.search-bar-container > span {
-    position: absolute;
-    right: 0px;
+.search-suggests li span:last-child {
+    float: right;
 }
-.search-bar-container > span {
-    top: 0.4em;
-    right: 0.1em;
+.search-bar-container > .input-group {
+    width: 100%;
 }
 
 .favourite-list {
