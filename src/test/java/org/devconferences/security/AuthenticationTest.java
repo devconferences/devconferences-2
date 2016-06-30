@@ -18,7 +18,6 @@ import org.devconferences.users.UsersRepository;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -31,19 +30,19 @@ import static org.mockito.Mockito.when;
 public class AuthenticationTest {
     private final RuntimeJestClientAdapter mockClient = mock(RuntimeJestClientAdapter.class);
     private final Authentication authentication = new Authentication(new Encrypter(), new UsersRepository(mockClient, null));
-    private final Encrypter encrypter  = new Encrypter();
+    private final Encrypter encrypter = new Encrypter();
 
     @Test
     public void testExtractUser() {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("login", "login");
-        map.put("id", "id");
-        map.put("avatar_url", "http://avatar_url");
+        GithubUser githubUser = new GithubUser();
+        githubUser.login = "login";
+        githubUser.id = 1234567;
+        githubUser.avatarUrl = "http://avatar_url";
 
-        User user = authentication.extractUserFromResponse(map);
+        User user = authentication.extractUserFromResponse(githubUser);
 
         assertEquals("login", user.login);
-        assertEquals("id", user.id);
+        assertEquals("1234567", user.id);
         assertEquals("http://avatar_url", user.avatarURL);
         assertNull(user.email);
     }
@@ -73,7 +72,7 @@ public class AuthenticationTest {
         try {
             when(cookies.get("access_token")).thenReturn(null);
             Assertions.assertThat(authentication.isAuthenticated(context)).isFalse();
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -90,7 +89,7 @@ public class AuthenticationTest {
             when(mockGithub.authorize("a1b2c3d4e5f67890")).thenReturn(githubResponse);
             MockJestClient.configGet(mockClient, githubUser);
 
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -112,7 +111,7 @@ public class AuthenticationTest {
             when(statusLine.getStatusCode()).thenReturn(HttpStatus.OK);
 
             Assertions.assertThat(authenticationWithMock.isAuthenticated(context)).isTrue();
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 

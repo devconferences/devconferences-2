@@ -3,6 +3,7 @@ package org.devconferences.security;
 import com.google.gson.Gson;
 import com.google.inject.Inject;
 import io.searchbox.core.DocumentResult;
+import io.searchbox.core.Update;
 import net.codestory.http.Context;
 import net.codestory.http.Cookie;
 import net.codestory.http.NewCookie;
@@ -15,12 +16,15 @@ import net.codestory.http.errors.BadRequestException;
 import net.codestory.http.errors.NotFoundException;
 import net.codestory.http.payload.Payload;
 import org.apache.http.client.fluent.Content;
+import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.events.search.SimpleSearchResult;
 import org.devconferences.users.User;
 import org.devconferences.users.UsersRepository;
 
 import java.io.IOException;
-import java.util.Map;
+
+import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
+import static org.devconferences.users.UsersRepository.USERS_TYPE;
 
 @Prefix("auth/")
 public class Authentication {
@@ -155,8 +159,8 @@ public class Authentication {
             Content content = githubCalls.getUser(accessToken, true)
                     .returnContent();
 
-            Map<String, Object> map = gson.fromJson(content.asString(), Map.class);
-            User userFromResponse = extractUserFromResponse(map);
+            GithubUser githubUser = gson.fromJson(content.asString(), GithubUser.class);
+            User userFromResponse = extractUserFromResponse(githubUser);
             if(userFromResponse == null) {
                 return null;
             }
@@ -168,6 +172,15 @@ public class Authentication {
             user.avatarURL = userFromResponse.avatarURL;
             user.email = userFromResponse.email;
             user.login = userFromResponse.login;
+            // Runtime fix of id conversion to double instead of long (once for each user)
+            if(!user.id.equals(userFromResponse.id)) {
+                Update update = new Update.Builder("{\"doc\":{\"id\":\"" + userFromResponse.id + "\"}}")
+                        .id(user.login).index(DEV_CONFERENCES_INDEX).type(USERS_TYPE).build();
+
+                ElasticUtils.createClient().execute(update);
+            }
+            user.id = userFromResponse.id;
+
             return user;
 
         } catch(IOException e) {
@@ -175,13 +188,8 @@ public class Authentication {
         }
     }
 
-    User extractUserFromResponse(Map<String, Object> map) {
-        String login = (String) map.get("login");
-        String id = map.get("id").toString();
-        String avatarUrl = (String) map.get("avatar_url");
-        String email = (String) map.get("email");
-
-        return new User(login, id, email, avatarUrl);
+    User extractUserFromResponse(GithubUser githubUser) {
+        return new User(githubUser.login, String.valueOf(githubUser.id), githubUser.email, githubUser.avatarUrl);
     }
 
     private String extractAccessToken(Context context) {

@@ -65,11 +65,11 @@ var FavouriteList = React.createClass({
                                     {favouritesCities()}
                                 </Col>
                                 <Col md={4}>
-                                    <h3><Link to="/favourites/conference">Conférences</Link></h3>
+                                    <h3><Link to="/favourites/conference">Conférences ({this.props.favourites.conferences.length})</Link></h3>
 
-                                    <h3><Link to="/favourites/community">Communautés</Link></h3>
+                                    <h3><Link to="/favourites/community">Communautés ({this.props.favourites.communities.length})</Link></h3>
 
-                                    <h3><Link to="/favourites/calendar">Événements</Link></h3>
+                                    <h3><Link to="/favourites/calendar">Événements ({this.props.favourites.upcomingEvents.length})</Link></h3>
                                 </Col>
                             </Row>
                         </Grid>
