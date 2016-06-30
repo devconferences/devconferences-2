@@ -25,21 +25,23 @@ var FavouriteButton = React.createClass({
     },
 
     onClick: function(e) {
-        if(this.state.favouriteUser == false) {
-            var favourite  = this.props.value + (this.props.filter ? "/" + this.props.filter: "");
-            DevConferencesClient.addFavourite(this.props.type, favourite).then(result => {
-                this.setState({
-                    favouriteUser: true
+        if(this.props.value != "") {
+            if(this.state.favouriteUser == false) {
+                var favourite  = this.props.value + (this.props.filter ? "/" + this.props.filter: "");
+                DevConferencesClient.addFavourite(this.props.type, favourite).then(result => {
+                    this.setState({
+                        favouriteUser: true
+                    });
+                    DevConferencesClient.auth.user(true);
+                })
+            } else if(this.state.favouriteUser == true) {
+                DevConferencesClient.removeFavourite(this.props.type, this.props.value, this.props.filter).then(result => {
+                    this.setState({
+                        favouriteUser: false
+                    });
+                    DevConferencesClient.auth.user(true);
                 });
-                DevConferencesClient.auth.user(true);
-            })
-        } else if(this.state.favouriteUser == true) {
-            DevConferencesClient.removeFavourite(this.props.type, this.props.value, this.props.filter).then(result => {
-                this.setState({
-                    favouriteUser: false
-                });
-                DevConferencesClient.auth.user(true);
-            });
+            }
         }
     },
     onMouseEnter: function(e) {
@@ -51,9 +53,9 @@ var FavouriteButton = React.createClass({
         if(this.state.isAuthenticated == true) {
             var className = "favourite";
             var title = "Ajouter aux favoris";
-            if(this.state.favouriteUser == true) {
-                className += " favourite-user"
-                title = "Retirer des favoris"
+            if(this.state.favouriteUser == true && this.props.value != "") {
+                className += " favourite-user";
+                title = "Retirer des favoris";
             }
             return (
                 <span title={title} className={className} onClick={this.onClick} onMouseEnter={this.onMouseEnter}

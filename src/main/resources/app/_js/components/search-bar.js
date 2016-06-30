@@ -231,13 +231,17 @@ var SearchBar = React.createClass({
                     return ((this.props.favourites) &&
                             (this.props.favourites.tags.indexOf(suggest.text) > -1));
                 }.bind(this);
-                return (
-                    <li key={suggest.text} data-value={suggest.text}
-                            onClick={this.setSearchQuery} onMouseOver={hoverSuggest} onMouseOut={noHoverSuggest}>
-                        {suggest.text}
-                        <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={suggest.text}/>
-                    </li>
-                );
+                if(suggest.text != "") {
+                    return (
+                        <li key={suggest.text} data-value={suggest.text}
+                                onClick={this.setSearchQuery} onMouseOver={hoverSuggest} onMouseOut={noHoverSuggest}>
+                            {suggest.text}
+                            <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={suggest.text}/>
+                        </li>
+                    );
+                } else {
+                    return null;
+                }
             }.bind(this);
 
             if(suggests.hits.length <= 0 || !showSuggests) {
@@ -256,10 +260,24 @@ var SearchBar = React.createClass({
             return (this.props.favourites &&
                     this.props.favourites.tags.indexOf(this.state.query) > -1);
         }.bind(this);
+
+        var favouriteButton = function() {
+            if(this.props.favourites != null) {
+                return (
+                    <div className="input-group-addon">
+                        <FavouriteButton isAuthenticated={true} favouriteUser={isFavouriteUser()} type="TAG" value={this.state.query}/>
+                    </div>
+                );
+            } else {
+                return null;
+            }
+        }.bind(this);
         return (
             <div className="search-bar-container text-center">
-                <input type="text" className="search-bar" ref="searchInput" onKeyPress={this.onEnterPress} onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
-                <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="TAG" value={this.state.query}/>
+                <div className="input-group">
+                    <input type="text" className="search-bar form-control" ref="searchInput" onKeyPress={this.onEnterPress} onChange={this.queryChanged} onBlur={this.hideSuggests} onFocus={this.showSuggests} placeholder="Entrez votre recherche ici..." defaultValue={this.props.query}/>
+                    {favouriteButton()}
+                </div>
                 {suggestList(this.state.suggests, this.state.showSuggests)}
             </div>
         );
