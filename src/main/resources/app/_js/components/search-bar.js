@@ -12,6 +12,7 @@ var SearchBar = React.createClass({
     CALENDAR: 0x02,
     CITIES: 0x04,
     ALL: 0x07,
+    HOME: 0x06,
     MAX_RESULTS: 1000,
 
     getInitialState: function() {
