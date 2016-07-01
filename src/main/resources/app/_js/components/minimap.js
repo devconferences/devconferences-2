@@ -156,6 +156,27 @@ var Minimap = React.createClass({
                 );
             }
         }.bind(this);
+
+        var noGpsList = function() {
+            var filter = function(city) {
+                return city.location == null;
+            };
+            if(this.props.cities.filter(filter).length > 0) {
+                return (
+                    <div>
+                        <br/>
+                        <div>
+                            Ville(s) non affichée(s) :
+                        </div>
+                        <div>
+                            {this.props.cities.map(linkNotLocatedCity)}
+                        </div>
+                    </div>
+                );
+            } else {
+                return null;
+            }
+        }.bind(this);
         return (
             <div className="minimap text-center hidden-xs">
                 <h2>
@@ -177,14 +198,7 @@ var Minimap = React.createClass({
                     </div>
                 </div>
 
-                <div>
-                    <p>
-                        <span className="label label-default">Ville(s) non affichée(s) :</span>
-                    </p>
-                    <p>
-                        {this.props.cities.map(linkNotLocatedCity)}
-                    </p>
-                </div>
+                {noGpsList()}
             </div>
         );
     }
