@@ -50,9 +50,11 @@ function createClient(u) {
         }
         function updateListeners() {
             userInfo.then(result => {
-                listeners.forEach(function(method) {
-                    method(result.data);
-                });
+                if(result != undefined) {
+                    listeners.forEach(function(method) {
+                        method(result.data);
+                    });
+                }
             });
         }
 

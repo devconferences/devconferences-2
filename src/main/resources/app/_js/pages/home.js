@@ -33,7 +33,9 @@ var Home = React.createClass({
 
     componentDidMount: function() {
         DevConferencesClient.auth.user().then(result => {
-            this.updateUser(result.data);
+            if(result != undefined) {
+                this.updateUser(result.data);
+            }
         });
         DevConferencesClient.auth.addListener(this.updateUser);
     },
