@@ -12,13 +12,6 @@ var Minimap = React.createClass({
         router: React.PropTypes.object.isRequired
     },
 
-    getInitialState: function() {
-        return {
-            minimapText: "Choisissez une ville sur la carte.",
-            linkHovered: false
-        }
-    },
-
     componentDidMount: function() {
         this.clearMapNode();
     },
@@ -70,12 +63,21 @@ var Minimap = React.createClass({
         var vectorLayer = new ol.layer.Vector({
             source: vectorSource
         });
+
+        var container = this.refs.mapPopup;
+        var content = this.refs.mapPopupContent;
+
+        var overlay = new ol.Overlay({
+            element: container
+        });
+
         var map = new ol.Map({
             target: "map",
             layers: [
                 new ol.layer.Tile({source: new ol.source.OSM()}),
                 vectorLayer
             ],
+            overlays: [overlay],
             controls: ol.control.defaults({
                 attributionOptions: ({
                     collapsible: false
@@ -121,39 +123,26 @@ var Minimap = React.createClass({
             if (e.dragging) {
                 return;
             }
+            var coordinate = e.coordinate;
             var pixel = map.getEventPixel(e.originalEvent);
             var hit = map.hasFeatureAtPixel(pixel);
             map.getTargetElement().style.cursor = hit ? 'pointer' : '';
 
             if(hit) {
+                container.style.display = 'block';
                 map.forEachFeatureAtPixel(pixel,
                 function(feature) {
-                      cityName.innerHTML = feature.get('name');
-                      cityConference.innerHTML = "Conférences : " + feature.get('totalConference');
-                      cityCommunity.innerHTML = "Communautés : " + feature.get('totalCommunity');
-                      cityCalendar.innerHTML = "Événements : " + feature.get('totalCalendar');
+                    cityName.innerHTML = feature.get('name');
+                    cityConference.innerHTML = "Conférences : " + feature.get('totalConference');
+                    cityCommunity.innerHTML = "Communautés : " + feature.get('totalCommunity');
+                    cityCalendar.innerHTML = "Événements : " + feature.get('totalCalendar');
+                    overlay.setPosition(coordinate);
                 });
             } else {
-                      cityName.innerHTML = "Choisissez une ville sur la carte.";
-                      cityConference.innerHTML = "&nbsp;";
-                      cityCommunity.innerHTML = "&nbsp;";
-                      cityCalendar.innerHTML = "&nbsp;";
+                container.style.display = 'none';
             }
-        });
+        }.bind(this));
         // End OSM Map
-    },
-
-    setMinimapText: function(e) {
-        this.setState({
-            minimapText: e.target.parentNode.attributes["title"].value || "...",
-            linkHovered: true
-        })
-    },
-    resetMinimapText: function(e) {
-        this.setState({
-            minimapText: "Choisissez une ville sur la carte.",
-            linkHovered: false
-        });
     },
 
     render: function() {
@@ -172,15 +161,20 @@ var Minimap = React.createClass({
                 <h2>
                     Villes répertoriées
                 </h2>
-                <div>
-                    <div id="mapCityName" className="label label-primary city">{this.state.minimapText}</div>
-                    <div id="mapCityConference">&nbsp;</div>
-                    <div id="mapCityCommunity">&nbsp;</div>
-                    <div id="mapCityCalendar">&nbsp;</div>
-                </div>
+                <p>
+                    Choisissez une ville sur la carte.
+                </p>
 
                 <div className="wrapper-map">
                     <div ref="map" id="map" className="center-block"></div>
+                    <div ref="mapPopup" id="map-popup">
+                        <div ref="mapPopupContent" id="map-popup-content">
+                            <h4 id="mapCityName"></h4>
+                            <div id="mapCityConference"></div>
+                            <div id="mapCityCommunity"></div>
+                            <div id="mapCityCalendar"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
