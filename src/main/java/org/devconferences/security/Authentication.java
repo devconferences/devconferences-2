@@ -163,6 +163,7 @@ public class Authentication {
                     .returnContent();
 
             GithubUser githubUser = gson.fromJson(content.asString(), GithubUser.class);
+            // TODO Remove this User, use GithubUser instead... extractUserFromResponse can be used if user == null (GithubUser -> User)
             User userFromResponse = extractUserFromResponse(githubUser);
             if(userFromResponse == null) {
                 return null;
