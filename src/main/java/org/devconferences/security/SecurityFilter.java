@@ -36,8 +36,7 @@ public class SecurityFilter implements Filter {
     public Payload apply(String uri, Context context, PayloadSupplier nextFilter) throws Exception {
         // Resources and
         // DevConferences API URL (with its own HTML 404)
-        if(resources.contains(uri) ||
-                uri.startsWith("/auth/") ||
+        if(uri.startsWith("/auth/") ||
                 uri.startsWith("/api/v2/") ||
                 uri.equals("/ping")) {
             return nextFilter.get();
@@ -46,5 +45,10 @@ public class SecurityFilter implements Filter {
             // or HTML 404 (React)
             return new Payload(ModelAndView.of("index"));
         }
+    }
+
+    @Override
+    public boolean matches(String uri, Context context) {
+        return !resources.contains(uri);
     }
 }
