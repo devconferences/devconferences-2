@@ -6,7 +6,8 @@ var Location = React.createClass({
             if(location) {
                 var mapsUrl = "http://maps.google.com/?q=" + location.gps.lat + ", " + location.gps.lon;
                 return (
-                    <span><i className="fa fa-map-marker"></i> : <a href={mapsUrl}>{location.name}</a> ({location.address}, {location.city})</span>
+                    <span><i className="fa fa-map-marker"></i> : <span onClick={(e) => {e.stopPropagation()}}><a href={mapsUrl}>{location.name}</a> </span>
+                        ({location.address}, {location.city})</span>
                 );
             } else {
                 return null;

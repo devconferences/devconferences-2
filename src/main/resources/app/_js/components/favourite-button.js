@@ -25,6 +25,7 @@ var FavouriteButton = React.createClass({
     },
 
     onClick: function(e) {
+        e.stopPropagation();
         if(this.props.value != "") {
             if(this.state.favouriteUser == false) {
                 var favourite  = this.props.value + (this.props.filter ? "/" + this.props.filter: "");

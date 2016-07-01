@@ -10,9 +10,9 @@ var Tags = React.createClass({
             return ( <span key={tag}> <Link to={linkToURL} >{tag}</Link>; </span> );
         };
         return (
-            <i className="fa fa-key">
-                { this.props.tags.map(aTag) }
-            </i>
+            <span onClick={(e) => {e.stopPropagation()}}>
+                <i className="fa fa-key"></i>{ this.props.tags.map(aTag) }
+            </span>
         );
     }
 });

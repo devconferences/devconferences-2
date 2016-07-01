@@ -7,8 +7,14 @@ var Location = require('./properties/location');
 var FavouriteButton = require('./favourite-button');
 
 var Glyphicon = ReactBootstrap.Glyphicon;
+var Collapse = ReactBootstrap.Collapse;
 
 var TimelineEvent = React.createClass({
+    getInitialState: function() {
+        return {
+            open: false
+        };
+    },
 
     render: function() {
         var event = this.props.event;
@@ -38,7 +44,7 @@ var TimelineEvent = React.createClass({
                 if(org.name) {
                     if(org.url) {
                         return (
-                            <span>, par <a href={org.url}>{org.name}</a></span>
+                            <span>, par <span onClick={(e) => {e.stopPropagation()}}><a href={org.url}>{org.name}</a></span></span>
                         );
                     } else {
                         return (
@@ -55,7 +61,7 @@ var TimelineEvent = React.createClass({
         var nameTitle = function(event) {
             if(event.url) {
                 return (
-                    <span><a href={event.url}>{event.name}</a></span>
+                    <span onClick={(e) => {e.stopPropagation()}}><a href={event.url}>{event.name}</a></span>
                 );
             } else {
                 return (
@@ -104,7 +110,7 @@ var TimelineEvent = React.createClass({
         };
 
         return (
-            <div className="timeline-event panel panel-default" >
+            <div className="timeline-event panel panel-default collapse-toggle" onClick={() => {this.setState({open: !this.state.open})}}>
                 <div>
                     <h3>
                         <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
@@ -114,22 +120,14 @@ var TimelineEvent = React.createClass({
                     </p>
                     {renderLocation(event)}
                 </div>
-                <div id={"collapse_" + event.id}>
+                <Collapse in={this.state.open}>
                     <div>
-                        <div className="text-center">
-                            <span data-toggle="collapse" data-target={"#collapse_" + event.id + "_show"}
-                                    onClick={rotate180}>
-                                <span className="expand-glyph" title="Cliquez pour afficher plus d'informations"><Glyphicon glyph='chevron-down'></Glyphicon></span>
-                            </span>
-                        </div>
-                        <div id={"collapse_" + event.id + "_show"} className="collapse">
-                            {renderCfp(event.cfp)}
-                            <div className="pre-style text-justify">
-                                {event.description}
-                            </div>
+                        {renderCfp(event.cfp)}
+                        <div className="pre-style text-justify">
+                            {event.description}
                         </div>
                     </div>
-                </div>
+                </Collapse>
             </div>
         );
     }

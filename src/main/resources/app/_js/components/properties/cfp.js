@@ -17,7 +17,7 @@ var Cfp = React.createClass({
                     }
                 }.bind(this);
                 return (
-                    <span>CFP : {statusCFP()} <a href={cfpData.url}>{cfpData.url}</a></span>
+                    <span>CFP : {statusCFP()} <span onClick={(e) => {e.stopPropagation()}}><a href={cfpData.url}>{cfpData.url}</a></span></span>
                 );
             } else {
                 return null;

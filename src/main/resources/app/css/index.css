@@ -355,3 +355,7 @@ div.event img.avatar {
     background-color: #337ab7;
     cursor: pointer;
 }
+
+.collapse-toggle {
+    cursor: pointer;
+}
