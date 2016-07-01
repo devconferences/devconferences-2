@@ -38,7 +38,7 @@ var FavouriteList = React.createClass({
             if(this.props.favourites.cities.length > 0) {
                 return (
                     <ul>
-                        {this.props.favourites.cities.map(tagsLink)}
+                        {this.props.favourites.cities.map(cityLink)}
                     </ul>
                 );
             } else {
