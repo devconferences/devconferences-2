@@ -44,7 +44,7 @@ var MyFavourites = React.createClass({
     render: function() {
         var items = function(noItemText) {
             if(this.state.items) {
-                if(this.state.items.length > 0) {
+                if(this.state.items.hits.length > 0) {
                     if(this.props.params.type == "conference" ||
                             this.props.params.type == "community") {
                         return (
