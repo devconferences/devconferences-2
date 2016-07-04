@@ -163,27 +163,25 @@ public class Authentication {
                     .returnContent();
 
             GithubUser githubUser = gson.fromJson(content.asString(), GithubUser.class);
-            // TODO Remove this User, use GithubUser instead... extractUserFromResponse can be used if user == null (GithubUser -> User)
-            User userFromResponse = extractUserFromResponse(githubUser);
-            if(userFromResponse == null) {
+            if(githubUser == null) {
                 return null;
             }
 
-            User user = usersRepository.getUser(userFromResponse.login);
+            User user = usersRepository.getUser(githubUser.login);
             if(user == null) {
-                user = userFromResponse;
+                user = extractUserFromResponse(githubUser);
             }
-            user.avatarURL = userFromResponse.avatarURL;
-            user.email = userFromResponse.email;
-            user.login = userFromResponse.login;
+            user.avatarURL = githubUser.avatarUrl;
+            user.email = githubUser.email;
+            user.login = githubUser.login;
             // Runtime fix of id conversion to double instead of long (once for each user)
-            if(!user.id.equals(userFromResponse.id)) {
-                Update update = new Update.Builder("{\"doc\":{\"id\":\"" + userFromResponse.id + "\"}}")
+            if(!user.id.equals(String.valueOf(githubUser.id))) {
+                Update update = new Update.Builder("{\"doc\":{\"id\":\"" + githubUser.id + "\"}}")
                         .id(user.login).index(DEV_CONFERENCES_INDEX).type(USERS_TYPE).build();
 
                 ElasticUtils.createClient().execute(update);
             }
-            user.id = userFromResponse.id;
+            user.id = String.valueOf(githubUser.id);
 
             return user;
 
