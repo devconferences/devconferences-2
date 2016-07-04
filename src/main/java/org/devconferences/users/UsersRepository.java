@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.elastic.ElasticUtils.createClient;
+import static org.devconferences.elastic.ElasticUtils.*;
 import static org.devconferences.users.UsersRepository.FavouriteItem.FavouriteType.CITY;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
@@ -42,8 +41,6 @@ public class UsersRepository {
             TAG, CITY, CONFERENCE, COMMUNITY, CALENDAR
         }
     }
-
-    public static final String USERS_TYPE = "users";
 
     private final RuntimeJestClient client;
     private final EventsRepository eventsRepository;
@@ -71,17 +68,17 @@ public class UsersRepository {
             SimpleSearchResult result;
             switch(typeEnum) {
                 case CONFERENCE:
-                    searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.conferences);
+                    searchResult = eventsRepository.searchByIds(EVENTS_TYPE, user.favourites.conferences);
                     result = new EventSearchResult();
                     ((EventSearchResult) result).hits.addAll(((EventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 case COMMUNITY:
-                    searchResult = eventsRepository.searchByIds(EventsRepository.EVENTS_TYPE, user.favourites.communities);
+                    searchResult = eventsRepository.searchByIds(EVENTS_TYPE, user.favourites.communities);
                     result = new EventSearchResult();
                     ((EventSearchResult) result).hits.addAll(((EventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 case CALENDAR:
-                    searchResult = eventsRepository.searchByIds(EventsRepository.CALENDAREVENTS_TYPE, user.favourites.upcomingEvents);
+                    searchResult = eventsRepository.searchByIds(CALENDAREVENTS_TYPE, user.favourites.upcomingEvents);
                     result = new CalendarEventSearchResult();
                     ((CalendarEventSearchResult) result).hits.addAll(((CalendarEventSearchResult) result).getHitsFromSearch(searchResult));
                     break;

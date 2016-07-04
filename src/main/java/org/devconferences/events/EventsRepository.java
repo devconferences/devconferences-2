@@ -34,8 +34,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.elastic.ElasticUtils.createClient;
+import static org.devconferences.elastic.ElasticUtils.*;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
@@ -44,9 +43,6 @@ import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
 @Singleton
 public class EventsRepository {
-    public static final String EVENTS_TYPE = "events";
-    public static final String CALENDAREVENTS_TYPE = "calendarevents";
-
     private static final double GEO_DISTANCE = 20d;
 
     private final RuntimeJestClient client;

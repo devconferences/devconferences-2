@@ -20,9 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.events.EventsRepository.CALENDAREVENTS_TYPE;
-import static org.devconferences.events.EventsRepository.EVENTS_TYPE;
+import static org.devconferences.elastic.ElasticUtils.*;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termQuery;
 

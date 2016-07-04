@@ -5,12 +5,11 @@ import com.google.gson.JsonParser;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
 import org.mockito.ArgumentMatcher;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import static org.devconferences.events.EventsRepository.CALENDAREVENTS_TYPE;
-import static org.devconferences.events.EventsRepository.EVENTS_TYPE;
-import static org.mockito.Matchers.*;
+import static org.devconferences.elastic.ElasticUtils.CALENDAREVENTS_TYPE;
+import static org.devconferences.elastic.ElasticUtils.EVENTS_TYPE;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -61,8 +60,7 @@ public class MockJestClient {
             "        \"successful\" : 5," +
             "        \"failed\" : 0" +
             "    }" +
-            "}"
-            ;
+            "}";
     private static final String searchStringTemplate = "" +
             "{" +
             "    \"_shards\":{" +
@@ -77,6 +75,7 @@ public class MockJestClient {
             "    }," +
             "    \"aggregations\" : %s" +
             "}";
+
     public static RuntimeJestClientAdapter createMock() {
         RuntimeJestClientAdapter result = mock(RuntimeJestClientAdapter.class);
         return result;

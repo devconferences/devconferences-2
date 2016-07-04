@@ -8,9 +8,9 @@ import org.assertj.core.api.Assertions;
 import org.devconferences.elastic.DeveloppementESNode;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
+import org.devconferences.events.EventsRepository;
 import org.devconferences.events.data.CalendarEvent;
 import org.devconferences.events.data.Event;
-import org.devconferences.events.EventsRepository;
 import org.devconferences.meetup.MeetupApiClient;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,9 +20,7 @@ import org.junit.Test;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.jobs.ImportCalendarEventsJob.CALENDAREVENTS_TYPE;
-import static org.devconferences.jobs.ImportEventsJob.EVENTS_TYPE;
+import static org.devconferences.elastic.ElasticUtils.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

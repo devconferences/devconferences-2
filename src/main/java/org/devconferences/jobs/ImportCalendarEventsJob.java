@@ -21,7 +21,6 @@ import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
 public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportCalendarEventsJob.class);
-    public static final String CALENDAREVENTS_TYPE = "calendarevents";
 
     static final HashSet<String> idMeetupList = new HashSet<>();
 
@@ -63,8 +62,6 @@ public class ImportCalendarEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        //ElasticUtils.deleteData(CALENDAREVENTS_TYPE);
-
         int totalCalendarEvents = 0;
 
         if(!noRemoteCall) {

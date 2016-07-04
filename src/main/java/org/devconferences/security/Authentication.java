@@ -27,7 +27,7 @@ import org.devconferences.users.UsersRepository;
 import java.io.IOException;
 
 import static org.devconferences.elastic.ElasticUtils.DEV_CONFERENCES_INDEX;
-import static org.devconferences.users.UsersRepository.USERS_TYPE;
+import static org.devconferences.elastic.ElasticUtils.USERS_TYPE;
 
 @Prefix("auth/")
 public class Authentication {

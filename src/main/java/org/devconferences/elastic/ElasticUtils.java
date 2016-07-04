@@ -11,7 +11,6 @@ import io.searchbox.indices.mapping.GetMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.apache.commons.io.IOUtils;
 import org.devconferences.events.EventsRepository;
-import org.devconferences.users.UsersRepository;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,12 @@ public final class ElasticUtils {
     public static final int MAX_SIZE = 10000; // Default max value, or ES will throw an Exception
 
     private static final String ES_URL = "ES_URL";
+
     public static final String DEV_CONFERENCES_INDEX = "dev-conferences-2";
+    public static final String EVENTS_TYPE = "events";
+    public static final String CALENDAREVENTS_TYPE = "calendarevents";
+    public static final String USERS_TYPE = "users";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticUtils.class);
 
     public static RuntimeJestClient createClient() {
@@ -101,9 +105,9 @@ public final class ElasticUtils {
         if(deleteAllTypes) {
             deleteAllTypes();
         }
-        createType(EventsRepository.EVENTS_TYPE, "/elastic/events-mapping.json");
-        createType(EventsRepository.CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
-        createType(UsersRepository.USERS_TYPE, "/elastic/users-mapping.json");
+        createType(EVENTS_TYPE, "/elastic/events-mapping.json");
+        createType(CALENDAREVENTS_TYPE, "/elastic/calendarevents-mapping.json");
+        createType(USERS_TYPE, "/elastic/users-mapping.json");
     }
 
     public static void deleteAllTypes() {

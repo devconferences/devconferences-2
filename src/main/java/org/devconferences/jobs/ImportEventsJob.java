@@ -4,16 +4,10 @@ import com.google.gson.Gson;
 import org.devconferences.elastic.RuntimeJestClient;
 import org.devconferences.events.GeopointCities;
 import org.devconferences.events.data.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.InputStreamReader;
 
 public class ImportEventsJob extends AbstractImportJSONJob {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImportEventsJob.class);
-    // TODO, le temps de ...
-    public static final String EVENTS_TYPE = "events";
 
     public ImportEventsJob() {
         super();
@@ -25,8 +19,6 @@ public class ImportEventsJob extends AbstractImportJSONJob {
 
     @Override
     public int reloadData(boolean noRemoteCall) {
-        //ElasticUtils.deleteData(EVENTS_TYPE);
-
         return importJsonInFolder("events", Event.class, (obj, path) -> {
             if(obj instanceof Event) {
                 Event event = (Event) obj;
