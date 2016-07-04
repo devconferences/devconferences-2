@@ -44,7 +44,7 @@ var TimelineEvent = React.createClass({
                 if(org.name) {
                     if(org.url) {
                         return (
-                            <span>, par <span onClick={(e) => {e.stopPropagation()}}><a href={org.url}>{org.name}</a></span></span>
+                            <span>, par <span onClick={(e) => {e.stopPropagation()}}><a href={org.url} title="Accéder au site de l'organisateur">{org.name}</a></span></span>
                         );
                     } else {
                         return (
@@ -61,7 +61,7 @@ var TimelineEvent = React.createClass({
         var nameTitle = function(event) {
             if(event.url) {
                 return (
-                    <span onClick={(e) => {e.stopPropagation()}}><a href={event.url}>{event.name}</a></span>
+                    <span onClick={(e) => {e.stopPropagation()}}><a href={event.url} title="Accéder au site de l'événement">{event.name}</a></span>
                 );
             } else {
                 return (
@@ -99,18 +99,10 @@ var TimelineEvent = React.createClass({
                     this.props.favourites.upcomingEvents.indexOf(event.id) > -1);
         }.bind(this);
 
-        var rotate180 = function(e) {
-            var elem = e.target.parentNode;
-            elem.classList.toggle("expanded");
-            if(elem.classList.contains("expanded")) {
-                elem.title = "Cliquez pour affichez moins d'informations";
-            } else {
-                elem.title = "Cliquez pour afficher plus d'informations";
-            }
-        };
+        var title = "Cliquez pour affichez " + (this.state.open ? "moins" : "plus") + " d'informations";
 
         return (
-            <div className="timeline-event panel panel-default collapse-toggle" onClick={() => {this.setState({open: !this.state.open})}}>
+            <div title={title} className="timeline-event panel panel-default collapse-toggle" onClick={() => {this.setState({open: !this.state.open})}}>
                 <div>
                     <h3>
                         <FavouriteButton isAuthenticated={this.props.favourites != null} favouriteUser={isFavouriteUser()} type="CALENDAR" value={event.id}/> {nameTitle(event)}
