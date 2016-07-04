@@ -3,7 +3,6 @@ var Router = require('react-router');
 var $ = require('jquery');
 
 var FavouriteList = require('./favourite-list');
-var Help = require('./help');
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;
@@ -96,7 +95,7 @@ var Authentication = React.createClass({
 
         var help = function() {
             return (
-                <li><a href="" data-toggle="modal" data-target="#helpModal">Aide</a></li>
+                <li><Link to="/help">Aide</Link></li>
             );
         };
 
@@ -153,7 +152,6 @@ var Authentication = React.createClass({
                         </div>
                     </div>
                 </div>
-                <Help />
             </div>
         );
     }
