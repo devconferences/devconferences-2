@@ -7,6 +7,8 @@ var EventList = require('../components/event-list');
 var TimelineEvent = require('../components/timeline-event');
 var DevConferencesClient = require('../client/client');
 
+var Link = Router.Link;
+
 var MyFavourites = React.createClass({
     getInitialState: function() {
         return {
@@ -99,6 +101,9 @@ var MyFavourites = React.createClass({
                         <h1>Mes favoris : {typeFavouriteText().title}</h1>
                     </div>
                     {items(typeFavouriteText().noItem)}
+                    <p className="text-center">
+                        <Link to="/favourites">Retour à mes favouris</Link>
+                    </p>
                 </div>
             </DocumentTitle>
         )
