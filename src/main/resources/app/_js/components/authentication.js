@@ -1,10 +1,12 @@
 var React = require('react');
+var Router = require('react-router');
 var $ = require('jquery');
 
 var FavouriteList = require('./favourite-list');
 var Help = require('./help');
-var Notifications = require('./notifications');
 var DevConferencesClient = require('../client/client');
+
+var Link = Router.Link;
 
 var Authentication = React.createClass({
     getInitialState: function () {
@@ -76,7 +78,7 @@ var Authentication = React.createClass({
                 var text = function() {
                     if(user.messages.length > 0) {
                         return (
-                            <b>Notifications ({user.messages.length})</b>
+                            <b>Notifications <span className="label label-primary">{user.messages.length}</span></b>
                         );
                     } else {
                         return (
@@ -85,7 +87,7 @@ var Authentication = React.createClass({
                     }
                 }.bind(this);
                 return (
-                    <li><a href="" data-toggle="modal" data-target="#notificationsModal">{text()}</a></li>
+                    <li><Link to="/notifications">{text()}</Link></li>
                 );
             } else {
                 return null;
@@ -109,12 +111,15 @@ var Authentication = React.createClass({
 
         var notificationStatus = function() {
             var className = "notification-status";
+            var title = null;
             if(this.state.user &&
                this.state.user.messages.length > 0) {
                 className += " unread";
+                title = this.state.user.messages.length + " nouvelle(s) notification(s)";
             }
             return (
-                <span data-toggle="modal" data-target="#notificationsModal" className={className}></span>
+                <Link to="/notifications" className={className}
+                        title={title}></Link>
             );
         }.bind(this);
 
@@ -148,7 +153,6 @@ var Authentication = React.createClass({
                         </div>
                     </div>
                 </div>
-                <Notifications messages={(this.state.user ? this.state.user.messages : [])}/>
                 <Help />
             </div>
         );

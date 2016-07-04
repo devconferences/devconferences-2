@@ -1,10 +1,14 @@
 var React = require('react');
 var Router = require('react-router');
+var ReactBootstrap = require('react-bootstrap');
 var moment = require('moment');
 
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;
+var Grid = ReactBootstrap.Grid;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
 
 var NotificationList = React.createClass({
     removeMessage: function(e) {
@@ -18,19 +22,28 @@ var NotificationList = React.createClass({
             var dateNotif = new Date(parseInt(message.date));
             var formattedDate = moment(message.date).format("DD/MM/YYYY HH:mm");
             return (
-                <p key={message.date + "/" + message.text}>
-                    <button data-id={message.id} type="button" className="close" title="Marquer comme lu" onClick={this.removeMessage}>
-                        &times;
-                    </button>
-                    {formattedDate} : (<Link to={message.link}>Voir</Link>) <br/> {message.text}
-                </p>
+                <li className="list-group-item" key={message.date + "/" + message.text}>
+                    <span className="close">
+                        <button data-id={message.id} type="button" title="Marquer comme lu" onClick={this.removeMessage}>
+                            &times;
+                        </button>
+                    </span>
+                    <Row>
+                    <Col md={3}>
+                        {formattedDate}
+                    </Col>
+                    <Col md={8}>
+                        <Link to={message.link} title="Voir">{message.text}</Link>
+                    </Col>
+                    </Row>
+                </li>
             );
         }.bind(this);
         if(this.props.messages.length > 0) {
             return (
-                <div>
+                <ul className="notification-list list-group">
                     {this.props.messages.map(message)}
-                </div>
+                </ul>
             );
         } else {
             return (

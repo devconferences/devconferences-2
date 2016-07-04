@@ -359,3 +359,20 @@ div.event img.avatar {
 .collapse-toggle {
     cursor: pointer;
 }
+
+.notification-list li {
+    position: relative;
+    z-index: 0;
+}
+.notification-list li > span {
+    position: absolute;
+    right: 5px;
+}
+.notification-list .close {
+    float: none;
+    z-index: 1;
+}
+.notification-list .close > button {
+    border: 0;
+    background-color: transparent;
+}

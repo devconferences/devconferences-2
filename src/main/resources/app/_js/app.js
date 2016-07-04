@@ -9,6 +9,7 @@ var City = require('./pages/city');
 var EventPage = require('./pages/event-page');
 var Home = require('./pages/home');
 var MyFavourites = require('./pages/my-favourites');
+var Notifications = require('./pages/notifications');
 var NotFound = require('./pages/not-found');
 var Search = require('./pages/search');
 
@@ -85,6 +86,7 @@ var routes = (
         <Route path="/city/:id/:query" component={City}/>
         <Route path="/event/:id" component={EventPage}/>
         <Route path="/favourites/:type" component={MyFavourites}/>
+        <Route path="/notifications" component={Notifications}/>
         <Route path="/search" component={Search}/>
         <Route path="/search/:query" component={Search}/>
         <Route path="/search/:query/:page" component={Search}/>
