@@ -28,6 +28,20 @@ var EventPage = React.createClass({
                 error: error
             });
         }));
+        DevConferencesClient.auth.user().then(result => {
+            this.updateUser(result.data);
+        });
+        DevConferencesClient.auth.addListener(this.updateUser);
+    },
+
+    componentWillUnmount: function() {
+        DevConferencesClient.auth.removeListener(this.updateUser);
+    },
+
+    updateUser: function(user) {
+        this.setState({
+            user: user
+        });
     },
 
     render: function () {
@@ -35,7 +49,7 @@ var EventPage = React.createClass({
             return (
                 <DocumentTitle title={"Dev Conferences - " + this.state.event.name}>
                     <div className="container">
-                        <Event event={this.state.event} />
+                        <Event event={this.state.event} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                     </div>
                 </DocumentTitle>
             );

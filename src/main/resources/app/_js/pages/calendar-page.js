@@ -14,7 +14,8 @@ var CalendarPage = React.createClass({
     getInitialState: function() {
         return {
             event: null,
-            error: null
+            error: null,
+            user: null
         }
     },
 
@@ -28,6 +29,20 @@ var CalendarPage = React.createClass({
                 error: error
             });
         }));
+        DevConferencesClient.auth.user().then(result => {
+            this.updateUser(result.data);
+        });
+        DevConferencesClient.auth.addListener(this.updateUser);
+    },
+
+    componentWillUnmount: function() {
+        DevConferencesClient.auth.removeListener(this.updateUser);
+    },
+
+    updateUser: function(user) {
+        this.setState({
+            user: user
+        });
     },
 
     render: function () {
@@ -35,7 +50,7 @@ var CalendarPage = React.createClass({
             return (
                 <DocumentTitle title={"Dev Conferences - " + this.state.event.name}>
                     <div className="container">
-                        <TimelineEvent event={this.state.event} />
+                        <TimelineEvent event={this.state.event} favourites={(this.state.user ? this.state.user.favourites : null)}/>
                     </div>
                 </DocumentTitle>
             );
