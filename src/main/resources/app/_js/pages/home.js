@@ -1,4 +1,5 @@
 var React = require('react');
+var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 var $ = require('jquery');
@@ -61,38 +62,39 @@ var Home = React.createClass({
 
     render: function () {
         return (
-            <div className="container text-center">
-                <SearchBar ref="searchBar" favourites={(this.state.user ? this.state.user.favourites : null)} onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().HOME} allDataWhenEmpty={true}/>
+            <DocumentTitle title="Dev Conferences - Accueil">
+                <div className="container text-center">
+                    <SearchBar ref="searchBar" favourites={(this.state.user ? this.state.user.favourites : null)} onUpdate={this.searchBarUpdated} all={true} limit={10} searchType={new SearchBar().HOME} allDataWhenEmpty={true}/>
 
-                <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
+                    <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
 
-                <Grid className="no-fixed-container">
-                    <Row>
-                        <Col lg={7} className="text-center">
-                            <h2>Prochains événements</h2>
+                    <Grid className="no-fixed-container">
+                        <Row>
+                            <Col lg={7} className="text-center">
+                                <h2>Prochains événements</h2>
 
-                            <p>Les prochains événements sont répertoriés ici.</p>
+                                <p>Les prochains événements sont répertoriés ici.</p>
 
-                            <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents} favourites={(this.state.user ? this.state.user.favourites : null)}/>
-                        </Col>
-                        <Col lg={5} className="text-center">
-                            <Minimap cities={this.state.cities} query={this.state.calendar.query}/>
+                                <TimelineEventList calendar={this.state.calendar} moreUpcomingEvents={this.moreUpcomingEvents} favourites={(this.state.user ? this.state.user.favourites : null)}/>
+                            </Col>
+                            <Col lg={5} className="text-center">
+                                <Minimap cities={this.state.cities} query={this.state.calendar.query}/>
 
-                            <hr/>
+                                <hr/>
 
-                            <h2>Dernières infos</h2>
+                                <h2>Dernières infos</h2>
 
-                            <p>
-                                Via
-                                <a href="https://twitter.com/devconferences"> @DevConferences</a>
-                            </p>
+                                <p>
+                                    Via
+                                    <a href="https://twitter.com/devconferences"> @DevConferences</a>
+                                </p>
 
-                            <TwitterTimeline twitterId="devconferences" widgetId="546986135780851713" />
-                        </Col>
-                    </Row>
-                </Grid>
-
-            </div>
+                                <TwitterTimeline twitterId="devconferences" widgetId="546986135780851713" />
+                            </Col>
+                        </Row>
+                    </Grid>
+                </div>
+            </DocumentTitle>
         )
     }
 });

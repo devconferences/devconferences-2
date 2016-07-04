@@ -1,4 +1,5 @@
 var React = require('react');
+var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var ReactDOM = require('react-dom');
 var $ = require('jquery');
@@ -159,16 +160,19 @@ var Search = React.createClass({
         var page = this.state.page ? this.state.page : (this.props.params.page || 1);
 
         return (
-            <div className="container">
-                <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page} favourites={(this.state.user ? this.state.user.favourites : null)}/>
-                {dataSearch(this.state.searchType, this.changeSearchType)}
-                <div className="search-result">
-                    {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
-                    <div className="results">
-                        {items(this.state.lastSearch, this.state.searchType)}
+            <DocumentTitle title={"Dev Conferences - Recherche" +
+                    (this.state.lastSearch && this.state.lastSearch.query ? " #" + this.state.lastSearch.query : "")}>
+                <div className="container">
+                    <SearchBar ref="searchBar" onUpdate={this.searchBarUpdated} searchType={searchType} query={query} page={page} favourites={(this.state.user ? this.state.user.favourites : null)}/>
+                    {dataSearch(this.state.searchType, this.changeSearchType)}
+                    <div className="search-result">
+                        {resultsHead(this.state.lastSearch, this.state.searchType, this.changeSearchType)}
+                        <div className="results">
+                            {items(this.state.lastSearch, this.state.searchType)}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </DocumentTitle>
         );
     }
 });

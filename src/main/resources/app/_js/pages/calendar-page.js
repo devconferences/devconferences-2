@@ -1,4 +1,5 @@
 var React = require('react');
+var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -32,9 +33,11 @@ var CalendarPage = React.createClass({
     render: function () {
         if(this.state.event) {
             return (
-                <div className="container">
-                    <TimelineEvent event={this.state.event} />
-                </div>
+                <DocumentTitle title={"Dev Conferences - " + this.state.event.name}>
+                    <div className="container">
+                        <TimelineEvent event={this.state.event} />
+                    </div>
+                </DocumentTitle>
             );
         } else if (this.state.error) {
             return (<NotFound />);

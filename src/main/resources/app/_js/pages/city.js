@@ -1,4 +1,5 @@
 var React = require('react');
+var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var $ = require('jquery');
 
@@ -80,26 +81,29 @@ var City = React.createClass({
         }.bind(this);
         if (this.state.city) {
             return (
-                <div className="container">
-                    <div className="text-center">
-                        <h1>
-                            Dev Conferences @ {this.state.city.name} {queryText(this.props.params.query)}
-                            <FavouriteButton isAuthenticated={this.state.user != null} favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
-                        </h1>
+                <DocumentTitle title={"Dev Conferences @ " + this.state.city.name +
+                        (this.props.params.query ? " #" + this.props.params.query : "")}>
+                    <div className="container">
+                        <div className="text-center">
+                            <h1>
+                                Dev Conferences @ {this.state.city.name} {queryText(this.props.params.query)}
+                                <FavouriteButton isAuthenticated={this.state.user != null} favouriteUser={isFavouriteUser()} type="CITY" value={this.state.city.name} filter={((this.props.params.query))}/>
+                            </h1>
+                        </div>
+
+                        {renderAnchorList(this.state.city.conferences, 'Conférences')}
+                        {renderAnchorList(this.state.city.communities, 'Communautés')}
+
+                        {renderUpcomingEvents(this.state.city.upcoming_events)}
+
+                        <hr />
+
+                        <EventList events={this.state.city.conferences} favourites={(this.state.user ? this.state.user.favourites : null)} />
+                        <EventList events={this.state.city.communities} favourites={(this.state.user ? this.state.user.favourites : null)} />
+
+                        <UpcomingEventsList events={this.state.city.upcoming_events} cityName={this.state.city.name} favourites={(this.state.user ? this.state.user.favourites : null)} />
                     </div>
-
-                    {renderAnchorList(this.state.city.conferences, 'Conférences')}
-                    {renderAnchorList(this.state.city.communities, 'Communautés')}
-
-                    {renderUpcomingEvents(this.state.city.upcoming_events)}
-
-                    <hr />
-
-                    <EventList events={this.state.city.conferences} favourites={(this.state.user ? this.state.user.favourites : null)} />
-                    <EventList events={this.state.city.communities} favourites={(this.state.user ? this.state.user.favourites : null)} />
-
-                    <UpcomingEventsList events={this.state.city.upcoming_events} cityName={this.state.city.name} favourites={(this.state.user ? this.state.user.favourites : null)} />
-                </div>
+                </DocumentTitle>
             )
         }
         else {

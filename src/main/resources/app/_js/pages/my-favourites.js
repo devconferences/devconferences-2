@@ -1,4 +1,5 @@
 var React = require('react');
+var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var ReactBootstrap = require('react-bootstrap');
 
@@ -92,12 +93,14 @@ var MyFavourites = React.createClass({
             return result;
         }.bind(this);
         return (
-            <div className="container">
-                <div className="text-center">
-                    <h1>Mes favoris : {typeFavouriteText().title}</h1>
+            <DocumentTitle title={"Dev Conferences - Mes favoris : " + typeFavouriteText().title}>
+                <div className="container">
+                    <div className="text-center">
+                        <h1>Mes favoris : {typeFavouriteText().title}</h1>
+                    </div>
+                    {items(typeFavouriteText().noItem)}
                 </div>
-                {items(typeFavouriteText().noItem)}
-            </div>
+            </DocumentTitle>
         )
     }
 });
