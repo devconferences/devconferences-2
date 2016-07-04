@@ -179,9 +179,6 @@ var Minimap = React.createClass({
         }.bind(this);
         return (
             <div className="minimap text-center hidden-xs">
-                <h2>
-                    Villes répertoriées
-                </h2>
                 <p>
                     Choisissez une ville sur la carte.
                 </p>
