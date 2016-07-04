@@ -1,5 +1,5 @@
 var React = require('react');
-import { Router, Route, IndexRoute, NorFoundRoute, browserHistory} from 'react-router';
+import { Router, Route, IndexRoute, NorFoundRoute, browserHistory, Link} from 'react-router';
 var ReactDOM = require('react-dom');
 var ReactBootstrap = require('react-bootstrap');
 var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -36,9 +36,9 @@ var App = React.createClass({
                         <Authentication />
 
                         <div className="title">
-                            <a href="/">
+                            <Link to="/">
                                 Dev Conferences
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </header>
