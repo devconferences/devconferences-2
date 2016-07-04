@@ -8,7 +8,6 @@ var CityLinkList = require('../components/city-link-list');
 var TimelineEventList = require('../components/timeline-event-list');
 var SearchBar = require('../components/search-bar');
 var Minimap = require('../components/minimap');
-var FavouriteList = require('../components/favourite-list');
 var GoogleCalendar = require('../components/social/google-calendar');
 var TwitterTimeline = require('../components/social/twitter-timeline');
 var DevConferencesClient = require('../client/client');

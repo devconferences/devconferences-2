@@ -7,6 +7,7 @@ var injectTapEventPlugin = require("react-tap-event-plugin");
 var CalendarPage = require('./pages/calendar-page');
 var City = require('./pages/city');
 var EventPage = require('./pages/event-page');
+var FavouriteList = require('./pages/favourite-list');
 var Home = require('./pages/home');
 var Help = require('./pages/help');
 var MyFavourites = require('./pages/my-favourites');
@@ -86,6 +87,7 @@ var routes = (
         <Route path="/city/:id" component={City}/>
         <Route path="/city/:id/:query" component={City}/>
         <Route path="/event/:id" component={EventPage}/>
+        <Route path="/favourites" component={FavouriteList}/>
         <Route path="/favourites/:type" component={MyFavourites}/>
         <Route path="/help" component={Help}/>
         <Route path="/notifications" component={Notifications}/>

@@ -2,7 +2,6 @@ var React = require('react');
 var Router = require('react-router');
 var $ = require('jquery');
 
-var FavouriteList = require('./favourite-list');
 var DevConferencesClient = require('../client/client');
 
 var Link = Router.Link;
@@ -65,7 +64,7 @@ var Authentication = React.createClass({
         var favourites = function() {
             if(user) {
                 return (
-                    <li><a href="" data-toggle="modal" data-target="#favouriteModal">Mes favoris</a></li>
+                    <li><Link to="/favourites">Mes favoris</Link></li>
                 );
             } else {
                 return null;
@@ -140,18 +139,6 @@ var Authentication = React.createClass({
                     {help()}
                     {disconnect()}
                 </ul>
-                <div className="modal fade" id="favouriteModal" role="dialog">
-                    <div className="modal-dialog" role="document">
-                        <div className="modal-content">
-                            <div className="modal-body text-center">
-                                <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                  <span aria-hidden="true">&times;</span>
-                                </button>
-                                <FavouriteList favourites={(this.state.user ? this.state.user.favourites : null)} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         );
     }
