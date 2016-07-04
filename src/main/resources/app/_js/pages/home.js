@@ -40,6 +40,10 @@ var Home = React.createClass({
         DevConferencesClient.auth.addListener(this.updateUser);
     },
 
+    componentWillUnmount: function() {
+        DevConferencesClient.auth.removeListener(this.updateUser);
+    },
+
     updateUser: function(user) {
         this.setState({user: user});
     },

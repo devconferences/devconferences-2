@@ -33,6 +33,10 @@ var MyFavourites = React.createClass({
         DevConferencesClient.auth.addListener(this.updateUser);
     },
 
+    componentWillUnmount: function() {
+        DevConferencesClient.auth.removeListener(this.updateUser);
+    },
+
     updateUser: function(user) {
         DevConferencesClient.getFavourites(this.props.params.type).then(result => {
             if(result.data != this.state.items) {

@@ -46,7 +46,14 @@ function createClient(u) {
             return check.then(nothing => Axios.get(`${actualUrl}/auth/client-id`).catch(errorCallback));
         }
         function addListener(method) {
-            listeners.push(method);
+            if(listeners.indexOf(method) == -1) {
+                listeners.push(method);
+            }
+        }
+        function removeListener(method) {
+            if(listeners.indexOf(method) > -1) {
+                listeners.splice(listeners.indexOf(method),1);
+            }
         }
         function updateListeners() {
             userInfo.then(result => {
@@ -62,7 +69,8 @@ function createClient(u) {
             userInfo,
             user,
             clientId,
-            addListener
+            addListener,
+            removeListener
         };
     };
 
