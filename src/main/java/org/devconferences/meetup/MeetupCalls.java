@@ -2,9 +2,11 @@ package org.devconferences.meetup;
 
 import com.google.gson.Gson;
 import net.codestory.http.constants.Headers;
-import org.apache.http.client.fluent.Content;
+import net.codestory.http.errors.HttpException;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
@@ -16,27 +18,36 @@ class MeetupCalls {
     private static final String MEETUP_API_EVENTS_BY_GROUP_URL = MEETUP_API_BASE_URL + "/2/events/?group_urlname=%s&" +
             "status=upcoming&sign=true&key=%s";
 
-    EventSearchResult askUpcomingEvents(String id) {
-        return (EventSearchResult) getContent(MEETUP_API_EVENTS_BY_GROUP_URL, id, EventSearchResult.class);
+    EventSearchResult getUpcomingEvents(String id) {
+        return (EventSearchResult) getCastedContent(MEETUP_API_EVENTS_BY_GROUP_URL, id, EventSearchResult.class);
     }
 
-    Group askGroupInfo(String id) {
-        return (Group) getContent(MEETUP_API_GROUP_INFO_URL, id, Group.class);
+    Group getGroupInfo(String id) {
+        return (Group) getCastedContent(MEETUP_API_GROUP_INFO_URL, id, Group.class);
     }
 
-    Event askEventInfo(String id) {
-        return (Event) getContent(MEETUP_API_EVENT_INFO_URL, id, Event.class);
+    Event getEventInfo(String id) {
+        return (Event) getCastedContent(MEETUP_API_EVENT_INFO_URL, id, Event.class);
     }
 
-    private Object getContent(String urlFormat, String id, Class classType) {
-        Content eventsByURLResponse;
+    private Object getCastedContent(String urlFormat, String id, Class classType) {
         try {
-            eventsByURLResponse = Request.Get(String.format(urlFormat, id, System.getenv(MEETUP_API_KEY)))
-                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json")).execute().returnContent();
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+            HttpResponse githubResponse;
 
-        return new Gson().fromJson(eventsByURLResponse.asString(), classType);
+            githubResponse = Request.Get(String.format(urlFormat, id, System.getenv(MEETUP_API_KEY)))
+                    .addHeader(new BasicHeader(Headers.ACCEPT, "application/json")).execute().returnResponse();
+
+            // Check if response is OK, otherwise throw a HttpException
+            int statusCode = githubResponse.getStatusLine().getStatusCode();
+            if(statusCode == 200) {
+                // Can't call returnContent() AND returnResponse() (InputStream can be read once...)
+                // Use getEntity() instead of returnContent()
+                return new Gson().fromJson(EntityUtils.toString(githubResponse.getEntity()), classType);
+            } else {
+                throw new HttpException(statusCode);
+            }
+        } catch(IOException e) {
+            throw new IllegalStateException("Can't use Meetup API : " + e.getMessage());
+        }
     }
 }

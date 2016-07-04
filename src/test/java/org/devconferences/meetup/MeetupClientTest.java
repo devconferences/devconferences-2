@@ -55,7 +55,7 @@ public class MeetupClientTest {
         eventSearchResultId1.results.add(eventSearch1);
         eventSearchResultId1.results.add(eventSearch2);
 
-        when(mockMeetupCalls.askUpcomingEvents("id1")).thenReturn(eventSearchResultId1);
+        when(mockMeetupCalls.getUpcomingEvents("id1")).thenReturn(eventSearchResultId1);
 
         List<CalendarEvent> calendarEventList = meetupApiClient.getUpcomingEvents("id1");
 
@@ -94,8 +94,8 @@ public class MeetupClientTest {
         nextEvent.event_url = "http://www.event-test.com";
         nextEvent.time = 123456789000L;
 
-        when(mockMeetupCalls.askGroupInfo("id1")).thenReturn(group);
-        when(mockMeetupCalls.askEventInfo("id2")).thenReturn(nextEvent);
+        when(mockMeetupCalls.getGroupInfo("id1")).thenReturn(group);
+        when(mockMeetupCalls.getEventInfo("id2")).thenReturn(nextEvent);
 
         try {
             meetupInfo = meetupEndPoint.meetupInfo("id1");
