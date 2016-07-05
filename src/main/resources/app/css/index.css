@@ -402,3 +402,9 @@ div.event img.avatar {
         transform: rotate(359deg);
     }
 }
+
+@media (max-width: 991px) {
+    .text-md-center {
+        text-align: center;
+    }
+}

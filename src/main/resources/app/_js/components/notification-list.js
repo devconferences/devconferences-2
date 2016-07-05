@@ -32,7 +32,7 @@ var NotificationList = React.createClass({
                     <Col md={3}>
                         {formattedDate}
                     </Col>
-                    <Col md={8}>
+                    <Col className="text-md-center text-left" md={8}>
                         <Link to={message.link} title="Voir">{message.text}</Link>
                     </Col>
                     </Row>
