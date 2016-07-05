@@ -55,9 +55,9 @@ var Minimap = React.createClass({
         }
 
         var vectorSource = new ol.source.Vector({
-            features: this.props.cities.filter(
+            features: (this.props.cities ? this.props.cities.filter(
                 function(city) {return city.location != null}
-            ).map(cityMarker)
+            ).map(cityMarker) : [])
         });
 
         var vectorLayer = new ol.layer.Vector({
@@ -161,7 +161,8 @@ var Minimap = React.createClass({
             var filter = function(city) {
                 return city.location == null;
             };
-            if(this.props.cities.filter(filter).length > 0) {
+            if(this.props.cities &&
+                    this.props.cities.filter(filter).length > 0) {
                 return (
                     <div>
                         <br/>

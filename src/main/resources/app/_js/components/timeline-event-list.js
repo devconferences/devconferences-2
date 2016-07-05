@@ -31,7 +31,7 @@ var TimelineEventList = React.createClass({
         }.bind(this);
 
         var hits = function() {
-            if(this.props.calendar.hits) {
+            if(this.props.calendar) {
                 if(this.props.calendar.hits.length > 0) {
                     return (
                         <div>
@@ -50,10 +50,12 @@ var TimelineEventList = React.createClass({
             }
         }.bind(this);
 
+        var totalPage = (this.props.calendar ? this.props.calendar.totalPage : -10);
+
         return (
             <div id="timeline-event-list" className="text-left separe scrollable">
                 {hits()}
-                {moreUpcomingEvents(this.props.calendar.totalPage, moreUpcomingEventsCall)}
+                {moreUpcomingEvents(totalPage, moreUpcomingEventsCall)}
             </div>
         );
     }

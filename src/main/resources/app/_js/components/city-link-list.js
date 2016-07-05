@@ -11,11 +11,15 @@ var CityLinkList = React.createClass({
                 <CityLink key={city.id} city={city} query={this.props.query}/>
             );
         }.bind(this);
-        return (
-            <div className="text-center visible-xs-block">
-                    { this.props.cities.map(renderCity) }
-            </div>
-        );
+        if(this.props.cities) {
+            return (
+                <div className="text-center visible-xs-block">
+                        { this.props.cities.map(renderCity) }
+                </div>
+            );
+        } else {
+            return null;
+        }
     }
 
 });

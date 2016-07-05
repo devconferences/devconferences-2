@@ -146,11 +146,9 @@ var SearchBar = React.createClass({
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.EVENTS;
+                        this.props.onUpdate(data);
                     } else {
                         console.warn("Previous query failed");
-                    }
-                    if(searchDone == searchType) {
-                        this.props.onUpdate(data);
                     }
                 });
             }
@@ -168,12 +166,10 @@ var SearchBar = React.createClass({
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.CALENDAR;
+                        this.props.onUpdate(data);
                     } else {
                         console.warn("Previous query failed");
                     }
-                    if(searchDone == searchType) {
-                        this.props.onUpdate(data);
-                   }
                });
             }
             if(searchType & this.CITIES) {
@@ -186,12 +182,10 @@ var SearchBar = React.createClass({
                     // If an API call fail (ie there is no 'data' property), then onUpdate() won't be called
                     if(result.data) {
                         searchDone += this.CITIES;
+                        this.props.onUpdate(data);
                     } else {
                         console.warn("Previous query failed");
                     }
-                    if(searchDone == searchType) {
-                        this.props.onUpdate(data);
-                   }
                });
             }
         }

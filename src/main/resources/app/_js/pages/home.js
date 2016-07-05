@@ -23,10 +23,7 @@ var Home = React.createClass({
     getInitialState: function () {
         return {
             cities: [],
-            calendar: {
-                query: null,
-                hits: null
-            },
+            calendar: null,
             user: null
         };
     },
@@ -81,8 +78,8 @@ var Home = React.createClass({
                             <Col lg={5} className="text-center">
                                 <h2>Villes répertoriées</h2>
 
-                                <Minimap cities={this.state.cities} query={this.state.calendar.query}/>
-                                <CityLinkList cities={this.state.cities} query={this.state.calendar.query}/>
+                                <Minimap cities={this.state.cities} query={(this.state.calendar ? this.state.calendar.query : null)}/>
+                                <CityLinkList cities={this.state.cities} query={(this.state.calendar ? this.state.calendar.query : null)}/>
 
                                 <h2>Dernières infos</h2>
 
