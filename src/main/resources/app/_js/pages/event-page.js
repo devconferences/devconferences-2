@@ -8,6 +8,8 @@ var NotFound = require('./not-found');
 var Event = require('../components/event');
 var DevConferencesClient = require('../client/client');
 
+var Glyphicon = ReactBootstrap.Glyphicon;
+
 var EventPage = React.createClass({
     mixins: [Router.Navigation],
 
@@ -57,9 +59,9 @@ var EventPage = React.createClass({
             return (<NotFound />);
         } else {
             return (
-                <div className="container text-center">
-                    Chargement...
-                </div>
+                <p className="container text-center">
+                    <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
+                </p>
             );
         }
     }

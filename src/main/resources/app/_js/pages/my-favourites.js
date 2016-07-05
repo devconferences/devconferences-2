@@ -7,6 +7,7 @@ var EventList = require('../components/event-list');
 var TimelineEvent = require('../components/timeline-event');
 var DevConferencesClient = require('../client/client');
 
+var Glyphicon = ReactBootstrap.Glyphicon;
 var Link = Router.Link;
 
 var MyFavourites = React.createClass({
@@ -76,7 +77,9 @@ var MyFavourites = React.createClass({
                 }
             } else {
                 return (
-                    <p className="text-center">Chargement...</p>
+                    <p className="text-center">
+                        <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
+                    </p>
                 );
             }
         }.bind(this);

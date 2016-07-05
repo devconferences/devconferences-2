@@ -8,6 +8,8 @@ var NotFound = require('./not-found');
 var TimelineEvent = require('../components/timeline-event');
 var DevConferencesClient = require('../client/client');
 
+var Glyphicon = ReactBootstrap.Glyphicon;
+
 var CalendarPage = React.createClass({
     mixins: [Router.Navigation],
 
@@ -58,9 +60,9 @@ var CalendarPage = React.createClass({
             return (<NotFound />);
         } else {
             return (
-                <div className="container text-center">
-                    Chargement...
-                </div>
+                <p className="container text-center">
+                    <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
+                </p>
             );
         }
     }

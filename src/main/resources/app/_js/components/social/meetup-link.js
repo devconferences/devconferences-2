@@ -49,10 +49,9 @@ var MeetupLink = React.createClass({
         )
       }
     } else {
-      // TODO loading icon ?
       return (
         <div className="container">
-          Chargement ...
+          <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
         </div>
       )
     }

@@ -1,8 +1,11 @@
 var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
 var moment = require('moment');
 
 var TimelineEvent = require('./timeline-event');
 var DevConferencesClient = require('../client/client');
+
+var Glyphicon = ReactBootstrap.Glyphicon;
 
 var TimelineEventList = React.createClass({
     render: function() {
@@ -39,7 +42,11 @@ var TimelineEventList = React.createClass({
                     return (<p className="text-center">Pas d'événements à venir.</p>);
                 }
             } else {
-                return (<p className="text-center">Chargement...</p>);
+                return (
+                    <p className="text-center">
+                        <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
+                    </p>
+                );
             }
         }.bind(this);
 

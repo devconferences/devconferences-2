@@ -1,4 +1,5 @@
 var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
 var DocumentTitle = require('react-document-title');
 var Router = require('react-router');
 var $ = require('jquery');
@@ -8,6 +9,8 @@ var EventList = require('../components/event-list');
 var UpcomingEventsList = require('../components/upcoming-events-list');
 var FavouriteButton = require('../components/favourite-button');
 var DevConferencesClient = require('../client/client');
+
+var Glyphicon = ReactBootstrap.Glyphicon;
 
 var City = React.createClass({
 
@@ -111,10 +114,11 @@ var City = React.createClass({
             )
         }
         else {
-            // TODO loading icon ?
             return (
                 <div className="container">
-                    Chargement ...
+                    <p className="text-center">
+                        <Glyphicon glyph="refresh" className="refresh-animate"></Glyphicon>
+                    </p>
                 </div>
             )
         }
