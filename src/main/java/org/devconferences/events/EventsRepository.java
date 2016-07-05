@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.*;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
+import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
 import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
 import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
@@ -499,7 +500,10 @@ public class EventsRepository {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         // Each location will be a sub-aggregation : it groups n count queries into 1.
         FilterAggregationBuilder filterAggregationBuilder = AggregationBuilders.filter("all")
-                .filter(FilterBuilders.queryFilter(getQueryBuilder(query)));
+                .filter(FilterBuilders.boolFilter()
+                        .must(FilterBuilders.queryFilter(getQueryBuilder(query)))
+                        .must(FilterBuilders.rangeFilter("date").gt(System.currentTimeMillis()))
+                );
         searchSourceBuilder.aggregation(filterAggregationBuilder);
 
         // Build aggregation for each location
@@ -606,10 +610,11 @@ public class EventsRepository {
         QueryBuilder queryBuilder = getQueryBuilder(query);
         SearchSourceBuilder eventLocations = new SearchSourceBuilder()
                 .query(filteredQuery(queryBuilder,
-                        geoDistanceFilter("location.gps")
+                        boolFilter().must(
+                                geoDistanceFilter("location.gps")
                                 .distance(distance, KILOMETERS)
                                 .lat(lat).lon(lon)
-                ))
+                ).must(FilterBuilders.rangeFilter("date").gt(System.currentTimeMillis()))))
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
                 .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
 
