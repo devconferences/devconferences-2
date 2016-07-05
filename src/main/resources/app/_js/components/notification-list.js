@@ -24,7 +24,7 @@ var NotificationList = React.createClass({
             return (
                 <li className="list-group-item" key={message.date + "/" + message.text}>
                     <span className="close">
-                        <button data-id={message.id} type="button" title="Marquer comme lu" onClick={this.removeMessage}>
+                        <button data-id={message.id} className="close" type="button" title="Marquer comme lu" onClick={this.removeMessage}>
                             &times;
                         </button>
                     </span>

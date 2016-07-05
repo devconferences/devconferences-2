@@ -372,10 +372,10 @@ div.event img.avatar {
     float: none;
     z-index: 1;
 }
-.notification-list .close > button {
-    border: 0;
-    background-color: transparent;
+.notification-list .close > button.close {
+    opacity: 1;
 }
+
 
 .refresh-animate {
     animation: spin 750ms infinite linear;
