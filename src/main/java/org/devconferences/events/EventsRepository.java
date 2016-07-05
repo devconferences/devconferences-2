@@ -4,8 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
-import io.searchbox.core.search.aggregation.MetricAggregation;
-import io.searchbox.core.search.aggregation.TermsAggregation;
+import io.searchbox.core.search.aggregation.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -22,6 +21,7 @@ import org.devconferences.users.UsersRepository;
 import org.elasticsearch.common.xcontent.XContentHelper;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.filter.FilterAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -471,16 +471,20 @@ public class EventsRepository {
         }
 
         // Attach each CalendarEvent with its city
-        GeopointCities.getInstance().getAllLocations().forEach((key, value) -> {
-            int countForCity = countCalendarEventsAround(query, value.lat(), value.lon(), GEO_DISTANCE);
+        FilterAggregation filterAggregation = getAllCalendarEventCountByCity(query);
+
+        // Parse result
+        GeopointCities.getInstance().getAllLocations().forEach((cityName, location) -> {
+            // Get corresponding aggregation
+            int countForCity = getCountForACity(filterAggregation, cityName);
             if(countForCity > 0) {
                 // If CityLight was not created with conferences or communities, then create it
-                if(!resultMap.containsKey(key)) {
-                    CityLight cityLight = new CityLight(key, key);
-                    cityLight.location = value;
-                    resultMap.put(key, cityLight);
+                if(!resultMap.containsKey(cityName)) {
+                    CityLight cityLight = new CityLight(cityName, cityName);
+                    cityLight.location = location;
+                    resultMap.put(cityName, cityLight);
                 }
-                resultMap.get(key).totalCalendar += countForCity;
+                resultMap.get(cityName).totalCalendar += countForCity;
             }
         });
 
@@ -489,6 +493,29 @@ public class EventsRepository {
             city.count = city.totalCalendar + city.totalCommunity + city.totalConference;
             return city;
         }).sorted().collect(Collectors.toList());
+    }
+
+    private FilterAggregation getAllCalendarEventCountByCity(String query) {
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+        // Each location will be a sub-aggregation : it groups n count queries into 1.
+        FilterAggregationBuilder filterAggregationBuilder = AggregationBuilders.filter("all")
+                .filter(FilterBuilders.queryFilter(getQueryBuilder(query)));
+        searchSourceBuilder.aggregation(filterAggregationBuilder);
+
+        // Build aggregation for each location
+        GeopointCities.getInstance().getAllLocations().forEach((key, value) -> {
+            filterAggregationBuilder.subAggregation(AggregationBuilders.geoDistance(key)
+                    .lon(value.lon()).lat(value.lat()).unit(KILOMETERS)
+                    .addUnboundedTo(GEO_DISTANCE).field("location.gps"));
+        });
+
+        Search geoSearchAggs = new Search.Builder(searchSourceBuilder.toString())
+                .addIndex(DEV_CONFERENCES_INDEX)
+                .addType(CALENDAREVENTS_TYPE)
+                .build();
+        SearchResult calendarAggResult = client.execute(geoSearchAggs);
+
+        return calendarAggResult.getAggregations().getFilterAggregation("all");
     }
 
     City getCity(String cityId, String query) {
@@ -545,6 +572,11 @@ public class EventsRepository {
         }
     }
 
+    // Extract count of city key from the FilterAggregation of getAllCitiesWithQuery()
+    private int getCountForACity(FilterAggregation filterAggregation, String city) {
+        return filterAggregation.getGeoDistanceAggregation(city).getBuckets().get(0).getCount().intValue();
+    }
+
     // ***************************** GeoSearch ***************************** //
 
     List<Event> findEventsAround(double lat, double lon, double distance) {
@@ -568,26 +600,6 @@ public class EventsRepository {
         }
 
         return new EventSearchResult().getHitsFromSearch(result);
-    }
-
-    int countCalendarEventsAround(String query, double lat, double lon, double distance) {
-        QueryBuilder queryBuilder = getQueryBuilder(query);
-        SearchSourceBuilder eventLocations = new SearchSourceBuilder()
-                .query(filteredQuery(queryBuilder,
-                        geoDistanceFilter("location.gps")
-                                .distance(distance, KILOMETERS)
-                                .lat(lat).lon(lon)));
-
-        Count search = new Count.Builder().query(eventLocations.toString())
-                .addIndex(DEV_CONFERENCES_INDEX)
-                .addType(CALENDAREVENTS_TYPE)
-                .build();
-
-        CountResult result = client.execute(search);
-        if(!result.isSucceeded()) {
-            throw new RuntimeException(result.getErrorMessage());
-        }
-        return result.getCount().intValue();
     }
 
     List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
