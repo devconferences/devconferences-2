@@ -754,7 +754,7 @@ public class EventsRepository {
             // Boost system : id >>> name >>> tags > description, url
             return QueryBuilders.boolQuery()
                     .must(QueryBuilders.queryStringQuery(QueryParser.escape(query)).defaultOperator(QueryStringQueryBuilder.Operator.AND)
-                            .field("id", 10).field("name", 5).field("tags", 2).field("description").field("url"));
+                            .field("id", 10).field("name", 5).field("tags", 2).field("description").field("url").field("city"));
         }
     }
 }
