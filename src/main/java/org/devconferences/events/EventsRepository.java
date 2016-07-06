@@ -4,7 +4,9 @@ import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.*;
-import io.searchbox.core.search.aggregation.*;
+import io.searchbox.core.search.aggregation.FilterAggregation;
+import io.searchbox.core.search.aggregation.MetricAggregation;
+import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.devconferences.elastic.ElasticUtils;
 import org.devconferences.elastic.RuntimeJestClient;
@@ -36,9 +38,7 @@ import java.util.stream.Collectors;
 
 import static org.devconferences.elastic.ElasticUtils.*;
 import static org.elasticsearch.common.unit.DistanceUnit.KILOMETERS;
-import static org.elasticsearch.index.query.FilterBuilders.boolFilter;
-import static org.elasticsearch.index.query.FilterBuilders.geoDistanceFilter;
-import static org.elasticsearch.index.query.FilterBuilders.rangeFilter;
+import static org.elasticsearch.index.query.FilterBuilders.*;
 import static org.elasticsearch.index.query.QueryBuilders.filteredQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 
@@ -55,9 +55,7 @@ public class EventsRepository {
     }
 
     public EventsRepository(RuntimeJestClient client) {
-        this.client = client;
-        this.updateCounter = 1;
-        this.usersRepository = new UsersRepository();
+        this(client, new UsersRepository());
     }
 
     public EventsRepository(RuntimeJestClient client, UsersRepository usersRepository) {
@@ -285,12 +283,8 @@ public class EventsRepository {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(EVENTS_TYPE).build();
 
         JestResult result = client.execute(get);
-        if(!result.isSucceeded()) {
-            if(result.getResponseCode() == 404) { // Not found : that's not an error
-                return null;
-            } else {
-                throw new RuntimeException(result.getErrorMessage());
-            }
+        if(httpError404OrFail(result)) {
+            return null;
         }
         return result.getSourceAsObject(Event.class);
     }
@@ -310,12 +304,8 @@ public class EventsRepository {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, eventId).type(CALENDAREVENTS_TYPE).build();
 
         JestResult result = client.execute(get);
-        if(!result.isSucceeded()) {
-            if(result.getResponseCode() == 404) { // Not found : that's not an error
-                return null;
-            } else {
-                throw new RuntimeException(result.getErrorMessage());
-            }
+        if(httpError404OrFail(result)) {
+            return null;
         }
         return result.getSourceAsObject(CalendarEvent.class);
     }
@@ -355,15 +345,15 @@ public class EventsRepository {
                         .field("suggests").text(query)
         );
 
-        JestResult jestResult = new JestResult(new Gson());
+        Suggest suggest;
         try {
-            Suggest suggest = new Suggest.Builder(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false))
+            suggest = new Suggest.Builder(XContentHelper.convertToJson(suggestBuilder.buildAsBytes(), false))
                     .addIndex(DEV_CONFERENCES_INDEX).build();
-
-            jestResult = client.execute(suggest);
         } catch(IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
         }
+
+        JestResult jestResult = client.execute(suggest);
 
         // Suggests result
         CompletionResult result = new CompletionResult();
@@ -373,14 +363,12 @@ public class EventsRepository {
         HashMap<String, Double> rating = new HashMap<>();
         SuggestResponse test = new Gson().fromJson(jestResult.getJsonObject(), SuggestResponse.class);
 
-        test.suggests.get(0).options.forEach((suggest) -> getSuggestConsumer(suggest, rating));
+        test.suggests.get(0).options.forEach((suggest2) -> getSuggestConsumer(suggest2, rating));
 
         // Add favourites booster in suggestions
         if(user != null) {
             user.favourites.tags.forEach((tag) -> {
-                SuggestData suggestData = new SuggestData();
-                suggestData.text = tag;
-                suggestData.score = 10d;
+                SuggestData suggestData = new SuggestData(tag, 10d);
                 if(rating.containsKey(tag) || query == null || query.equals("")) {
                     getSuggestConsumer(suggestData, rating);
                 }
@@ -388,25 +376,9 @@ public class EventsRepository {
         }
 
         // Create list of suggestions
-        rating.forEach((key, value) -> {
-            SuggestData item = new SuggestData();
-            item.text = key;
-            item.score = value;
-            result.hits.add(item);
-        });
+        rating.forEach((key, value) -> result.hits.add(new SuggestData(key, value)));
 
-        // Sort hits : (high score, alphabetical text)
-        result.hits.sort((suggO, suggT1) -> {
-            if(suggO != null && suggT1 != null) {
-                if(suggO.score.compareTo(suggT1.score) != 0) {
-                    return -1 * suggO.score.compareTo(suggT1.score); // Desc sort
-                } else {
-                    return suggO.text.compareTo(suggT1.text);
-                }
-            } else {
-                return -1;
-            }
-        });
+        Collections.sort(result.hits);
 
         return result;
     }
@@ -612,9 +584,9 @@ public class EventsRepository {
                 .query(filteredQuery(queryBuilder,
                         boolFilter().must(
                                 geoDistanceFilter("location.gps")
-                                .distance(distance, KILOMETERS)
-                                .lat(lat).lon(lon)
-                ).must(FilterBuilders.rangeFilter("date").gt(System.currentTimeMillis()))))
+                                        .distance(distance, KILOMETERS)
+                                        .lat(lat).lon(lon)
+                        ).must(FilterBuilders.rangeFilter("date").gt(System.currentTimeMillis()))))
                 .sort(SortBuilders.fieldSort("date").order(SortOrder.ASC))
                 .size(ElasticUtils.MAX_SIZE); // Default max value, or ES will throw an Exception
 
@@ -714,7 +686,7 @@ public class EventsRepository {
                 ((CalendarEventSearchResult) res).hits.addAll(((CalendarEventSearchResult) res).getHitsFromSearch(searchResult));
                 break;
             default:
-                throw new RuntimeException("Unknown search type : " + typeSearch);
+                throw new IllegalStateException("Unknown search type : " + typeSearch);
         }
 
         res.totalHits = String.valueOf(countResult.getCount().intValue());
@@ -756,5 +728,17 @@ public class EventsRepository {
                     .must(QueryBuilders.queryStringQuery(QueryParser.escape(query)).defaultOperator(QueryStringQueryBuilder.Operator.AND)
                             .field("id", 10).field("name", 5).field("tags", 2).field("description").field("url").field("city"));
         }
+    }
+
+
+    private boolean httpError404OrFail(JestResult result) {
+        if(!result.isSucceeded()) {
+            if(result.getResponseCode() == 404) { // Not found : that's not an error
+                return true;
+            } else {
+                throw new RuntimeException("HTTP " + result.getResponseCode() + " : " + result.getErrorMessage());
+            }
+        }
+        return false;
     }
 }
