@@ -103,7 +103,7 @@ public class Authentication {
             UsersRepository.FavouriteItem.FavouriteType typeEnum = UsersRepository.FavouriteItem.FavouriteType.valueOf(type);
             return usersRepository.getFavourites(getUser(context), typeEnum);
         } catch(RuntimeException e) {
-            if(e.getMessage().startsWith("HTML 400 :") || e.getMessage().startsWith("No enum constant ")) {
+            if(e.getMessage().startsWith("HTTP 400 :") || e.getMessage().startsWith("No enum constant ")) {
                 throw new BadRequestException();
             } else {
                 throw e;

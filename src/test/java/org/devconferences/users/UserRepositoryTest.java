@@ -10,15 +10,17 @@ import net.codestory.http.errors.BadRequestException;
 import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Response;
 import org.assertj.core.api.Assertions;
-import org.devconferences.elastic.*;
+import org.devconferences.elastic.DeveloppementESNode;
+import org.devconferences.elastic.ElasticUtils;
+import org.devconferences.elastic.RuntimeJestClient;
+import org.devconferences.events.EventsRepository;
 import org.devconferences.events.data.CalendarEvent;
 import org.devconferences.events.data.Event;
-import org.devconferences.events.EventsRepository;
 import org.devconferences.events.search.SimpleSearchResult;
-import org.devconferences.security.Authentication;
-import org.devconferences.security.Encrypter;
 import org.devconferences.github.GitHubAuthenticationResponse;
 import org.devconferences.github.GithubCalls;
+import org.devconferences.security.Authentication;
+import org.devconferences.security.Encrypter;
 import org.elasticsearch.action.percolate.PercolateResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -135,7 +137,7 @@ public class UserRepositoryTest {
             when(mockGithub.getUser(githubResponse.accessToken, true)).thenReturn(responseUser);
             when(mockGithub.authorize("a1b2c3d4e5f67890")).thenReturn(githubResponse);
 
-        } catch (IOException e) {
+        } catch(IOException e) {
             e.printStackTrace();
         }
 
@@ -241,8 +243,8 @@ public class UserRepositoryTest {
             simpleSearchResult = usersRepository.getFavourites(user, UsersRepository.FavouriteItem.FavouriteType.TAG);
 
             Assertions.failBecauseExceptionWasNotThrown(RuntimeException.class);
-        } catch (RuntimeException e) {
-            Assertions.assertThat(e.getMessage()).isEqualTo("HTML 400 : Unsupported FavouriteType : TAG");
+        } catch(RuntimeException e) {
+            Assertions.assertThat(e.getMessage()).isEqualTo("HTTP 400 : Unsupported FavouriteType : TAG");
         }
 
         // user == null => null
@@ -278,7 +280,7 @@ public class UserRepositoryTest {
                 .addIndex(DEV_CONFERENCES_INDEX).addType(".percolator").build();
 
         SearchResult searchResult = client.execute(search);
-        List<SearchResult.Hit<PercolateResponse,Void>> listHits = searchResult.getHits(PercolateResponse.class);
+        List<SearchResult.Hit<PercolateResponse, Void>> listHits = searchResult.getHits(PercolateResponse.class);
         Assertions.assertThat(listHits).hasSize(7);
         Assertions.assertThat(listHits.get(0).sort.get(0)).matches("abc1234_CALENDAR_1");
         Assertions.assertThat(listHits.get(1).sort.get(0)).matches("abc1234_CITY_City 1/io");
@@ -351,7 +353,7 @@ public class UserRepositoryTest {
         client.execute(refresh);
 
         searchResult = client.execute(search);
-        List<SearchResult.Hit<PercolateResponse,Void>> listHits2 = searchResult.getHits(PercolateResponse.class);
+        List<SearchResult.Hit<PercolateResponse, Void>> listHits2 = searchResult.getHits(PercolateResponse.class);
         Assertions.assertThat(listHits2).hasSize(0);
 
     }

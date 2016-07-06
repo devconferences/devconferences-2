@@ -22,7 +22,7 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     public <T extends JestResult> T execute(Action<T> clientRequest) {
         try {
             return jestClient.execute(clientRequest);
-        } catch (IOException e) {
+        } catch(IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -45,5 +45,14 @@ public class RuntimeJestClientAdapter implements RuntimeJestClient {
     @Override
     public void close() {
         shutdownClient();
+    }
+
+    @Override
+    public void failOnError(JestResult jestResult) {
+        if(!jestResult.isSucceeded()) {
+            throw new IllegalStateException(
+                    new IOException("HTTP " + jestResult.getResponseCode() + " : " + jestResult.getErrorMessage())
+            );
+        }
     }
 }

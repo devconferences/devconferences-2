@@ -73,9 +73,7 @@ public class DailyJob {
                 .addIndex(DEV_CONFERENCES_INDEX).addType(CALENDAREVENTS_TYPE).build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
 
         List<String> idsList = searchResult.getHits(Event.class).stream().map(data -> data.source.id).collect(Collectors.toList());
 
@@ -108,9 +106,7 @@ public class DailyJob {
                 .addIndex(DEV_CONFERENCES_INDEX).addType(type).build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
 
         List<String> idsList = searchResult.getHits(clazz).stream()
                 .map(data -> {

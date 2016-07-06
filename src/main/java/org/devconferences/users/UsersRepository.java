@@ -83,7 +83,7 @@ public class UsersRepository {
                     ((CalendarEventSearchResult) result).hits.addAll(((CalendarEventSearchResult) result).getHitsFromSearch(searchResult));
                     break;
                 default:
-                    throw new RuntimeException("HTML 400 : Unsupported FavouriteType : " + typeEnum);
+                    throw new RuntimeException("HTTP 400 : Unsupported FavouriteType : " + typeEnum);
             }
             result.query = "favourites/" + typeEnum.toString();
 
@@ -96,6 +96,7 @@ public class UsersRepository {
     public User getUser(String userId) {
         Get get = new Get.Builder(DEV_CONFERENCES_INDEX, userId).type(USERS_TYPE).build();
         JestResult jestResult = client.execute(get);
+        client.failOnError(jestResult);
         return jestResult.getSourceAsObject(User.class);
     }
 
@@ -168,10 +169,7 @@ public class UsersRepository {
             }
             indexes.forEach(index -> {
                 DocumentResult documentResult = client.execute(index);
-                if(!documentResult.isSucceeded()) {
-                    throw new RuntimeException("Impossible to create percolator " + index.getId() + "\n" +
-                            documentResult.getErrorMessage());
-                }
+                client.failOnError(documentResult);
             });
         }
 
@@ -191,10 +189,7 @@ public class UsersRepository {
                     .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
 
             DocumentResult documentResult = client.execute(delete);
-            if(!documentResult.isSucceeded()) {
-                throw new RuntimeException("Impossible to remove percolator " + percolatorId + "\n" +
-                        documentResult.getErrorMessage());
-            }
+            client.failOnError(documentResult);
             // Remove also geosearch if type is CITY
             if(type == CITY) {
                 if(GeopointCities.getInstance().getLocation(value.split("/")[0]) != null) {
@@ -202,10 +197,7 @@ public class UsersRepository {
                             .index(DEV_CONFERENCES_INDEX).type(".percolator").build();
 
                     documentResult = client.execute(delete);
-                    if(!documentResult.isSucceeded()) {
-                        throw new RuntimeException("Impossible to remove percolator " + percolatorId + "_geo" + "\n" +
-                                documentResult.getErrorMessage());
-                    }
+                    client.failOnError(documentResult);
                 }
             }
         }

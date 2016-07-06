@@ -329,9 +329,7 @@ public class EventsRepository {
                 .build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
 
         return new CalendarEventSearchResult().getHitsFromSearch(searchResult);
     }
@@ -354,6 +352,7 @@ public class EventsRepository {
         }
 
         JestResult jestResult = client.execute(suggest);
+        client.failOnError(jestResult);
 
         // Suggests result
         CompletionResult result = new CompletionResult();
@@ -413,9 +412,7 @@ public class EventsRepository {
                 .build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
 
         // Manage aggregations
         MetricAggregation aggregations = searchResult.getAggregations();
@@ -490,6 +487,7 @@ public class EventsRepository {
                 .addType(CALENDAREVENTS_TYPE)
                 .build();
         SearchResult calendarAggResult = client.execute(geoSearchAggs);
+        client.failOnError(calendarAggResult);
 
         return calendarAggResult.getAggregations().getFilterAggregation("all");
     }
@@ -515,9 +513,7 @@ public class EventsRepository {
                 .build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
         searchResult.getHits(Event.class)
                 .stream()
                 .map(hit -> hit.source)
@@ -570,12 +566,10 @@ public class EventsRepository {
                 .addType(EVENTS_TYPE)
                 .build();
 
-        SearchResult result = client.execute(search);
-        if(!result.isSucceeded()) {
-            throw new RuntimeException(result.getErrorMessage());
-        }
+        SearchResult searchResult = client.execute(search);
+        client.failOnError(searchResult);
 
-        return new EventSearchResult().getHitsFromSearch(result);
+        return new EventSearchResult().getHitsFromSearch(searchResult);
     }
 
     List<CalendarEvent> findCalendarEventsAround(String query, double lat, double lon, double distance) {
@@ -595,11 +589,9 @@ public class EventsRepository {
                 .addType(CALENDAREVENTS_TYPE)
                 .build();
 
-        SearchResult result = client.execute(search);
-        if(!result.isSucceeded()) {
-            throw new RuntimeException(result.getErrorMessage());
-        }
-        return new CalendarEventSearchResult().getHitsFromSearch(result);
+        SearchResult searchResult = client.execute(search);
+        client.failOnError(searchResult);
+        return new CalendarEventSearchResult().getHitsFromSearch(searchResult);
     }
 
     // ****************************** Search ****************************** //
@@ -622,13 +614,13 @@ public class EventsRepository {
 
         // Check parameters
         if(pageInt <= 0) {
-            throw new RuntimeException("HTML 400 : page parameter must be positive");
+            throw new RuntimeException("HTTP 400 : page parameter must be positive");
         }
         if(query == null || query.equals("undefined")) {
-            throw new RuntimeException("HTML 400 : query parameter is missing");
+            throw new RuntimeException("HTTP 400 : query parameter is missing");
         }
         if(perPage < 1 || perPage > 1000) {
-            throw new RuntimeException("HTML 400 : limit parameter must be between 1 and 1000");
+            throw new RuntimeException("HTTP 400 : limit parameter must be between 1 and 1000");
         }
 
         // Count query
@@ -646,14 +638,12 @@ public class EventsRepository {
                 .build();
 
         CountResult countResult = client.execute(count);
-        if(!countResult.isSucceeded()) {
-            throw new RuntimeException(countResult.getErrorMessage());
-        }
+        client.failOnError(countResult);
 
         // Search query
         // Check conditions about page and size (part 2)
         if(perPage * (pageInt - 1) >= countResult.getCount() && (countResult.getCount() != 0 || pageInt != 1)) {
-            throw new RuntimeException("HTML 400 : page out of bounds");
+            throw new RuntimeException("HTTP 400 : page out of bounds");
         }
 
         if(sortBy != null) {
@@ -669,9 +659,7 @@ public class EventsRepository {
                 .build();
 
         SearchResult searchResult = client.execute(search);
-        if(!searchResult.isSucceeded()) {
-            throw new RuntimeException(searchResult.getErrorMessage());
-        }
+        client.failOnError(searchResult);
 
         // Create result of search
         PaginatedSearchResult res;
